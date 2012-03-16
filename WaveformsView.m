@@ -69,6 +69,10 @@
         //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) 
         //                                             name:@"highlight" object:nil];
     }
+    //initialize variables
+    vertices = NULL;
+    colors = NULL;
+    indices = NULL;
     return self;
 }
 
@@ -145,9 +149,35 @@
     //we want to create peaks every 8 points
     chunkSize = 8;
     numPoints = 2*(npoints/chunkSize)*channels;
-    vertices = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
-    colors = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
-    indices = malloc(2*(npoints/chunkSize)*channels*sizeof(GLuint));
+    //check if we already have allocate space; if so, free
+    if( vertices != NULL)
+    {
+        vertices = realloc(vertices,3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
+    }
+    else
+    {
+        vertices = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
+    }
+    if( colors != NULL)
+    {
+        colors = realloc(colors,3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
+    }
+    else
+    {
+        colors = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
+    }
+    if(indices != NULL)
+    {
+        indices = realloc(indices,2*(npoints/chunkSize)*channels*sizeof(GLuint));
+    }
+    else
+    {
+        indices = malloc(2*(npoints/chunkSize)*channels*sizeof(GLuint));
+    }
+    
+    
+    
+    
     //vector to hold the min/max for each channel
     limits = calloc(2*channels,sizeof(GLfloat));
     
