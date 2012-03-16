@@ -502,8 +502,8 @@
         {
             [self moveLeft:self];
         }
-        dz = [theEvent deltaY];
-        dx += [theEvent deltaX]*10;
+        //dz = [theEvent deltaY];
+        dx += [theEvent deltaX]*0.001*windowSize;
         if( dx < xmin)
         {
             dx = 0;
