@@ -415,6 +415,11 @@
         
         ySpan = dataPoint.y-ty;
         dy = ty;
+        if(dataPoint.y < ty+ymin )
+        {
+            dy = dataPoint.y-ymin;
+            ySpan = ty + ymin -dy;
+        }
         //here, we can simply figure out the smallest distance between the vector defined by
         //(dataPoint.x,dataPoint.y) and the waveforms vectors
     }
