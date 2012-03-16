@@ -253,12 +253,13 @@
         }
     }
     //we don't need limits anymore
+    ymax = offset+limits[2*(channels-1)+1];
     free(limits);
     dz = 0.0;
     dy = 0.0;
     dx =0.0;
     //add maximum of the last channel to the offset
-    ymax = offset+limits[2*(channels-1)+1];
+    
     ySpan = ymax;
     ymin = 0;
     [[self openGLContext] makeCurrentContext];
