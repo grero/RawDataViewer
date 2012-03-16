@@ -156,6 +156,7 @@
     xmin = 0;
     //sampling rate of 30 kHz
     xmax = timepoints/30.0;
+    windowSize = 10000;
     //xmax = 20000;
     //find the minimum and maximum for each channel
     for(ch=0;ch<channels;ch++)
@@ -279,7 +280,7 @@
 		
 		/*glOrtho(1.05*xmin-0.05*xmax, 1.05*xmin-0.05*xmax, 1.05*wfMinmax[2]-0.05*wfMinmax[3], 
 				1.05*wfMinmax[3]-0.05*wfMinmax[2], wfMinmax[4], wfMinmax[5]);*/
-        glOrtho(xmin+dx, 10000+dx, 1.1*ymin, 1.1*ymax, -2.0+dz, 3.0+dz);
+        glOrtho(xmin+dx, windowSize+dx, 1.1*ymin, 1.1*ymax, -2.0+dz, 3.0+dz);
         		//activate the dynamicbuffer
         
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -464,9 +465,9 @@
     {
         dx = 0;
     }
-    else if( dx > xmax-10000)
+    else if( dx > xmax-windowSize)
     {
-        dx = xmax-10000;
+        dx = xmax-windowSize;
     }
     [self setNeedsDisplay:YES];
 }
