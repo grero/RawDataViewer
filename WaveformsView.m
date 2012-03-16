@@ -472,6 +472,13 @@
     [self setNeedsDisplay:YES];
 }
 
+-(void)magnifyWithEvent:(NSEvent*)theEvent
+{
+    GLfloat m = [theEvent magnification];
+    //change the window size
+    windowSize = windowSize*(1+m);
+    [self setNeedsDisplay:YES];
+}
 -(IBAction)moveRight:(id)sender
 {
 	//shift highlighted waveform downwards
