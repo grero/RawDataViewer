@@ -24,7 +24,7 @@
 {
     //read data from the file
     //start progress indicator
-    [[progress window] orderFront:self];
+    [[progress window] makeKeyAndOrderFront:self];
     [progress startAnimation:self];
     const char *fname;    
     FILE *fid;
