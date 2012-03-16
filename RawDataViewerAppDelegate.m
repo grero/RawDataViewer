@@ -30,10 +30,29 @@
     fid = fopen(fname, "rb");
     //get the header size
     fread(&headerSize, sizeof(uint32_t), 1, fid);
+    //check if we have a valid file
+    if( (headerSize != 73) && (headerSize != 90 ) )
+    {
+        //not valid file
+        return NO;
+    }
+    
     //get the number of channels
     fread(&nchs,sizeof(uint8_t),1,fid);
     //get the sampling rate
     fread(&samplingRate,sizeof(uint32_t),1,fid);
+    if( samplingRate > 1e5 )
+    {
+        //we made a mistake; try reading in the opposite order
+        fseek(fid,5,SEEK_CUR);
+        fread(&samplingRate,sizeof(uint32_t),1,fid);
+        fread(&nchs,sizeof(uint8_t),1,fid);
+    }
+    //check again; if we still didn't get a sensible number, this is probably not a valid file
+    if (samplingRate > 1e5 )
+    {
+        return NO;
+    }
     fseek(fid,0,SEEK_END);
     npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
     
