@@ -256,7 +256,8 @@
     free(limits);
     dz = 0.0;
     dx =0.0;
-    ymax = offset;
+    //add maximum of the last channel to the offset
+    ymax = offset+limits[2*(channels-1)+1];
     ymin = 0;
     [[self openGLContext] makeCurrentContext];
     //vertices have been created, now push those to the GPU
@@ -310,7 +311,7 @@
 		
 		/*glOrtho(1.05*xmin-0.05*xmax, 1.05*xmin-0.05*xmax, 1.05*wfMinmax[2]-0.05*wfMinmax[3], 
 				1.05*wfMinmax[3]-0.05*wfMinmax[2], wfMinmax[4], wfMinmax[5]);*/
-        glOrtho(xmin+dx, windowSize+dx, 1.1*ymin, 1.1*ymax, -2.0+dz, 3.0+dz);
+        glOrtho(xmin+dx, windowSize+dx, ymin, ymax, -2.0+dz, 3.0+dz);
         		//activate the dynamicbuffer
         
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
