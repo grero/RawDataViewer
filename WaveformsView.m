@@ -378,6 +378,12 @@
     
 -(void)mouseUp:(NSEvent *)theEvent
 {
+    if( [theEvent clickCount] == 2 )
+    {
+        //double click;reset window to 10000 points
+        windowSize = 10000;
+        [self setNeedsDisplay:YES];
+    }
 	//TODO: modify this to incorproate the new index
     //get current point in view coordinates
     NSPoint currentPoint = [self convertPoint: [theEvent locationInWindow] fromView:nil];
@@ -517,6 +523,7 @@
     windowSize = windowSize*(1+m);
     [self setNeedsDisplay:YES];
 }
+
 -(IBAction)moveRight:(id)sender
 {
 	//shift highlighted waveform downwards
