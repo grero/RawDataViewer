@@ -39,12 +39,16 @@
     
     //get the number of channels
     fread(&nchs,sizeof(uint8_t),1,fid);
+    if( nchs == 0 )
+    {
+        return NO;
+    }
     //get the sampling rate
     fread(&samplingRate,sizeof(uint32_t),1,fid);
     if( samplingRate > 1e5 )
     {
         //we made a mistake; try reading in the opposite order
-        fseek(fid,5,SEEK_CUR);
+        fseek(fid,-5,SEEK_CUR);
         fread(&samplingRate,sizeof(uint32_t),1,fid);
         fread(&nchs,sizeof(uint8_t),1,fid);
     }
@@ -55,7 +59,11 @@
     }
     fseek(fid,0,SEEK_END);
     npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
-    
+    //check that we are actually able to load; load a maximum of 100MB
+    if(npoints*sizeof(int16_t) > 100*1024*1024 )
+    {
+        npoints = (100*1024*1024/(((uint32_t)nchs)*sizeof(int16_t)))*((uint32_t)nchs);
+    }
     data = malloc(npoints*sizeof(int16_t));
     fseek(fid,headerSize,SEEK_SET);
     nbytes = fread(data,sizeof(int16_t),npoints,fid);
