@@ -16,4 +16,5 @@
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;
+@property (assign) IBOutlet NSProgressIndicator *progress;
 @end
