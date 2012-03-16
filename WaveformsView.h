@@ -10,29 +10,6 @@
 #import <Accelerate/Accelerate.h>
 //#import "GLString.h"
 
-static GLuint wfVertexBuffer;
-static GLuint wfIndexBuffer;
-static GLuint wfColorBuffer;
-static GLuint wfPixelBuffer;
-static GLfloat *wfVertices;
-//static GLfloat *use_vertices;
-static GLfloat *wfColors;
-//static GLfloat *use_colors;
-static GLuint *wfIndices;
-static float *wfMinmax;
-static float *chMinMax;
-static float xmin,xmax,ymin,ymax;
-static unsigned int num_spikes,orig_num_spikes;
-static unsigned int nWfVertices;
-static unsigned int nWfIndices;
-static unsigned int wavesize;
-static unsigned int waveIndexSize;
-static unsigned int chs;
-static unsigned int timepts;
-static unsigned int channelHop;
-static int highlightWave;
-static BOOL wfDataloaded;
-static unsigned int channels,pointsPerChannel;
 static void wfPushVertices();
 static void wfModifyVertices(GLfloat *vertex_data);
 static void wfModifyIndices(GLuint *index_data);
@@ -49,10 +26,12 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 	//data to hold information on which waveforms are active
 	NSMutableIndexSet *waveformIndices;
     NSUInteger numPoints;
+    GLfloat xmax,xmin,ymax,ymin;
     GLfloat *vertices,*colors;
     GLuint *indices;
     GLfloat dz,dx;
     GLuint indexBuffer,vertexBuffer,colorBuffer;
+    BOOL dataLoaded;
     
 }
 

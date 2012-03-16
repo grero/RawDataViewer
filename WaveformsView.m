@@ -8,7 +8,12 @@
 
 #import "WaveformsView.h"
 
+#ifndef MIN
 #define MIN(a,b) ((a)>(b)?(b):(a))
+#endif
+#ifndef MAX
+#define MAX(a,b) ((a)>(b)?(a):(b))
+#endif
 #define PI 3.141516
 
 @implementation WaveformsView
@@ -18,7 +23,7 @@
 
 -(void)awakeFromNib
 {
-    wfDataloaded = NO;
+    dataLoaded = NO;
 }
 
 -(BOOL)acceptsFirstResponder
@@ -133,8 +138,8 @@
 {
     NSUInteger npoints,ch,i,j,k,chunkSize;
     int16_t *_data;
-    GLfloat peak,trough,d,offset,coffset,maxPeak,maxTrough;
-    //npoints = [vertex_data length]/(sizeof(int16_t));
+    GLfloat peak,trough,d,offset;
+    GLfloat *limits;
     npoints = timepoints;
 	_data = (int16_t*)[vertex_data bytes];
     //we want to create peaks every 8 points
@@ -143,15 +148,38 @@
     vertices = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
     colors = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
     indices = malloc(2*(npoints/chunkSize)*channels*sizeof(GLuint));
+    //vector to hold the min/max for each channel
+    limits = calloc(2*ch,sizeof(GLfloat));
+    
     //this works because the data is organized in channel order
     offset = 0;
     xmin = 0;
     //sampling rate of 30 kHz
     xmax = timepoints/30.0;
     xmax = 20000;
+    //find the minimum and maximum for each channel
+    for(ch=0;ch<channels;ch++)
+    {   
+        for(i=0;i<npoints;i++)
+        {
+            d = (GLfloat)(_data[i*channels+ch]);
+            limits[2*ch] = MIN(d,limits[2*ch]);           
+            limits[2*ch+1] = MAX(d,limits[2*ch+1]);
+
+        }
+    }
+    
     for(ch=0;ch<channels;ch++)
     {
-        coffset = 0;
+        if(ch>0)
+        {
+            //the offset should be the maximum of the previous channel minus the minimum of this channel
+            offset += (-limits[2*ch] + limits[2*(ch-1)+1]);
+        }
+        else
+        {
+            offset = -limits[2*ch];
+        }
         //maxPeak = 0;
         //maxTrough = 0;
         for(i=0;i<npoints;i+=chunkSize)
@@ -161,28 +189,9 @@
             for(j=0;j<chunkSize;j++)
             {
                 d = (GLfloat)_data[channels*(i+j)+ch];
-                if(d > peak )
-                {
-                    peak = d;
-                }
-                else if (d < trough )
-                {
-                    trough = d;
-                }
-            }
-            /*
-            if( peak > maxPeak )
-            {
-                maxPeak = peak;
-            }
-            else if (trough < maxTrough )
-            {
-                maxTrough = trough;
-            }
-             */
-            if ((peak-trough) > coffset)
-            {
-                coffset = peak-trough;
+                
+                peak = MAX(peak,d);
+                trough = MIN(trough,d);
             }
             k = ch*(npoints/chunkSize) + i/chunkSize;
             //x
@@ -211,28 +220,14 @@
             indices[2*k] = 2*k;
             indices[2*k+1] = 2*k+1;
         }
-        //add the maximum peak for this channel to the offset of the next channel
-        //offset+=maxPeak;
-        
-        offset+=coffset;
-        if( ch==0 )
-        {
-            ymin = -coffset;
-        }
     }
+    //we don't need limits anymore
+    free(limits);
     dz = 0.0;
     dx =0.0;
     ymax = offset;
+    ymin = 0;
     [[self openGLContext] makeCurrentContext];
-    /*
-    glGenBuffers(1,&colorBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 3*2*(npoints/chunkSize)*channels*sizeof(GLfloat), colors, GL_DYNAMIC_DRAW);
-    glColorPointer(3, GL_FLOAT, 0, (void*)0);
-    glGenBuffers(1, &indexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 2*(npoints/chunkSize)*channels*sizeof(GLuint), indices, GL_DYNAMIC_DRAW);
-     */
     //vertices have been created, now push those to the GPU
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer  );
@@ -249,7 +244,7 @@
     glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
     glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
     //notify that we have loaded the data
-    wfDataloaded = YES;
+    dataLoaded = YES;
     [self setNeedsDisplay: YES];
 }
 
@@ -276,7 +271,7 @@
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glLoadIdentity();
     //glClear(GL_DEPTH_BUFFER_BIT);
-    if(wfDataloaded)
+    if(dataLoaded)
     {
 		//[self drawLabels];
 		glMatrixMode(GL_PROJECTION);
@@ -287,28 +282,6 @@
         glOrtho(xmin+dx, 10000+dx, 1.1*ymin, 1.1*ymax, -2.0+dz, 3.0+dz);
         		//activate the dynamicbuffer
         
-        /*
-        int i;
-        //this is just a test to see if the data was transferred OK
-        
-        GLfloat *_vertices = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
-        glBegin(GL_POINTS);
-        for(i=0;i<150000;i++)
-        {
-            
-            glVertex3f(_vertices[3*i], _vertices[3*i+1], _vertices[3*i+2]);
-            //glColor3f(colors[6*i], colors[6*i+1], colors[6*i+2]);
-            glColor3f(_vertices[3*numPoints+3*i], _vertices[3*numPoints+3*i+1], _vertices[3*numPoints+3*i+2]);
-            
-            //glVertex3f(_vertices[6*i+3], _vertices[6*i+4], _vertices[6*i+5]);
-            //glColor3f(colors[6*i+3], colors[6*i+4], colors[6*i+5]);
-            //glColor3f(_vertices[3*numPoints+6*i+3], _vertices[3*numPoints+6*i+4], _vertices[3*numPoints+6*i+5]);
-            
-        }
-        glEnd();
-        
-        glUnmapBuffer(GL_ARRAY_BUFFER);
-        */
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -316,24 +289,10 @@
         //glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
         glEnableClientState(GL_COLOR_ARRAY);
          
-        //checks
-        /*
-        GLuint ca;
-        glGetIntegerv(GL_COLOR_ARRAY, &ca);
-        glGetIntegerv(GL_COLOR_ARRAY_SIZE, &ca);
-        glGetIntegerv(GL_COLOR_ARRAY_STRIDE, &ca);
-        glGetIntegerv(GL_VERTEX_ARRAY, &ca);
-        glGetIntegerv(GL_VERTEX_ARRAY_SIZE, &ca);
-        glGetIntegerv(GL_VERTEX_ARRAY_STRIDE, &ca);
-        
-        GLboolean b;
-        b = glIsEnabled(GL_VERTEX_ARRAY);
-        b = glIsEnabled(GL_COLOR_ARRAY);
-         */
         glDrawArrays(GL_LINES, 0, numPoints);
         
-        GLenum e = glGetError();
-        NSLog(@"gl error: %d", e);
+        //GLenum e = glGetError();
+        //NSLog(@"gl error: %d", e);
     }
     glFlush();
     [context flushBuffer];
@@ -517,10 +476,10 @@
 
 -(void)dealloc
 {
-    free(wfVertices);
-    free(wfIndices);
-    free(wfMinmax);
-    free(wfColors);
+    free(vertices);
+    free(indices);
+    //free(wfMinmax);
+    free(colors);
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:NSViewGlobalFrameDidChangeNotification
                                                   object:self];
