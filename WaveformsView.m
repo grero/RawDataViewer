@@ -403,8 +403,16 @@
         dataPoint.y = (currentPoint.y*(ySpan-ymin))/viewBounds.size.height+ymin+dy;
         //now we set dx and window size
         //dx = xmin-dataPoint.x;
+        
         windowSize = dataPoint.x-tx;
         dx = tx;
+        //make sure we are not flipping
+        if(dataPoint.x < tx+xmin)
+        {
+            dx = dataPoint.x-xmin;
+            windowSize = tx+xmin-dx;
+        }
+        
         ySpan = dataPoint.y-ty;
         dy = ty;
         //here, we can simply figure out the smallest distance between the vector defined by
