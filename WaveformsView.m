@@ -385,6 +385,8 @@
     {
         //double click;reset window to 10000 points
         windowSize = 10000;
+        ySpan = ymax;
+        dy = 0;
         
     }
     else
@@ -398,11 +400,13 @@
         NSRect viewBounds = [self bounds];
         //scale to data coordinates
         dataPoint.x = (currentPoint.x*(windowSize-xmin))/viewBounds.size.width+xmin+dx;
-        dataPoint.y = (currentPoint.y*(1.1*ymax-1.1*ymin))/viewBounds.size.height+1.1*ymin;
+        dataPoint.y = (currentPoint.y*(ySpan-ymin))/viewBounds.size.height+ymin+dy;
         //now we set dx and window size
         //dx = xmin-dataPoint.x;
         windowSize = dataPoint.x-tx;
         dx = tx;
+        ySpan = dataPoint.y-ty;
+        dy = ty;
         //here, we can simply figure out the smallest distance between the vector defined by
         //(dataPoint.x,dataPoint.y) and the waveforms vectors
     }
@@ -422,8 +426,10 @@
         NSPoint dataPoint;
         NSRect viewBounds = [self bounds];
         dataPoint.x = (currentPoint.x*(windowSize-xmin))/viewBounds.size.width+xmin+dx;
+        dataPoint.y = (currentPoint.y*(ySpan-ymin))/viewBounds.size.height+ymin+dy;
         //set dx such that we shift the appropriate amount from the current xmin
         tx = dataPoint.x-xmin;
+        ty = dataPoint.y-ymin;
     }
 }
 
