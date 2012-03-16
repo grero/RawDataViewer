@@ -383,22 +383,46 @@
     {
         //double click;reset window to 10000 points
         windowSize = 10000;
-        [self setNeedsDisplay:YES];
+        
     }
-	//TODO: modify this to incorproate the new index
-    //get current point in view coordinates
-    NSPoint currentPoint = [self convertPoint: [theEvent locationInWindow] fromView:nil];
-    //now we will have to figure out which waveform(s) contains this point
-    //scale to data coorindates
-    NSPoint dataPoint;
-    NSRect viewBounds = [self bounds];
-    //scale to data coordinates
-    dataPoint.x = (currentPoint.x*(xmax-xmin))/viewBounds.size.width+xmin;
-    dataPoint.y = (currentPoint.y*(1.1*ymax-1.1*ymin))/viewBounds.size.height+1.1*ymin;
-    //here, we can simply figure out the smallest distance between the vector defined by
-    //(dataPoint.x,dataPoint.y) and the waveforms vectors
+    else
+    {
+        //TODO: modify this to incorproate the new index
+        //get current point in view coordinates
+        NSPoint currentPoint = [self convertPoint: [theEvent locationInWindow] fromView:nil];
+        //now we will have to figure out which waveform(s) contains this point
+        //scale to data coorindates
+        NSPoint dataPoint;
+        NSRect viewBounds = [self bounds];
+        //scale to data coordinates
+        dataPoint.x = (currentPoint.x*(windowSize-xmin))/viewBounds.size.width+xmin+dx;
+        dataPoint.y = (currentPoint.y*(1.1*ymax-1.1*ymin))/viewBounds.size.height+1.1*ymin;
+        //now we set dx and window size
+        //dx = xmin-dataPoint.x;
+        windowSize = dataPoint.x-tx;
+        dx = tx;
+        //here, we can simply figure out the smallest distance between the vector defined by
+        //(dataPoint.x,dataPoint.y) and the waveforms vectors
+    }
+    [self setNeedsDisplay:YES];
     
-    
+}
+
+-(void)mouseDown:(NSEvent *)theEvent
+{
+    if( [theEvent clickCount] == 2 )
+    {
+        
+    }
+    else
+    {
+        NSPoint currentPoint = [self convertPoint: [theEvent locationInWindow] fromView:nil];
+        NSPoint dataPoint;
+        NSRect viewBounds = [self bounds];
+        dataPoint.x = (currentPoint.x*(windowSize-xmin))/viewBounds.size.width+xmin+dx;
+        //set dx such that we shift the appropriate amount from the current xmin
+        tx = dataPoint.x-xmin;
+    }
 }
 
 /*-(void)removePoints:(NSIndexSet*)points

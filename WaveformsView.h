@@ -29,7 +29,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan;
     GLfloat *vertices,*colors,*channelLimits;
     GLuint *indices;
-    GLfloat dz,dx;
+    GLfloat dz,dx,dy,tx;
     GLuint indexBuffer,vertexBuffer,colorBuffer;
     BOOL dataLoaded;
     
