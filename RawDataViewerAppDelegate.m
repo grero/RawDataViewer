@@ -88,7 +88,39 @@
         [[progress window] orderOut:self];
         return NO;
     }
-    
+    //check for the presense of a file called reorder.txt; if we find it, that means we have to reoder the data
+    NSString *reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
+    NSString *sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
+    if( sreorder != nil )
+    {
+        int *reorder = malloc(nchs*sizeof(int));
+        int k = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:sreorder];
+        [scanner setCharactersToBeSkipped:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        //find all the ints
+        while( ([scanner isAtEnd] == NO ) && (k < nchs))
+        {
+            [scanner scanInt:reorder+k];
+            k+=1;
+        }
+        //we need a temporary array to hold the data for each channel
+        //now loop through the data and reorder everything
+        uint32_t ch,i,ppc;
+        int16_t d;
+        ppc = npoints/(uint32_t)nchs;
+        for(ch=0;ch<nchs;ch++)
+        {
+            for(i=0;i<ppc;i++)
+            {
+                d = data[i*nchs+ch];
+                //subtract 1 since the ordering is (usually!) 1-based
+                data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
+                data[i*nchs+reorder[ch]-1] = d;
+                
+            }
+        }
+        free(reorder);
+    }
     [wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
     //we don't need to keep the data
     free(data);
