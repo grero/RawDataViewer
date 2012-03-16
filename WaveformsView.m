@@ -149,7 +149,7 @@
     colors = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
     indices = malloc(2*(npoints/chunkSize)*channels*sizeof(GLuint));
     //vector to hold the min/max for each channel
-    limits = calloc(2*ch,sizeof(GLfloat));
+    limits = calloc(2*channels,sizeof(GLfloat));
     
     //this works because the data is organized in channel order
     offset = 0;
