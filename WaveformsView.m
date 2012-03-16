@@ -156,7 +156,7 @@
     xmin = 0;
     //sampling rate of 30 kHz
     xmax = timepoints/30.0;
-    xmax = 20000;
+    //xmax = 20000;
     //find the minimum and maximum for each channel
     for(ch=0;ch<channels;ch++)
     {   
@@ -460,6 +460,14 @@
 	}
     dz = [theEvent deltaY];
     dx += [theEvent deltaX]*10;
+    if( dx < xmin)
+    {
+        dx = 0;
+    }
+    else if( dx > xmax-10000)
+    {
+        dx = xmax-10000;
+    }
     [self setNeedsDisplay:YES];
 }
 
