@@ -459,7 +459,7 @@
 		[self moveLeft:self];
 	}
     dz = [theEvent deltaY];
-    dx = [theEvent deltaX]*100;
+    dx += [theEvent deltaX]*10;
     [self setNeedsDisplay:YES];
 }
 
