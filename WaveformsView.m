@@ -450,24 +450,32 @@
 //TODO: this is a bit experimental
 -(void)scrollWheel:(NSEvent *)theEvent
 {
-	//set a threshold for when we accept a scroll
-	if([theEvent deltaX] > 1 )
-	{
-		[self moveRight:self];
-	}
-	else if ( [theEvent deltaX] < -1 )
-	{
-		[self moveLeft:self];
-	}
-    dz = [theEvent deltaY];
-    dx += [theEvent deltaX]*10;
-    if( dx < xmin)
+    if( [theEvent modifierFlags] & NSCommandKeyMask )
     {
-        dx = 0;
+        //if we are pressin the control key, we are requesting a zoom
+        windowSize +=windowSize*([theEvent deltaX]/10);
     }
-    else if( dx > xmax-windowSize)
+    else
     {
-        dx = xmax-windowSize;
+        //set a threshold for when we accept a scroll
+        if([theEvent deltaX] > 1 )
+        {
+            [self moveRight:self];
+        }
+        else if ( [theEvent deltaX] < -1 )
+        {
+            [self moveLeft:self];
+        }
+        dz = [theEvent deltaY];
+        dx += [theEvent deltaX]*10;
+        if( dx < xmin)
+        {
+            dx = 0;
+        }
+        else if( dx > xmax-windowSize)
+        {
+            dx = xmax-windowSize;
+        }
     }
     [self setNeedsDisplay:YES];
 }
