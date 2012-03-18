@@ -25,7 +25,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 	NSMutableArray *highlightedChannels;
 	//data to hold information on which waveforms are active
 	NSMutableIndexSet *waveformIndices;
-    NSUInteger numPoints,numChannels,chunkSize;
+    NSUInteger numPoints,numChannels,chunkSize,vertexOffset;
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan;
     GLfloat *vertices,*colors,*channelLimits;
     GLuint *indices;

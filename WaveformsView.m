@@ -73,6 +73,7 @@
     vertices = NULL;
     colors = NULL;
     indices = NULL;
+    vertexOffset = 0;
     return self;
 }
 
