@@ -152,27 +152,27 @@
     //check if we already have allocate space; if so, free
     if( vertices != NULL)
     {
-        vertices = realloc(vertices,3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
+        vertices = realloc(vertices,3*numPoints*sizeof(GLfloat));
     }
     else
     {
-        vertices = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
+        vertices = malloc(3*numPoints*sizeof(GLfloat));
     }
     if( colors != NULL)
     {
-        colors = realloc(colors,3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
+        colors = realloc(colors,3*numPoints*sizeof(GLfloat));
     }
     else
     {
-        colors = malloc(3*2*(npoints/chunkSize)*channels*sizeof(GLfloat));
+        colors = malloc(3*numPoints*sizeof(GLfloat));
     }
     if(indices != NULL)
     {
-        indices = realloc(indices,2*(npoints/chunkSize)*channels*sizeof(GLuint));
+        indices = realloc(indices,numPoints*sizeof(GLuint));
     }
     else
     {
-        indices = malloc(2*(npoints/chunkSize)*channels*sizeof(GLuint));
+        indices = malloc(numPoints*sizeof(GLuint));
     }
     
     
