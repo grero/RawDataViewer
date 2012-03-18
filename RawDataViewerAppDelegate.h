@@ -12,8 +12,11 @@
 
 @interface RawDataViewerAppDelegate : NSObject <NSApplicationDelegate> {
     NSWindow *window;
+    
+    NSData *signalData; //data containing the signals
 }
 
+-(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;
 @property (assign) IBOutlet NSProgressIndicator *progress;
