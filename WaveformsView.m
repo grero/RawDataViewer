@@ -283,7 +283,7 @@
 {
     NSUInteger npoints,ch,i,j,k;
     int16_t *_data;
-    GLfloat peak,trough,d,offset;
+    GLfloat d,offset;
     GLfloat *limits;
     npoints = timepoints;
 	_data = (int16_t*)[vertex_data bytes];
