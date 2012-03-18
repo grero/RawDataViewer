@@ -710,6 +710,16 @@
         }
         //dz = [theEvent deltaY];
         dx += [theEvent deltaX]*0.001*windowSize;
+        if( (xmax-dx)/xmax > 0.9 )
+        {
+            //we are approaching the end of the current buffer; notify that app that we need more data
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+dx*30.0],nil] forKeys:[NSArray arrayWithObjects:@"currenPos",nil]]];
+        }
+        else if ((dx-xmin)/(xmax-xmin) < 0.1 )
+        {
+            //we are approaching the beginning of the current buffer; notify that app that we need more data
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+dx*30.0],nil] forKeys:[NSArray arrayWithObjects:@"currenPos",nil]]];   
+        }
         if( dx < xmin)
         {
             dx = 0;
