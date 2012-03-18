@@ -311,11 +311,11 @@
     }
     if(indices != NULL)
     {
-        indices = realloc(indices,numPoints*sizeof(GLuint));
+        indices = realloc(indices,2*numPoints*sizeof(GLuint));
     }
     else
     {
-        indices = malloc(numPoints*sizeof(GLuint));
+        indices = malloc(2*numPoints*sizeof(GLuint));
     }
     //vector to hold the min/max for each channel
     limits = calloc(2*channels,sizeof(GLfloat));
@@ -363,12 +363,12 @@
             {
                 d = (GLfloat)_data[channels*(i+j)+ch];
                 k = ch*npoints + i + j;
-                peak = MAX(peak,d);
-                trough = MIN(trough,d);
+                
                 //determine the peak/trough indices
                 pidx = d > peak ? k : pidx;
+                peak = MAX(peak,d);
                 tidx = d < trough ? k : tidx;
-                
+                trough = MIN(trough,d);
             
 
                 
@@ -387,8 +387,8 @@
                 
             }
             //index
-            indices[2*(ch*npoints/chunkSize+i)] = tidx;
-            indices[2*(ch*npoints/chunkSize+i)+1] = pidx;
+            indices[2*ch*((npoints+i)/chunkSize)] = tidx;
+            indices[2*ch*((npoints+i)/chunkSize)+1] = pidx;
         }
     }
     //we don't need limits anymore
@@ -470,7 +470,10 @@
         glEnableClientState(GL_COLOR_ARRAY);
         if( drawingMode == 1)
         {
-            glDrawArrays(GL_LINES, 0, numPoints);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+            glEnableClientState(GL_INDEX_ARRAY);
+            glDrawElements(GL_LINES, numPoints/chunkSize, GL_UNSIGNED_INT, (GLvoid*)0);
+            //glDrawArrays(GL_LINES, 0, numPoints);
         }
         else if (drawingMode == 0 )
         {
