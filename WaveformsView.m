@@ -282,13 +282,15 @@
 
 -(void) createConnectedVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints
 {
-    NSUInteger npoints,ch,i,j,k;
+    NSUInteger npoints,ch,i,j,k,chunkSize,pidx,tidx;
     int16_t *_data;
-    GLfloat d,offset;
+    GLfloat d,offset,peak,trough;
     GLfloat *limits;
     npoints = timepoints;
+    numChannels = channels;
 	_data = (int16_t*)[vertex_data bytes];
     //we want to create peaks every 8 points
+    chunkSize = 8;
     numPoints = npoints*channels;
     //check if we already have allocate space; if so, free
     if( vertices != NULL)
@@ -350,25 +352,43 @@
         }
         //maxPeak = 0;
         //maxTrough = 0;
-        for(i=0;i<npoints;i++)
+        for(i=0;i<npoints;i+=chunkSize)
         {
-            d = (GLfloat)_data[channels*i+ch];
+            //find the peak and trough
+            peak = -INFINITY;
+            trough = INFINITY;
+            tidx = 0;
+            pidx = 0;
+            for(j=0;j<chunkSize;j++)
+            {
+                d = (GLfloat)_data[channels*(i+j)+ch];
+                k = ch*npoints + i + j;
+                peak = MAX(peak,d);
+                trough = MIN(trough,d);
+                //determine the peak/trough indices
+                pidx = d > peak ? k : pidx;
+                tidx = d < trough ? k : tidx;
                 
-            //x
-            vertices[3*k] = ((GLfloat)i)/30.0;
-            //y
-            vertices[3*k+1] = d;
-            //z
-            vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
             
-            //color
-            colors[3*k] = 1.0f;
-            colors[3*k+1] = 0.5f;
-            colors[3*k+2] = 0.3f;
-            
+
+                
+                //x
+                vertices[3*k] = ((GLfloat)(i + j))/30.0;
+                //y
+                vertices[3*k+1] = d + offset;
+                //z
+                vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
+                
+                //color
+                colors[3*k] = 1.0f;
+                colors[3*k+1] = 0.5f;
+                colors[3*k+2] = 0.3f;
+                
+                
+            }
             //index
-            indices[k] = k;
-            k+=1;
+            indices[2*(ch*npoints/chunkSize+i)] = tidx;
+            indices[2*(ch*npoints/chunkSize+i)+1] = pidx;
         }
     }
     //we don't need limits anymore
@@ -394,11 +414,18 @@
     memcpy(_vdata + 3*numPoints, colors, 3*numPoints*sizeof(GLfloat));
     glUnmapBuffer(GL_ARRAY_BUFFER );
     
+    //indices
+    glGenBuffers(1,&indexBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 2*numPoints/chunkSize*sizeof(GLuint), indices, GL_STATIC_DRAW);
+    
     //let opengl know how the data is packed
     glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
     glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
+    glIndexPointer(GL_UNSIGNED_INT, 1, (GLvoid*)0);
     //notify that we have loaded the data
     dataLoaded = YES;
+    drawingMode = 0;//indicate that we are drawing everything
     [self setNeedsDisplay: YES];
 }
 
@@ -445,7 +472,15 @@
         {
             glDrawArrays(GL_LINES, 0, numPoints);
         }
-        
+        else if (drawingMode == 0 )
+        {
+            NSUInteger ch,np;
+            np = numPoints/numChannels;
+            for(ch=0;ch<numChannels;ch++)
+            {
+                glDrawArrays(GL_LINE_STRIP, ch*np, np);
+            }
+        }
         //GLenum e = glGetError();
         //NSLog(@"gl error: %d", e);
     }
