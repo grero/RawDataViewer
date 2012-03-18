@@ -140,7 +140,7 @@
 
 -(void) createPeakVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints
 {
-    NSUInteger npoints,ch,i,j,k,chunkSize;
+    NSUInteger npoints,ch,i,j,k;
     int16_t *_data;
     GLfloat peak,trough,d,offset;
     GLfloat *limits;
@@ -282,7 +282,7 @@
 
 -(void) createConnectedVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints
 {
-    NSUInteger npoints,ch,i,j,k,chunkSize,pidx,tidx;
+    NSUInteger npoints,ch,i,j,k,pidx,tidx;
     int16_t *_data;
     GLfloat d,offset,peak,trough;
     GLfloat *limits;
