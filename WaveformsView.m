@@ -286,7 +286,7 @@
     NSUInteger npoints,ch,i,j,k,pidx,tidx;
     int16_t *_data;
     GLfloat d,offset,peak,trough;
-    GLfloat *limits;
+    GLfloat *limits,*choffsets;
     npoints = timepoints;
     numChannels = channels;
 	_data = (int16_t*)[vertex_data bytes];
@@ -320,7 +320,7 @@
     }
     //vector to hold the min/max for each channel
     limits = calloc(2*channels,sizeof(GLfloat));
-    
+    choffsets = malloc(channels*sizeof(GLfloat));
     //this works because the data is organized in channel order
     offset = 0;
     xmin = 0;
@@ -339,9 +339,14 @@
             
         }
     }
-    k = 0;
+    choffsets[0] = -limits[0];
+    for(ch=1;ch<channels;ch++)
+    {
+        choffsets[ch] = choffsets[ch-1] + (-limits[2*ch] + limits[2*(ch-1)+1]);
+    }
     for(ch=0;ch<channels;ch++)
     {
+        /*
         if(ch>0)
         {
             //the offset should be the maximum of the previous channel minus the minimum of this channel
@@ -351,6 +356,8 @@
         {
             offset = -limits[2*ch];
         }
+         */
+        offset = choffsets[ch];
         //maxPeak = 0;
         //maxTrough = 0;
         for(i=0;i<npoints;i+=chunkSize)
@@ -393,8 +400,9 @@
         }
     }
     //we don't need limits anymore
-    ymax = offset+limits[2*(channels-1)+1];
+    ymax = choffsets[channels-1]+limits[2*(channels-1)+1];
     free(limits);
+    free(choffsets);
     dz = 0.0;
     dy = 0.0;
     dx =0.0;
