@@ -57,6 +57,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 //others
 -(void) createVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger)timepoints andColor: (NSData*)color andOrder: (NSData*)order;
 -(void) createPeakVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints;
+-(void)createConnectedVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints;
 -(void) highlightWaveform:(NSUInteger)wfidx;
 -(void) highlightWaveforms:(NSData*)wfidx;
 -(void) highlightChannels:(NSArray*)channels;

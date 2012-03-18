@@ -174,10 +174,6 @@
     {
         indices = malloc(numPoints*sizeof(GLuint));
     }
-    
-    
-    
-    
     //vector to hold the min/max for each channel
     limits = calloc(2*channels,sizeof(GLfloat));
     
@@ -283,6 +279,127 @@
     [self setNeedsDisplay: YES];
 }
 
+-(void) createConnectedVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints
+{
+    NSUInteger npoints,ch,i,j,k;
+    int16_t *_data;
+    GLfloat peak,trough,d,offset;
+    GLfloat *limits;
+    npoints = timepoints;
+	_data = (int16_t*)[vertex_data bytes];
+    //we want to create peaks every 8 points
+    numPoints = npoints*channels;
+    //check if we already have allocate space; if so, free
+    if( vertices != NULL)
+    {
+        vertices = realloc(vertices,3*numPoints*sizeof(GLfloat));
+    }
+    else
+    {
+        vertices = malloc(3*numPoints*sizeof(GLfloat));
+    }
+    if( colors != NULL)
+    {
+        colors = realloc(colors,3*numPoints*sizeof(GLfloat));
+    }
+    else
+    {
+        colors = malloc(3*numPoints*sizeof(GLfloat));
+    }
+    if(indices != NULL)
+    {
+        indices = realloc(indices,numPoints*sizeof(GLuint));
+    }
+    else
+    {
+        indices = malloc(numPoints*sizeof(GLuint));
+    }
+    //vector to hold the min/max for each channel
+    limits = calloc(2*channels,sizeof(GLfloat));
+    
+    //this works because the data is organized in channel order
+    offset = 0;
+    xmin = 0;
+    //sampling rate of 30 kHz
+    xmax = timepoints/30.0;
+    windowSize = 10000;
+    //xmax = 20000;
+    //find the minimum and maximum for each channel
+    for(ch=0;ch<channels;ch++)
+    {   
+        for(i=0;i<npoints;i++)
+        {
+            d = (GLfloat)(_data[i*channels+ch]);
+            limits[2*ch] = MIN(d,limits[2*ch]);           
+            limits[2*ch+1] = MAX(d,limits[2*ch+1]);
+            
+        }
+    }
+    k = 0;
+    for(ch=0;ch<channels;ch++)
+    {
+        if(ch>0)
+        {
+            //the offset should be the maximum of the previous channel minus the minimum of this channel
+            offset += (-limits[2*ch] + limits[2*(ch-1)+1]);
+        }
+        else
+        {
+            offset = -limits[2*ch];
+        }
+        //maxPeak = 0;
+        //maxTrough = 0;
+        for(i=0;i<npoints;i++)
+        {
+            d = (GLfloat)_data[channels*i+ch];
+                
+            //x
+            vertices[3*k] = ((GLfloat)i)/30.0;
+            //y
+            vertices[3*k+1] = d;
+            //z
+            vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
+            
+            //color
+            colors[3*k] = 1.0f;
+            colors[3*k+1] = 0.5f;
+            colors[3*k+2] = 0.3f;
+            
+            //index
+            indices[k] = k;
+            k+=1;
+        }
+    }
+    //we don't need limits anymore
+    ymax = offset+limits[2*(channels-1)+1];
+    free(limits);
+    dz = 0.0;
+    dy = 0.0;
+    dx =0.0;
+    //add maximum of the last channel to the offset
+    
+    ySpan = ymax;
+    ymin = 0;
+    [[self openGLContext] makeCurrentContext];
+    //vertices have been created, now push those to the GPU
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer  );
+    //allocate space for the buffer
+    glBufferData(GL_ARRAY_BUFFER, 2*3*numPoints*sizeof(GLfloat), 0, GL_STATIC_DRAW);
+    GLfloat *_vdata = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    //copy vertices
+    memcpy(_vdata, vertices, 3*numPoints*sizeof(GLfloat));
+    //copy colors
+    memcpy(_vdata + 3*numPoints, colors, 3*numPoints*sizeof(GLfloat));
+    glUnmapBuffer(GL_ARRAY_BUFFER );
+    
+    //let opengl know how the data is packed
+    glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+    glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
+    //notify that we have loaded the data
+    dataLoaded = YES;
+    [self setNeedsDisplay: YES];
+}
 
 -(void) highlightChannels:(NSArray*)channels
 {
