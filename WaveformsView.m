@@ -276,6 +276,7 @@
     glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
     //notify that we have loaded the data
     dataLoaded = YES;
+    drawingMode = 1; //indicate that we are drawing peaks
     [self setNeedsDisplay: YES];
 }
 
@@ -440,8 +441,10 @@
         
         //glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
         glEnableClientState(GL_COLOR_ARRAY);
-         
-        glDrawArrays(GL_LINES, 0, numPoints);
+        if( drawingMode == 1)
+        {
+            glDrawArrays(GL_LINES, 0, numPoints);
+        }
         
         //GLenum e = glGetError();
         //NSLog(@"gl error: %d", e);
