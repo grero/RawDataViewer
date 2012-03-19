@@ -7,6 +7,7 @@
 //
 
 #import "RawDataViewerAppDelegate.h"
+#import "OpenPanelDelegate.h"
 
 @implementation RawDataViewerAppDelegate
 
@@ -132,6 +133,21 @@
     [[progress window] orderOut:self];
     return YES;
     
+}
+
+-(IBAction)openFile:(id)sender
+{
+    OpenPanelDelegate *oDelegate = [[OpenPanelDelegate alloc] init];
+    NSOpenPanel *oPanel = [NSOpenPanel openPanel];
+    NSInteger result;
+    [oPanel setDelegate:oDelegate];
+    result = [oPanel runModal];
+    if( result == NSOKButton )
+    {
+        [self loadDataFromFile:[oPanel filename] atOffset:0];
+    }
+    
+
 }
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset

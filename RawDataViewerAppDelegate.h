@@ -19,7 +19,10 @@
     
 }
 
+-(IBAction)openFile:(id)sender;
+
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
+
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;
 @property (assign) IBOutlet NSProgressIndicator *progress;
