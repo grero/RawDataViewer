@@ -11,9 +11,12 @@
 #import "WaveformsView.h"
 
 @interface RawDataViewerAppDelegate : NSObject <NSApplicationDelegate> {
-    NSWindow *window;
+    IBOutlet NSWindow *window;
+    IBOutlet WaveformsView *wf;
+    IBOutlet NSProgressIndicator *progress;
     
     NSData *signalData; //data containing the signals
+    
 }
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
