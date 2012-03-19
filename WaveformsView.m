@@ -291,8 +291,6 @@
     
     npoints = timepoints;
     numChannels = channels;
-    NSLog(@"Channels: %lu", numChannels);
-    NSLog(@"timepoints: %lu", npoints);
 	_data = (int16_t*)[vertex_data bytes];
     //we want to create peaks every 8 points
     chunkSize = 8;
@@ -436,13 +434,9 @@
 
         }
     });
-    
-    NSLog(@"vertex[0] = %f", vertices[0]);
-    NSLog(@"vertex[3*(npoints)] = %f", vertices[3*(npoints)]);
 
     float m;
     vDSP_minv(vertices, 3, &m, numPoints);
-    NSLog(@"min x-value = %f", m);
     //we don't need limits anymore
     ymax = choffsets[channels-1]+limits[2*(channels-1)+1];
     free(limits);
@@ -619,7 +613,6 @@
         //scale to data coordinates
         dataPoint.x = (currentPoint.x*(windowSize-xmin))/viewBounds.size.width+xmin+dx;
         dataPoint.y = (currentPoint.y*(ySpan-ymin))/viewBounds.size.height+ymin+dy;
-        NSLog(@"x: %f, y: %f",dataPoint.x,dataPoint.y);
         //now we set dx and window size
         //dx = xmin-dataPoint.x;
         
