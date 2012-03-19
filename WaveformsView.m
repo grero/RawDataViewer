@@ -183,7 +183,7 @@
     xmin = 0;
     //sampling rate of 30 kHz
     xmax = timepoints/30.0;
-    windowSize = 10000;
+    windowSize = MIN(10000,xmax);
     //xmax = 20000;
     //find the minimum and maximum for each channel
     for(ch=0;ch<channels;ch++)
@@ -331,7 +331,7 @@
     xmin = 0;
     //sampling rate of 30 kHz
     xmax = timepoints/30.0;
-    windowSize = 10000;
+    windowSize = MIN(10000,xmax);
     //xmax = 20000;
     //find the minimum and maximum for each channel
     queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
@@ -600,7 +600,7 @@
     if( [theEvent clickCount] == 2 )
     {
         //double click;reset window to 10000 points
-        windowSize = 10000;
+        windowSize = MIN(10000,xmax);
         dx = 0;
         
         ySpan = ymax;
