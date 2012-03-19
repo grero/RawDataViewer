@@ -283,15 +283,20 @@
 
 -(void) createConnectedVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints
 {
-    NSUInteger npoints,ch,i,j,k,pidx,tidx;
+    NSUInteger npoints,ch,left;//i,j,k,pidx,tidx;
     int16_t *_data;
-    GLfloat d,offset,peak,trough;
+    //GLfloat offset;//d,peak,trough;
     GLfloat *limits,*choffsets;
+    dispatch_queue_t queue;
+    
     npoints = timepoints;
     numChannels = channels;
+    NSLog(@"Channels: %lu", numChannels);
+    NSLog(@"timepoints: %lu", npoints);
 	_data = (int16_t*)[vertex_data bytes];
     //we want to create peaks every 8 points
     chunkSize = 8;
+    left = npoints - (npoints/chunkSize)*chunkSize; //figure out how much we have to pad
     numPoints = npoints*channels;
     //check if we already have allocate space; if so, free
     if( vertices != NULL)
@@ -322,45 +327,41 @@
     limits = calloc(2*channels,sizeof(GLfloat));
     choffsets = malloc(channels*sizeof(GLfloat));
     //this works because the data is organized in channel order
-    offset = 0;
+    //offset = 0;
     xmin = 0;
     //sampling rate of 30 kHz
     xmax = timepoints/30.0;
     windowSize = 10000;
     //xmax = 20000;
     //find the minimum and maximum for each channel
-    for(ch=0;ch<channels;ch++)
-    {   
+    queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_apply(channels, queue, ^(size_t c) 
+    { 
+        NSUInteger i;
+        GLfloat d;
         for(i=0;i<npoints;i++)
         {
-            d = (GLfloat)(_data[i*channels+ch]);
-            limits[2*ch] = MIN(d,limits[2*ch]);           
-            limits[2*ch+1] = MAX(d,limits[2*ch+1]);
+            d = (GLfloat)(_data[i*channels+c]);
+            limits[2*c] = MIN(d,limits[2*c]);           
+            limits[2*c+1] = MAX(d,limits[2*c+1]);
             
         }
-    }
+    });
     choffsets[0] = -limits[0];
     for(ch=1;ch<channels;ch++)
     {
         choffsets[ch] = choffsets[ch-1] + (-limits[2*ch] + limits[2*(ch-1)+1]);
     }
-    for(ch=0;ch<channels;ch++)
+    
+    //for(ch=0;ch<channels;ch++)
+    dispatch_apply(channels, queue, ^(NSUInteger c) 
     {
-        /*
-        if(ch>0)
-        {
-            //the offset should be the maximum of the previous channel minus the minimum of this channel
-            offset += (-limits[2*ch] + limits[2*(ch-1)+1]);
-        }
-        else
-        {
-            offset = -limits[2*ch];
-        }
-         */
-        offset = choffsets[ch];
-        //maxPeak = 0;
-        //maxTrough = 0;
-        for(i=0;i<npoints;i+=chunkSize)
+        NSUInteger i,j,tidx,pidx,k,l;
+        GLfloat offset,peak,trough,d;
+        
+        offset = choffsets[c];
+        l = (npoints/chunkSize)*chunkSize;
+        for(i=0;i<l;i+=chunkSize)
         {
             //find the peak and trough
             peak = -INFINITY;
@@ -369,8 +370,9 @@
             pidx = 0;
             for(j=0;j<chunkSize;j++)
             {
-                d = (GLfloat)_data[channels*(i+j)+ch];
-                k = ch*npoints + i + j;
+                d = (GLfloat)_data[channels*(i+j)+c];
+                //do we over-write something here?
+                k = c*npoints + i + j;
                 
                 //determine the peak/trough indices
                 pidx = d > peak ? k : pidx;
@@ -394,11 +396,53 @@
                 
                 
             }
+    
             //index
-            indices[2*ch*((npoints+i)/chunkSize)] = tidx;
-            indices[2*ch*((npoints+i)/chunkSize)+1] = pidx;
+            indices[2*c*((npoints+i)/chunkSize)] = tidx;
+            indices[2*c*((npoints+i)/chunkSize)+1] = pidx;
         }
-    }
+        //do the remainder separately
+        //find the peak and trough
+        peak = -INFINITY;
+        trough = INFINITY;
+        tidx = 0;
+        pidx = 0;
+        l = npoints-(npoints/chunkSize)*chunkSize;
+        for(j=0;j<l;j++)
+        {
+            d = (GLfloat)_data[channels*(i+j)+c];
+            //do we over-write something here?
+            k = c*npoints + i + j;
+            
+            //determine the peak/trough indices
+            pidx = d > peak ? k : pidx;
+            peak = MAX(peak,d);
+            tidx = d < trough ? k : tidx;
+            trough = MIN(trough,d);
+            
+            
+            
+            //x
+            vertices[3*k] = ((GLfloat)(i + j))/30.0;
+            //y
+            vertices[3*k+1] = d + offset;
+            //z
+            vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
+            
+            //color
+            colors[3*k] = 1.0f;
+            colors[3*k+1] = 0.5f;
+            colors[3*k+2] = 0.3f;
+
+        }
+    });
+    
+    NSLog(@"vertex[0] = %f", vertices[0]);
+    NSLog(@"vertex[3*(npoints)] = %f", vertices[3*(npoints)]);
+
+    float m;
+    vDSP_minv(vertices, 3, &m, numPoints);
+    NSLog(@"min x-value = %f", m);
     //we don't need limits anymore
     ymax = choffsets[channels-1]+limits[2*(channels-1)+1];
     free(limits);
@@ -422,16 +466,16 @@
     //copy colors
     memcpy(_vdata + 3*numPoints, colors, 3*numPoints*sizeof(GLfloat));
     glUnmapBuffer(GL_ARRAY_BUFFER );
-    
+    //let opengl know how the data is packed
+    glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+    glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
     //indices
     glGenBuffers(1,&indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 2*numPoints/chunkSize*sizeof(GLuint), indices, GL_STATIC_DRAW);
     
-    //let opengl know how the data is packed
-    glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
-    glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
-    glIndexPointer(GL_UNSIGNED_INT, 1, (GLvoid*)0);
+    
+    glIndexPointer(GL_UNSIGNED_INT, 0, (GLvoid*)0);
     //notify that we have loaded the data
     dataLoaded = YES;
     drawingMode = 0;//indicate that we are drawing everything
@@ -466,8 +510,6 @@
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		
-		/*glOrtho(1.05*xmin-0.05*xmax, 1.05*xmin-0.05*xmax, 1.05*wfMinmax[2]-0.05*wfMinmax[3], 
-				1.05*wfMinmax[3]-0.05*wfMinmax[2], wfMinmax[4], wfMinmax[5]);*/
         glOrtho(xmin+dx, windowSize+dx, ymin+dy, ySpan+dy, -2.0+dz, 3.0+dz);
         		//activate the dynamicbuffer
         
@@ -479,6 +521,7 @@
         glEnableClientState(GL_COLOR_ARRAY);
         if( drawingMode == 1)
         {
+            //only draw peaks
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
             glEnableClientState(GL_INDEX_ARRAY);
             glDrawElements(GL_LINES, numPoints/chunkSize, GL_UNSIGNED_INT, (GLvoid*)0);
@@ -486,13 +529,18 @@
         }
         else if (drawingMode == 0 )
         {
+            //draw everything
             NSUInteger ch,np;
             np = numPoints/numChannels;
+            
             for(ch=0;ch<numChannels;ch++)
             {
-                glDrawArrays(GL_LINE_STRIP, ch*np, np);
+                glDrawArrays(GL_LINES, ch*np, np);
+                glDrawArrays(GL_LINES, ch*np+1, np-1);
+                
             }
         }
+        
         //GLenum e = glGetError();
         //NSLog(@"gl error: %d", e);
     }
@@ -569,6 +617,7 @@
         //scale to data coordinates
         dataPoint.x = (currentPoint.x*(windowSize-xmin))/viewBounds.size.width+xmin+dx;
         dataPoint.y = (currentPoint.y*(ySpan-ymin))/viewBounds.size.height+ymin+dy;
+        NSLog(@"x: %f, y: %f",dataPoint.x,dataPoint.y);
         //now we set dx and window size
         //dx = xmin-dataPoint.x;
         
