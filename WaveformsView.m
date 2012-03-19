@@ -354,7 +354,7 @@
     }
     
     //for(ch=0;ch<channels;ch++)
-    dispatch_apply(channels, queue, ^(NSUInteger c) 
+    dispatch_apply(channels, queue, ^(size_t c) 
     {
         NSUInteger i,j,tidx,pidx,k,l;
         GLfloat offset,peak,trough,d;
