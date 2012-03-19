@@ -28,11 +28,12 @@
     [progress startAnimation:self];
     const char *fname;    
     FILE *fid;
-    uint32_t headerSize,samplingRate,npoints;
+    uint32_t headerSize,samplingRate,npoints,maxSize;
     uint8_t nchs;
     int16_t *data;
     size_t nbytes;
     
+    maxSize = 20; //limit the amount of data to load to 20 MB
     fname  = [filename cStringUsingEncoding:NSASCIIStringEncoding];
     fid = fopen(fname, "rb");
     //get the header size
@@ -73,9 +74,9 @@
     fseek(fid,0,SEEK_END);
     npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
     //check that we are actually able to load; load a maximum of 100MB
-    if(npoints*sizeof(int16_t) > 100*1024*1024 )
+    if(npoints*sizeof(int16_t) > maxSize*1024*1024 )
     {
-        npoints = (100*1024*1024/(((uint32_t)nchs)*sizeof(int16_t)))*((uint32_t)nchs);
+        npoints = (maxSize*1024*1024/(((uint32_t)nchs)*sizeof(int16_t)))*((uint32_t)nchs);
     }
     data = malloc(npoints*sizeof(int16_t));
     fseek(fid,headerSize,SEEK_SET);
@@ -141,11 +142,12 @@
     [progress startAnimation:self];
     const char *fname;    
     FILE *fid;
-    uint32_t headerSize,samplingRate,npoints;
+    uint32_t headerSize,samplingRate,npoints,maxSize;
     uint8_t nchs;
     int16_t *data;
     size_t nbytes;
     
+    maxSize = 20; //maximum data size in MB
     fname  = [filename cStringUsingEncoding:NSASCIIStringEncoding];
     fid = fopen(fname, "rb");
     //get the header size
@@ -186,9 +188,9 @@
     fseek(fid,0,SEEK_END);
     npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
     //check that we are actually able to load; load a maximum of 100MB
-    if(npoints*sizeof(int16_t) > 100*1024*1024 )
+    if(npoints*sizeof(int16_t) > maxSize*1024*1024 )
     {
-        npoints = (100*1024*1024/(((uint32_t)nchs)*sizeof(int16_t)))*((uint32_t)nchs);
+        npoints = (maxSize*1024*1024/(((uint32_t)nchs)*sizeof(int16_t)))*((uint32_t)nchs);
     }
     data = malloc(npoints*sizeof(int16_t));
     fseek(fid,headerSize,SEEK_SET);
