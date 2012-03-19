@@ -601,6 +601,8 @@
     {
         //double click;reset window to 10000 points
         windowSize = 10000;
+        dx = 0;
+        
         ySpan = ymax;
         dy = 0;
         
