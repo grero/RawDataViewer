@@ -687,48 +687,45 @@
 -(void)saveToPDF
 {
     NSRect bounds = [self bounds];
-    NSURL *url = [NSURL fileURLWithPath:@"test.pdf"];
+    NSURL *url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
     CGContextRef ctx = CGPDFContextCreateWithURL(url,&bounds,NULL);
+    CGContextSetLineWidth(ctx,1.0);
+    CGFloat color[4] = {0.0f,0.0f,0.0f, 1.0f};
+    CGContextSetStrokeColor(ctx, color);
     //now, repeat all the commands necessary to re-draw the current view
-    NSUInteger ch,i,xmx,xmi,ymx,ymi;
-    CGAffineTransform m;
-    
+    NSUInteger ch,i,xmx,xmi,ymx,ymi,np;
     //create an affine transform to transform from data to view coordinates
-    m = CGAffineTransformMakeScale(bounds.size.width/(windowSize-xmin),bounds.size.height/(ySpan-ymin));
-    float d;
-    i = 0;
-    while( (d = xmin+dx-vertices[3*i]) > 0 )
+    CGAffineTransform m;
+    //first move to zero
+    m = CGAffineTransformMakeTranslation(-xmin-dx,-ymin-dy);
+    //.. then scale
+    m = CGAffineTransformConcat(m,CGAffineTransformMakeScale(bounds.size.width/(windowSize-xmin),bounds.size.height/(ySpan-ymin)));
+    //float d;
+    np = numPoints/numChannels;
+    CGContextBeginPage(ctx,&bounds);
+    for(ch=0;ch<numChannels;ch++)
     {
-        i++;
-    }
-    xmi = i;
-    while( (d = windowSize+dx-vertices[3*i]) <= 0 )
-    {
-        i++;
-    }
-    xmx = i;
-    i=0;
-    while( (d = ymin+dy-vertices[3*i+1]) > 0 )
-    {
-        i++;
-    }
-    ymi = i;
-    while( (d = ySpan+dy-vertices[3*i+1]) <= 0 )
-    {
-        i++;
-    }
-    ymx = i;
-    for(ch=ymi;ch<ymx;ch++)
-    {
-        CGMutablePathRef p = CGPathCreateMutable();
-        CGPathMoveToPoint(p, &m, vertices[0], vertices[1]);
-        for(i=0;i<numPoints/numChannels;i++)
+        i = 0;
+        while( (vertices[3*(ch*np+i)] < xmin+dx ) && (i < np))
         {
-            CGPathAddLineToPoint(p, &m, vertices[3*i], vertices[3*i+1]);
+            i++;
         }
-        CGContextStrokePath(ctx);
+        if(i < np )
+        {
+            CGMutablePathRef p = CGPathCreateMutable();
+            CGPathMoveToPoint(p, &m, vertices[3*(ch*np+i)], vertices[3*(ch*np+i)+1]);
+            while( (vertices[3*(ch*np+i)] < windowSize+dx) && (i < np ))
+            {
+                CGPathAddLineToPoint(p, &m, vertices[3*(ch*np+i)], vertices[3*(ch*np+i)+1]);
+                i++;
+            }
+            //add the path
+            CGContextAddPath(ctx, p);
+            //stroke the path
+            CGContextStrokePath(ctx);
+        }
     }
-    
+    CGContextEndPage(ctx);
     CGContextRelease(ctx);
     
     

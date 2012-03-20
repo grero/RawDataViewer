@@ -20,6 +20,7 @@
 }
 
 -(IBAction)openFile:(id)sender;
+-(IBAction)saveToPDF:(id)sender;
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
 

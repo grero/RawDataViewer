@@ -150,6 +150,13 @@
 
 }
 
+-(IBAction)saveToPDF:(id)sender
+{
+   NSOperationQueue *queue = [NSOperationQueue mainQueue];
+   NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:wf                                                                                                    selector:@selector(saveToPDF) object:nil] autorelease];
+    [queue addOperation:theOp];
+}
+
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset
 {
     //read data from the file
