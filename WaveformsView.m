@@ -684,10 +684,13 @@
     
 }
 
--(void)saveToPDF
+-(void)saveToPDFAtURL:(NSURL*)url
 {
     NSRect bounds = [self bounds];
-    NSURL *url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
+    if(url == NULL )
+    {
+        url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
+    }
     CGContextRef ctx = CGPDFContextCreateWithURL(url,&bounds,NULL);
     CGContextSetLineWidth(ctx,1.0);
     CGFloat color[4] = {0.0f,0.0f,0.0f, 1.0f};

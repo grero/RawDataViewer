@@ -153,8 +153,24 @@
 -(IBAction)saveToPDF:(id)sender
 {
    NSOperationQueue *queue = [NSOperationQueue mainQueue];
-   NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:wf                                                                                                    selector:@selector(saveToPDF) object:nil] autorelease];
+   NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:wf                                                                                                    selector:@selector(saveToPDFAtURL:) object:NULL] autorelease];
     [queue addOperation:theOp];
+}
+
+-(IBAction)savePDFAs:(id)sender
+{
+    NSURL *url;
+    NSSavePanel *sPanel = [NSSavePanel savePanel];
+    [sPanel setAllowedFileTypes:[NSArray arrayWithObjects:@"pdf", nil]];
+    NSInteger result;
+    result = [sPanel runModal];
+    if( result == NSOKButton )
+    {
+        url = [NSURL fileURLWithPath:[sPanel filename]];
+        NSOperationQueue *queue = [NSOperationQueue mainQueue];
+        NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:wf                                                                                                    selector:@selector(saveToPDFAtURL:) object:url] autorelease];
+        [queue addOperation:theOp];
+    }
 }
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset
