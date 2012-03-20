@@ -67,5 +67,6 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(void)showOnlyHighlighted;
 -(NSImage*)image;
 -(void) createAxis;
+-(void)saveToPDF;
 
 @end

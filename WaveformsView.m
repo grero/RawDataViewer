@@ -684,6 +684,56 @@
     
 }
 
+-(void)saveToPDF
+{
+    NSRect bounds = [self bounds];
+    NSURL *url = [NSURL fileURLWithPath:@"test.pdf"];
+    CGContextRef ctx = CGPDFContextCreateWithURL(url,&bounds,NULL);
+    //now, repeat all the commands necessary to re-draw the current view
+    NSUInteger ch,i,xmx,xmi,ymx,ymi;
+    CGAffineTransform m;
+    
+    //create an affine transform to transform from data to view coordinates
+    m = CGAffineTransformMakeScale(bounds.size.width/(windowSize-xmin),bounds.size.height/(ySpan-ymin));
+    float d;
+    i = 0;
+    while( (d = xmin+dx-vertices[3*i]) > 0 )
+    {
+        i++;
+    }
+    xmi = i;
+    while( (d = windowSize+dx-vertices[3*i]) <= 0 )
+    {
+        i++;
+    }
+    xmx = i;
+    i=0;
+    while( (d = ymin+dy-vertices[3*i+1]) > 0 )
+    {
+        i++;
+    }
+    ymi = i;
+    while( (d = ySpan+dy-vertices[3*i+1]) <= 0 )
+    {
+        i++;
+    }
+    ymx = i;
+    for(ch=ymi;ch<ymx;ch++)
+    {
+        CGMutablePathRef p = CGPathCreateMutable();
+        CGPathMoveToPoint(p, &m, vertices[0], vertices[1]);
+        for(i=0;i<numPoints/numChannels;i++)
+        {
+            CGPathAddLineToPoint(p, &m, vertices[3*i], vertices[3*i+1]);
+        }
+        CGContextStrokePath(ctx);
+    }
+    
+    CGContextRelease(ctx);
+    
+    
+}
+
 -(NSImage*)image
 {
     //for drawing the image
