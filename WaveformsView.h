@@ -33,10 +33,13 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     GLuint indexBuffer,vertexBuffer,colorBuffer;
     NSUInteger drawingMode; //which mode are we using to draw (peak/all)
     BOOL dataLoaded;
+    IBOutlet NSTextField *coords;
 }
 
+@property (assign,readwrite) IBOutlet NSTextField *coords;
 @property (retain,readwrite) NSMutableData *highlightWaves;
 @property (retain,readwrite) NSMutableArray *highlightedChannels;
+
 
 //OpenGL related functions
 +(NSOpenGLPixelFormat*)defaultPixelFormat;

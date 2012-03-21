@@ -20,6 +20,7 @@
 
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
+@synthesize coords;
 
 -(void)awakeFromNib
 {
@@ -615,25 +616,32 @@
         dataPoint.y = (currentPoint.y*(ySpan-ymin))/viewBounds.size.height+ymin+dy;
         //now we set dx and window size
         //dx = xmin-dataPoint.x;
-        
-        windowSize = dataPoint.x-tx;
-        dx = tx;
-        //make sure we are not flipping
-        if(dataPoint.x < tx+xmin)
+        if([theEvent modifierFlags] & NSAlternateKeyMask )
         {
-            dx = dataPoint.x-xmin;
-            windowSize = tx+xmin-dx;
+            //report the current coordinates to the text field
+            [coords setStringValue:[NSString stringWithFormat:@"%.2f, %.2f", dataPoint.x,dataPoint.y]];
         }
-        
-        ySpan = dataPoint.y-ty;
-        dy = ty;
-        if(dataPoint.y < ty+ymin )
+        else
         {
-            dy = dataPoint.y-ymin;
-            ySpan = ty + ymin -dy;
+            windowSize = dataPoint.x-tx;
+            dx = tx;
+            //make sure we are not flipping
+            if(dataPoint.x < tx+xmin)
+            {
+                dx = dataPoint.x-xmin;
+                windowSize = tx+xmin-dx;
+            }
+            
+            ySpan = dataPoint.y-ty;
+            dy = ty;
+            if(dataPoint.y < ty+ymin )
+            {
+                dy = dataPoint.y-ymin;
+                ySpan = ty + ymin -dy;
+            }
+            //here, we can simply figure out the smallest distance between the vector defined by
+            //(dataPoint.x,dataPoint.y) and the waveforms vectors
         }
-        //here, we can simply figure out the smallest distance between the vector defined by
-        //(dataPoint.x,dataPoint.y) and the waveforms vectors
     }
     [self setNeedsDisplay:YES];
     
