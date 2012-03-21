@@ -687,6 +687,9 @@
 -(void)saveToPDFAtURL:(NSURL*)url
 {
     NSRect bounds = [self bounds];
+    char *label;
+    char sunit[2] = "ms";
+    char chs;
     if(url == NULL )
     {
         url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
@@ -705,6 +708,7 @@
     m = CGAffineTransformConcat(m,CGAffineTransformMakeScale(bounds.size.width/(windowSize-xmin),bounds.size.height/(ySpan-ymin)));
     //float d;
     np = numPoints/numChannels;
+    
     CGContextBeginPage(ctx,&bounds);
     for(ch=0;ch<numChannels;ch++)
     {
@@ -715,6 +719,7 @@
         }
         if(i < np )
         {
+            
             CGMutablePathRef p = CGPathCreateMutable();
             CGPathMoveToPoint(p, &m, vertices[3*(ch*np+i)], vertices[3*(ch*np+i)+1]);
             while( (vertices[3*(ch*np+i)] < windowSize+dx) && (i < np ))
@@ -728,8 +733,43 @@
             CGContextStrokePath(ctx);
         }
     }
+    //create xscale
+    //setup text
+    CGContextSelectFont(ctx, "Times New Roman", 12, kCGEncodingMacRoman);
+    CGContextSetTextDrawingMode (ctx, kCGTextStroke);
+    //make the length of vertical line 1% of the height
+    CGContextMoveToPoint(ctx, 0.1*bounds.size.width, 0.05*bounds.size.height);
+    CGContextAddLineToPoint(ctx, 0.1*bounds.size.width, 0.06*bounds.size.height);
+    CGContextStrokePath(ctx);
+    label = malloc(10*sizeof(char));
+    snprintf(label, 10,"%-10.2f", xmin+0.1*(windowSize-xmin));
+    i = 0;
+    
+    while( (i < 10) && ((chs = label[i]) != ' '))
+    {
+        i++;
+    }
+    strncpy(label+i+1, "ms", 2);
+    snprintf(label, 10,"%-10s", label);
+    CGContextShowTextAtPoint(ctx, 0.1*bounds.size.width, 0.035*bounds.size.height, label, 9);
+    CGContextMoveToPoint(ctx, 0.9*bounds.size.width, 0.05*bounds.size.height);
+    CGContextAddLineToPoint(ctx, 0.9*bounds.size.width, 0.06*bounds.size.height);
+    CGContextStrokePath(ctx);
+    
+    snprintf(label, 10,"%-10.2f ms", xmin+0.9*(windowSize-xmin));
+    i = 0;
+    
+    while( (i < 10) && ((chs = label[i]) != ' '))
+    {
+        i++;
+    }
+    strncpy(label+i+1, "ms", 2);
+    snprintf(label, 10,"%-10s", label);
+    CGContextShowTextAtPoint(ctx, 0.9*bounds.size.width, 0.035*bounds.size.height, label, 9);
+    
     CGContextEndPage(ctx);
     CGContextRelease(ctx);
+    free(label);
     
     
 }
