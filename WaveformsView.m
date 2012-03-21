@@ -773,12 +773,12 @@
     
     //create a scale bar for the y-axis
     //get an approrpiate y-scale
-    ys = 1000.0/(ySpan-ymin)*bounds.size.height;
+    ys = 100.0/(ySpan-ymin)*bounds.size.height;
     scaleBar = CGRectMake(0.1*bounds.size.width, 0.3*bounds.size.height, 0.01*bounds.size.width , ys);
     CGContextFillRect(ctx, scaleBar);
     m = CGAffineTransformMakeRotation(pi/2.0);
     CGContextSetTextMatrix(ctx,m);
-    CGContextShowTextAtPoint(ctx, 0.13*bounds.size.width, 0.32*bounds.size.height, "1000 mV", 7);
+    CGContextShowTextAtPoint(ctx, 0.13*bounds.size.width, 0.32*bounds.size.height, "100 mV", 7);
     
     CGContextEndPage(ctx);
     CGContextRelease(ctx);
