@@ -786,7 +786,7 @@
     CGContextFillRect(ctx, scaleBar);
     m = CGAffineTransformMakeRotation(pi/2.0);
     CGContextSetTextMatrix(ctx,m);
-    CGContextShowTextAtPoint(ctx, 0.13*bounds.size.width, 0.32*bounds.size.height, "100 mV", 7);
+    CGContextShowTextAtPoint(ctx, 0.13*bounds.size.width, 0.32*bounds.size.height, "100 mV", 6);
     
     CGContextEndPage(ctx);
     CGContextRelease(ctx);
