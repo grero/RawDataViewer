@@ -686,10 +686,13 @@
 
 -(void)saveToPDFAtURL:(NSURL*)url
 {
-    NSRect bounds = [self bounds];
+    
+    NSRect bounds,scaleBar;
+    CGFloat ys;
     char *label;
     char sunit[2] = "ms";
     char chs;
+    bounds = [self bounds];
     if(url == NULL )
     {
         url = [NSURL fileURLWithPath:@"/tmp/test.pdf"];
@@ -741,32 +744,34 @@
     CGContextMoveToPoint(ctx, 0.1*bounds.size.width, 0.05*bounds.size.height);
     CGContextAddLineToPoint(ctx, 0.1*bounds.size.width, 0.06*bounds.size.height);
     CGContextStrokePath(ctx);
-    label = malloc(10*sizeof(char));
-    snprintf(label, 10,"%-10.2f", xmin+0.1*(windowSize-xmin));
+    label = malloc(30*sizeof(char));
+    snprintf(label, 30,"%-30.2f", xmin+dx+0.1*(windowSize-xmin));
     i = 0;
     
-    while( (i < 10) && ((chs = label[i]) != ' '))
+    while( (i < 30) && ((chs = label[i]) != ' '))
     {
         i++;
     }
+   
     strncpy(label+i+1, "ms", 2);
-    snprintf(label, 10,"%-10s", label);
-    CGContextShowTextAtPoint(ctx, 0.1*bounds.size.width, 0.035*bounds.size.height, label, 9);
+    snprintf(label, 30,"%-30s", label);
+    CGContextShowTextAtPoint(ctx, 0.1*bounds.size.width, 0.035*bounds.size.height, label, i+3);
     CGContextMoveToPoint(ctx, 0.9*bounds.size.width, 0.05*bounds.size.height);
     CGContextAddLineToPoint(ctx, 0.9*bounds.size.width, 0.06*bounds.size.height);
     CGContextStrokePath(ctx);
     
-    snprintf(label, 10,"%-10.2f ms", xmin+0.9*(windowSize-xmin));
+    snprintf(label, 30,"%-30.2f ms", xmin+dx+0.9*(windowSize-xmin));
     i = 0;
     
-    while( (i < 10) && ((chs = label[i]) != ' '))
+    while( (i < 30) && ((chs = label[i]) != ' '))
     {
         i++;
     }
     strncpy(label+i+1, "ms", 2);
-    snprintf(label, 10,"%-10s", label);
-    CGContextShowTextAtPoint(ctx, 0.9*bounds.size.width, 0.035*bounds.size.height, label, 9);
+    snprintf(label, 30,"%-30s", label);
+    CGContextShowTextAtPoint(ctx, 0.9*bounds.size.width, 0.035*bounds.size.height, label, i+3);
     
+        
     CGContextEndPage(ctx);
     CGContextRelease(ctx);
     free(label);
