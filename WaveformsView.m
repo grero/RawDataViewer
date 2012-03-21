@@ -771,7 +771,15 @@
     snprintf(label, 30,"%-30s", label);
     CGContextShowTextAtPoint(ctx, 0.9*bounds.size.width, 0.035*bounds.size.height, label, i+3);
     
-        
+    //create a scale bar for the y-axis
+    //get an approrpiate y-scale
+    ys = 1000.0/(ySpan-ymin)*bounds.size.height;
+    scaleBar = CGRectMake(0.1*bounds.size.width, 0.3*bounds.size.height, 0.01*bounds.size.width , ys);
+    CGContextFillRect(ctx, scaleBar);
+    m = CGAffineTransformMakeRotation(pi/2.0);
+    CGContextSetTextMatrix(ctx,m);
+    CGContextShowTextAtPoint(ctx, 0.13*bounds.size.width, 0.32*bounds.size.height, "1000 mV", 7);
+    
     CGContextEndPage(ctx);
     CGContextRelease(ctx);
     free(label);
