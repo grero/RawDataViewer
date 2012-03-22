@@ -42,6 +42,7 @@
     //check if we have a valid file
     if( (headerSize != 73) && (headerSize != 90 ) )
     {
+        NSLog(@"Could not open file %s", fname);
         //not valid file
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
@@ -52,6 +53,7 @@
     fread(&nchs,sizeof(uint8_t),1,fid);
     if( nchs == 0 )
     {
+        NSLog(@"Could not open file %s", fname);
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
         return NO;
@@ -68,6 +70,7 @@
     //check again; if we still didn't get a sensible number, this is probably not a valid file
     if (samplingRate > 1e5 )
     {
+        NSLog(@"Could not open file %s", fname);
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
         return NO;
