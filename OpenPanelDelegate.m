@@ -26,6 +26,10 @@
     
     //check if the file is valid; by reading the header
     fid = fopen(path,"r");
+    if(fid<0)
+    {
+        return NO;
+    }
     fread(&headerSize,sizeof(uint32_t),1,fid);
     if( (headerSize != 73) && (headerSize != 90) )
     {
