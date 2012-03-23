@@ -461,6 +461,11 @@
     
     ySpan = ymax;
     ymin = 0;
+    //push onto the zoom stack
+    zoomStack[0] = dx;
+    zoomStack[1] = windowSize;
+    zoomStack[2] = dy;
+    zoomStack[3] = ySpan;
     
     [[self openGLContext] makeCurrentContext];
     //vertices have been created, now push those to the GPU
