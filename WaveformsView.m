@@ -648,6 +648,7 @@
             //report the current coordinates to the text field
             [timeCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.x]];
             [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y]];
+            currentX = dataPoint.x;
 
         }
         else
