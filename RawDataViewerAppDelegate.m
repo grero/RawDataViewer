@@ -129,6 +129,9 @@
         }
         free(reorder);
     }
+    //test; compute covariance matrix
+    float *cov = malloc(nchs*nchs*sizeof(float));
+    computeCovariance(data, nchs, npoints/nchs, 1, cov);
     //[wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
     [wf createConnectedVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
 

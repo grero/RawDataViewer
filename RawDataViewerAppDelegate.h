@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "WaveformsView.h"
+#import "computations.h"
 
 @interface RawDataViewerAppDelegate : NSObject <NSApplicationDelegate> {
     IBOutlet NSWindow *window;
