@@ -76,6 +76,9 @@
     colors = NULL;
     indices = NULL;
     vertexOffset = 0;
+    //zoom stack to keep the last ten zoom levels, for both x and y directions
+    zoomStack = malloc(4*10*sizeof(GLfloat));
+    zoomStackIdx = 0;
     return self;
 }
 
@@ -261,6 +264,13 @@
     
     ySpan = ymax;
     ymin = 0;
+    
+    //set the zoom
+    zoomStack[0] = dx;
+    zoomStack[1] = windowSize;
+    zoomStack[2] = dy;
+    zoomStack[3] = ySpan;
+    zoomStackIdx = 0;
     [[self openGLContext] makeCurrentContext];
     //vertices have been created, now push those to the GPU
     glGenBuffers(1, &vertexBuffer);
@@ -601,6 +611,7 @@
         
         ySpan = ymax;
         dy = 0;
+        zoomStackIdx = 0;
         
     }
     else
@@ -640,8 +651,20 @@
                 dy = dataPoint.y-ymin;
                 ySpan = ty + ymin -dy;
             }
-            //here, we can simply figure out the smallest distance between the vector defined by
-            //(dataPoint.x,dataPoint.y) and the waveforms vectors
+            if( zoomStackIdx==9 )
+            {
+                //shift back, discard the first stack
+                memmove(zoomStack, zoomStack+4,9*4*sizeof(NSUInteger));
+            }
+            else
+            {
+                zoomStackIdx+=1;
+            }
+            zoomStack[zoomStackIdx*4] = dx;
+            zoomStack[zoomStackIdx*4+1] = windowSize;
+            zoomStack[zoomStackIdx*4+2] = dy;
+            zoomStack[zoomStackIdx*4+3] = ySpan;
+                
         }
     }
     [self setNeedsDisplay:YES];
@@ -907,13 +930,32 @@
 
 -(IBAction)moveRight:(id)sender
 {
-	//shift highlighted waveform downwards
+	
 	
 }
 
 -(IBAction)moveLeft:(id)sender
 {
-	//shift highlighted waveform downwards
+	//go back into the zoom stack
+    if(zoomStackIdx>0)
+    {
+        zoomStackIdx-=1;
+        dx = zoomStack[zoomStackIdx*4];
+        windowSize = zoomStack[zoomStackIdx*4+1];
+        dy = zoomStack[zoomStackIdx*4+2];
+        ySpan = zoomStack[zoomStackIdx*4+3];
+    }
+    else
+    {
+        //reset everything
+        windowSize = MIN(10000,xmax);
+        dx = 0;
+        
+        ySpan = ymax;
+        dy = 0;
+        zoomStackIdx = 0;
+    }
+    [self setNeedsDisplay:YES];
 }	
 
 -(void)setCurrentX:(GLfloat)_currentX

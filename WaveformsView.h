@@ -25,14 +25,15 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 	NSMutableArray *highlightedChannels;
 	//data to hold information on which waveforms are active
 	NSMutableIndexSet *waveformIndices;
-    NSUInteger numPoints,numChannels,chunkSize,vertexOffset;
+    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx;
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan;
-    GLfloat *vertices,*colors,*channelLimits;
+    GLfloat *vertices,*colors,*channelLimits,*zoomStack;
     GLuint *indices;
     GLfloat dz,dx,dy,tx,ty;
     GLuint indexBuffer,vertexBuffer,colorBuffer;
     NSUInteger drawingMode; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
+
     BOOL dataLoaded;
     
     IBOutlet NSTextField *coords;
