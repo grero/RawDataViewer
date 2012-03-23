@@ -271,7 +271,7 @@
         uint32_t ch,i,ppc;
         int16_t d;
         ppc = npoints/(uint32_t)nchs;
-        for(ch=0;ch<nchs;ch++)
+        for(ch=0;ch<MIN(nchs,k);ch++)
         {
             for(i=0;i<ppc;i++)
             {
@@ -284,6 +284,7 @@
         }
         free(reorder);
     }
+    
     //[wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
     [wf createConnectedVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
     
