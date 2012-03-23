@@ -21,6 +21,7 @@
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
 @synthesize coords;
+//@synthesize currentX,currentY;
 
 -(void)awakeFromNib
 {
@@ -784,6 +785,7 @@
     ys = 100.0/(ySpan-ymin)*bounds.size.height;
     scaleBar = CGRectMake(0.1*bounds.size.width, 0.3*bounds.size.height, 0.01*bounds.size.width , ys);
     CGContextFillRect(ctx, scaleBar);
+    //rotate 90 degrees
     m = CGAffineTransformMakeRotation(pi/2.0);
     CGContextSetTextMatrix(ctx,m);
     CGContextShowTextAtPoint(ctx, 0.13*bounds.size.width, 0.32*bounds.size.height, "100 mV", 6);
@@ -913,6 +915,34 @@
 {
 	//shift highlighted waveform downwards
 }	
+
+-(void)setCurrentX:(GLfloat)_currentX
+{
+    currentX = _currentX;
+    //also update current y
+    currentY = [[[[coords stringValue] componentsSeparatedByString:@","] objectAtIndex:1] floatValue];
+    dx = currentX-xmin-dx;
+    dy = currentY-ymin-dy;
+}
+
+-(GLfloat)currentX
+{
+    return currentX;
+}
+
+-(void)setCurrentY:(GLfloat)_currentY
+{
+    //also update current y
+    currentY = _currentY;
+    currentX = [[[[coords stringValue] componentsSeparatedByString:@","] objectAtIndex:0] floatValue];
+    dx = currentX-xmin-dx;
+    dy = currentY-ymin-dy;
+}
+
+-(GLfloat)currentY
+{
+    return currentY;
+}
 
 -(void)dealloc
 {

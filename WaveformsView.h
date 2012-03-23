@@ -32,10 +32,12 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     GLfloat dz,dx,dy,tx,ty;
     GLuint indexBuffer,vertexBuffer,colorBuffer;
     NSUInteger drawingMode; //which mode are we using to draw (peak/all)
+    GLfloat currentX,currentY;
     BOOL dataLoaded;
+    
     IBOutlet NSTextField *coords;
 }
-
+@property (assign,readwrite) GLfloat currentX,currentY;
 @property (assign,readwrite) IBOutlet NSTextField *coords;
 @property (retain,readwrite) NSMutableData *highlightWaves;
 @property (retain,readwrite) NSMutableArray *highlightedChannels;
@@ -71,5 +73,6 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(NSImage*)image;
 -(void) createAxis;
 -(void)saveToPDFAtURL:(NSURL*)url;
+
 
 @end
