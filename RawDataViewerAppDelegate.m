@@ -182,6 +182,11 @@
     }
 }
 
+-(IBAction)changeTime:(id)sender
+{
+    [wf setCurrentX :[sender floatValue]];
+}
+
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset
 {
     //read data from the file

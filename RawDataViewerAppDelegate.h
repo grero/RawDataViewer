@@ -16,7 +16,6 @@
     IBOutlet NSWindow *window;
     IBOutlet WaveformsView *wf;
     IBOutlet NSProgressIndicator *progress;
-    
     NSData *signalData; //data containing the signals
     
 }
@@ -24,6 +23,8 @@
 -(IBAction)openFile:(id)sender;
 -(IBAction)saveToPDF:(id)sender;
 -(IBAction)savePDFAs:(id)sender;
+-(IBAction)changeTime:(id)sender;
+-(IBAction)changeAmp:(id)sender;
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
 

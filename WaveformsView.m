@@ -1008,6 +1008,34 @@
      */
 }	
 
+-(void)setCurrentX:(GLfloat)_currentX
+{
+    currentX = _currentX;
+    //center on currentX
+    dx = currentX-xmin-dx-0.5*windowSize;
+    
+    [self setNeedsDisplay:YES];
+}
+
+-(GLfloat)currentX
+{
+    return currentX;
+}
+
+-(void)setCurrentY:(GLfloat)_currentY
+{
+    currentY = _currentY;
+    
+    //center on currentY
+    dy = currentY-ymin-dy-0.5*ySpan;
+    
+    [self setNeedsDisplay:YES];
+}
+
+-(GLfloat)currentY
+{
+    return currentY;
+}
 -(void)dealloc
 {
     free(vertices);
