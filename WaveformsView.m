@@ -461,6 +461,7 @@
     
     ySpan = ymax;
     ymin = 0;
+    
     [[self openGLContext] makeCurrentContext];
     //vertices have been created, now push those to the GPU
     glGenBuffers(1, &vertexBuffer);
@@ -868,9 +869,34 @@
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-	NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
     if ([theEvent modifierFlags] & NSNumericPadKeyMask) {
-        [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
+        
+        //we don't want to use interpret keys because moving the mouse and using the right/left arrow keys are interpreted as the event, by default
+        if([theEvent keyCode] == 124 )
+        {
+            //right arrow
+            //move down the zoom stack
+            if(zoomStackIdx < zoomStackLength-1)
+            {
+                zoomStackIdx+=1;
+            }
+
+        }
+        else if( [theEvent keyCode] == 123 )
+        {
+            if(zoomStackIdx>0)
+            {
+                zoomStackIdx-=1;
+            }
+            
+        }
+        dx = zoomStack[zoomStackIdx*4];
+        windowSize = zoomStack[zoomStackIdx*4+1];
+        dy = zoomStack[zoomStackIdx*4+2];
+        ySpan = zoomStack[zoomStackIdx*4+3];
+        [self setNeedsDisplay:YES];
+        
+        //[self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
     } else {
 	}
 }
@@ -934,6 +960,7 @@
 -(IBAction)moveRight:(id)sender
 {
 	//move down the zoom stack
+    /*
     if(zoomStackIdx < zoomStackLength-1)
     {
         zoomStackIdx+=1;
@@ -944,13 +971,14 @@
         
     }
     [self setNeedsDisplay:YES];
-    
+    */
 	
 }
 
 -(IBAction)moveLeft:(id)sender
 {
 	//go back into the zoom stack
+    /*
     if(zoomStackIdx>0)
     {
         zoomStackIdx-=1;
@@ -970,6 +998,7 @@
         zoomStackIdx = 0;
     }
     [self setNeedsDisplay:YES];
+     */
 }	
 
 -(void)setCurrentX:(GLfloat)_currentX
