@@ -77,7 +77,8 @@
     indices = NULL;
     vertexOffset = 0;
     //zoom stack to keep the last ten zoom levels, for both x and y directions
-    zoomStack = malloc(4*10*sizeof(GLfloat));
+    zoomStackLength = 50;
+    zoomStack = malloc(zoomStackLength*4*sizeof(GLfloat));
     zoomStackIdx = 0;
     return self;
 }
@@ -651,14 +652,16 @@
                 dy = dataPoint.y-ymin;
                 ySpan = ty + ymin -dy;
             }
-            if( zoomStackIdx==9 )
+            if( zoomStackIdx<zoomStackLength-1 )
             {
-                //shift back, discard the first stack
-                memmove(zoomStack, zoomStack+4,9*4*sizeof(NSUInteger));
+                zoomStackIdx+=1;
             }
             else
             {
-                zoomStackIdx+=1;
+                //shift back, discard the first stack
+
+                memmove(zoomStack, zoomStack+4,(zoomStackLength-1)*4*sizeof(NSUInteger));
+
             }
             zoomStack[zoomStackIdx*4] = dx;
             zoomStack[zoomStackIdx*4+1] = windowSize;
@@ -930,7 +933,18 @@
 
 -(IBAction)moveRight:(id)sender
 {
-	
+	//move down the zoom stack
+    if(zoomStackIdx < zoomStackLength-1)
+    {
+        zoomStackIdx+=1;
+        dx = zoomStack[zoomStackIdx*4];
+        windowSize = zoomStack[zoomStackIdx*4+1];
+        dy = zoomStack[zoomStackIdx*4+2];
+        ySpan = zoomStack[zoomStackIdx*4+3];
+        
+    }
+    [self setNeedsDisplay:YES];
+    
 	
 }
 
