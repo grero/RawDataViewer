@@ -20,6 +20,9 @@
     //we wantt to use threaded animation
     [progress setUsesThreadedAnimation: YES];
     [progress setIndeterminate: YES];
+    //Load NSUserDefaults and set values
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults registerDefaults:[NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:20.0] forKey:@"maxDataSize"]];
 }
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
@@ -34,7 +37,7 @@
     int16_t *data;
     size_t nbytes;
     
-    maxSize = 20; //limit the amount of data to load to 20 MB
+    maxSize = [[NSUserDefaults standardUserDefaults] floatForKey:@"maxDataSize"];
     fname  = [filename cStringUsingEncoding:NSASCIIStringEncoding];
     fid = fopen(fname, "rb");
     //get the header size
