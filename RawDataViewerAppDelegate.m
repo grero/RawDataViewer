@@ -206,6 +206,7 @@
         //not valid file
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
+        NSLog(@"Unrecognized header size");
         return NO;
     }
     
