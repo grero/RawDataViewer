@@ -553,7 +553,15 @@
                 
             }
         }
-        
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_COLOR_ARRAY);
+        //draw a line at the currentX value
+        glBegin(GL_LINES);
+        glVertex3d(currentX, ymin+dy, 0.5);
+        glColor3f(1.0, 0, 0);
+        glVertex3d(currentX, ySpan+dy, 0.5);
+        glColor3f(1.0, 0, 0);
+        glEnd();
         //GLenum e = glGetError();
         //NSLog(@"gl error: %d", e);
     }
