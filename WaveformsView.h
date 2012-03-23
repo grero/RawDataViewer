@@ -36,10 +36,10 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 
     BOOL dataLoaded;
     
-    IBOutlet NSTextField *coords;
+    IBOutlet NSTextField *timeCoord,*ampCoord;
 }
 @property (assign,readwrite) GLfloat currentX,currentY;
-@property (assign,readwrite) IBOutlet NSTextField *coords;
+@property (assign,readwrite) IBOutlet NSTextField *timeCoord,*ampCoord;
 @property (retain,readwrite) NSMutableData *highlightWaves;
 @property (retain,readwrite) NSMutableArray *highlightedChannels;
 

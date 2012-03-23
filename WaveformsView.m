@@ -20,7 +20,7 @@
 
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
-@synthesize coords;
+@synthesize timeCoord,ampCoord;
 //@synthesize currentX,currentY;
 
 -(void)awakeFromNib
@@ -638,7 +638,9 @@
         if([theEvent modifierFlags] & NSAlternateKeyMask )
         {
             //report the current coordinates to the text field
-            [coords setStringValue:[NSString stringWithFormat:@"%.2f, %.2f", dataPoint.x,dataPoint.y]];
+            [timeCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.x]];
+            [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y]];
+
         }
         else
         {
@@ -1005,34 +1007,6 @@
     [self setNeedsDisplay:YES];
      */
 }	
-
--(void)setCurrentX:(GLfloat)_currentX
-{
-    currentX = _currentX;
-    //also update current y
-    currentY = [[[[coords stringValue] componentsSeparatedByString:@","] objectAtIndex:1] floatValue];
-    dx = currentX-xmin-dx;
-    dy = currentY-ymin-dy;
-}
-
--(GLfloat)currentX
-{
-    return currentX;
-}
-
--(void)setCurrentY:(GLfloat)_currentY
-{
-    //also update current y
-    currentY = _currentY;
-    currentX = [[[[coords stringValue] componentsSeparatedByString:@","] objectAtIndex:0] floatValue];
-    dx = currentX-xmin-dx;
-    dy = currentY-ymin-dy;
-}
-
--(GLfloat)currentY
-{
-    return currentY;
-}
 
 -(void)dealloc
 {
