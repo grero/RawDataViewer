@@ -644,37 +644,41 @@
         }
         else
         {
-            windowSize = dataPoint.x-tx;
-            dx = tx;
-            //make sure we are not flipping
-            if(dataPoint.x < tx+xmin)
+            //make sure we actually moved
+            if( (abs(tx-dataPoint.x)/xmin > 0.001) && (abs(ty-dataPoint.y)/ymin > 0.001))
             {
-                dx = dataPoint.x-xmin;
-                windowSize = tx+xmin-dx;
-            }
-            
-            ySpan = dataPoint.y-ty;
-            dy = ty;
-            if(dataPoint.y < ty+ymin )
-            {
-                dy = dataPoint.y-ymin;
-                ySpan = ty + ymin -dy;
-            }
-            if( zoomStackIdx<zoomStackLength-1 )
-            {
-                zoomStackIdx+=1;
-            }
-            else
-            {
-                //shift back, discard the first stack
+                windowSize = dataPoint.x-tx;
+                dx = tx;
+                //make sure we are not flipping
+                if(dataPoint.x < tx+xmin)
+                {
+                    dx = dataPoint.x-xmin;
+                    windowSize = tx+xmin-dx;
+                }
+                
+                ySpan = dataPoint.y-ty;
+                dy = ty;
+                if(dataPoint.y < ty+ymin )
+                {
+                    dy = dataPoint.y-ymin;
+                    ySpan = ty + ymin -dy;
+                }
+                if( zoomStackIdx<zoomStackLength-1 )
+                {
+                    zoomStackIdx+=1;
+                }
+                else
+                {
+                    //shift back, discard the first stack
 
-                memmove(zoomStack, zoomStack+4,(zoomStackLength-1)*4*sizeof(NSUInteger));
+                    memmove(zoomStack, zoomStack+4,(zoomStackLength-1)*4*sizeof(NSUInteger));
 
+                }
+                zoomStack[zoomStackIdx*4] = dx;
+                zoomStack[zoomStackIdx*4+1] = windowSize;
+                zoomStack[zoomStackIdx*4+2] = dy;
+                zoomStack[zoomStackIdx*4+3] = ySpan;
             }
-            zoomStack[zoomStackIdx*4] = dx;
-            zoomStack[zoomStackIdx*4+1] = windowSize;
-            zoomStack[zoomStackIdx*4+2] = dy;
-            zoomStack[zoomStackIdx*4+3] = ySpan;
                 
         }
     }
@@ -1010,9 +1014,10 @@
 
 -(void)setCurrentX:(GLfloat)_currentX
 {
-    currentX = _currentX;
+    
     //center on currentX
-    dx = currentX-xmin-dx-0.5*windowSize;
+    dx = _currentX-xmin-0.5*windowSize;
+    currentX = _currentX;
     
     [self setNeedsDisplay:YES];
 }
