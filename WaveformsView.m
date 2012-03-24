@@ -655,6 +655,7 @@
             [timeCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.x]];
             [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y]];
             currentX = dataPoint.x;
+            currentY = dataPoint.y;
 
         }
         else
@@ -926,7 +927,40 @@
     } 
     else 
     {
-                                            
+        if( [[theEvent characters] isEqualToString:@"e"] )
+        {
+            double *spikes;
+            
+            int i,j,currentXidx;
+            int ch,np,minch,maxch;
+            np = numPoints/numChannels;
+            //figure out which channel we are at
+            minch = 0;
+            currentXidx = 0;
+            //find the index of the currentX point
+            while( (vertices[3*currentXidx] < currentX) && (currentXidx<np) )
+            {
+                currentXidx++;
+            }
+            while( (ymin+dy > channelOffsets[minch]) && (minch < numChannels) )
+            {
+                minch++;
+            }
+            maxch=minch;
+            while( (ySpan+dy > channelOffsets[maxch]) && (maxch < numChannels) )
+            {
+                maxch++;
+            }
+            spikes = malloc((maxch-minch)*32*sizeof(double));
+            for(ch=minch;ch<maxch;ch++)
+            {
+                for (i=0; i<32; i++) 
+                {
+                    j = currentXidx-10+i;
+                    spikes[(ch-minch)*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
+                }
+            }
+        }
 	}
 }
 
