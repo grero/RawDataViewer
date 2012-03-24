@@ -334,9 +334,16 @@
     {
         indices = malloc(2*numPoints*sizeof(GLuint));
     }
+    if( channelOffsets != NULL )
+    {
+        channelOffsets = realloc(channelOffsets,channels*sizeof(GLfloat));
+    }
+    else
+    {
+        channelOffsets = malloc(channels*sizeof(GLfloat));
+    }
     //vector to hold the min/max for each channel
     limits = calloc(2*channels,sizeof(GLfloat));
-    choffsets = malloc(channels*sizeof(GLfloat));
     //this works because the data is organized in channel order
     //offset = 0;
     xmin = 0;
@@ -358,10 +365,10 @@
             
         }
     });
-    choffsets[0] = -limits[0];
+    channelOffsets[0] = -limits[0];
     for(ch=1;ch<channels;ch++)
     {
-        choffsets[ch] = choffsets[ch-1] + (-limits[2*ch] + limits[2*(ch-1)+1]);
+        channelOffsets[ch] = channelOffsets[ch-1] + (-limits[2*ch] + limits[2*(ch-1)+1]);
     }
     
     //for(ch=0;ch<channels;ch++)
@@ -370,7 +377,7 @@
         NSUInteger i,j,tidx,pidx,k,l;
         GLfloat offset,peak,trough,d;
         
-        offset = choffsets[c];
+        offset = channelOffsets[c];
         l = (npoints/chunkSize)*chunkSize;
         for(i=0;i<l;i+=chunkSize)
         {
@@ -451,9 +458,8 @@
     float m;
     vDSP_minv(vertices, 3, &m, numPoints);
     //we don't need limits anymore
-    ymax = choffsets[channels-1]+limits[2*(channels-1)+1];
+    ymax = channelOffsets[channels-1]+limits[2*(channels-1)+1];
     free(limits);
-    free(choffsets);
     dz = 0.0;
     dy = 0.0;
     dx =0.0;
@@ -917,7 +923,10 @@
         [self setNeedsDisplay:YES];
         
         //[self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
-    } else {
+    } 
+    else 
+    {
+                                            
 	}
 }
 
