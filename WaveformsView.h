@@ -27,7 +27,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 	NSMutableIndexSet *waveformIndices;
     NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength;
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan;
-    GLfloat *vertices,*colors,*channelLimits,*zoomStack;
+    GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets;
     GLuint *indices;
     GLfloat dz,dx,dy,tx,ty;
     GLuint indexBuffer,vertexBuffer,colorBuffer;
