@@ -930,38 +930,43 @@
     {
         if( [[theEvent characters] isEqualToString:@"e"] )
         {
-            float *spikes;
-            
-            int i,j,currentXidx;
-            int ch,np,minch,maxch;
-            np = numPoints/numChannels;
-            //figure out which channel we are at
-            minch = 0;
-            currentXidx = 0;
-            //find the index of the currentX point
-            while( (vertices[3*currentXidx] < currentX) && (currentXidx<np) )
-            {
-                currentXidx++;
-            }
-            while( (ymin+dy > channelOffsets[minch]) && (minch < numChannels) )
-            {
-                minch++;
-            }
-            maxch=minch;
-            while( (ySpan+dy > channelOffsets[maxch]) && (maxch < numChannels) )
-            {
-                maxch++;
-            }
-            spikes = malloc((maxch-minch)*32*sizeof(float));
-            for(ch=minch;ch<maxch;ch++)
-            {
-                for (i=0; i<32; i++) 
+            //dispath this piece of code
+            dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+            dispatch_async(queue, ^{
+               
+                float *spikes;
+                
+                int i,j,currentXidx;
+                int ch,np,minch,maxch;
+                np = numPoints/numChannels;
+                //figure out which channel we are at
+                minch = 0;
+                currentXidx = 0;
+                //find the index of the currentX point
+                while( (vertices[3*currentXidx] < currentX) && (currentXidx<np) )
                 {
-                    j = currentXidx-10+i;
-                    spikes[(ch-minch)*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
+                    currentXidx++;
                 }
-            }
-            [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(maxch-minch)];
+                while( (ymin+dy > channelOffsets[minch]) && (minch < numChannels) )
+                {
+                    minch++;
+                }
+                maxch=minch;
+                while( (ySpan+dy > channelOffsets[maxch]) && (maxch < numChannels) )
+                {
+                    maxch++;
+                }
+                spikes = malloc((maxch-minch)*32*sizeof(float));
+                for(ch=minch;ch<maxch;ch++)
+                {
+                    for (i=0; i<32; i++) 
+                    {
+                        j = currentXidx-10+i;
+                        spikes[(ch-minch)*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
+                    }
+                }
+                [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(maxch-minch)];
+            });
         }
 	}
 }
