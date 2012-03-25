@@ -15,9 +15,10 @@
     //array of arrays
     NSMutableData *templates;
     NSMutableData *numChannels;
+    uint32_t ntemplates;
     
 }
 
--(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(NSInteger)nchs;
+-(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs;
 -(BOOL)saveTemplates:(NSString*)filename;
 @end
