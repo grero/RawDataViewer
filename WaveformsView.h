@@ -8,6 +8,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Accelerate/Accelerate.h>
+
+#import "SignalProcessor.h"
+
 //#import "GLString.h"
 
 static void wfPushVertices();
@@ -36,6 +39,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 
     BOOL dataLoaded;
     
+    SignalProcessor *sp;
     IBOutlet NSTextField *timeCoord,*ampCoord;
 }
 @property (assign,readwrite) GLfloat currentX,currentY;

@@ -80,6 +80,7 @@
     zoomStackLength = 50;
     zoomStack = malloc(zoomStackLength*4*sizeof(GLfloat));
     zoomStackIdx = 0;
+    sp = [[[[SignalProcessor alloc] init] retain] autorelease];
     return self;
 }
 
@@ -929,7 +930,7 @@
     {
         if( [[theEvent characters] isEqualToString:@"e"] )
         {
-            double *spikes;
+            float *spikes;
             
             int i,j,currentXidx;
             int ch,np,minch,maxch;
@@ -951,7 +952,7 @@
             {
                 maxch++;
             }
-            spikes = malloc((maxch-minch)*32*sizeof(double));
+            spikes = malloc((maxch-minch)*32*sizeof(float));
             for(ch=minch;ch<maxch;ch++)
             {
                 for (i=0; i<32; i++) 
@@ -960,6 +961,7 @@
                     spikes[(ch-minch)*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
                 }
             }
+            [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(maxch-minch)];
         }
 	}
 }
