@@ -965,7 +965,7 @@
                         spikes[(ch-minch)*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
                     }
                 }
-                [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(maxch-minch)];
+                [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(uint32_t)(maxch-minch)];
             });
         }
 	}
