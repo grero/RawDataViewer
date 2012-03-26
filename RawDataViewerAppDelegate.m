@@ -107,11 +107,12 @@
             [[progress window] orderOut:self];
             return NO;
         }
-        //check for the presense of a file called reorder.txt; if we find it, that means we have to reoder the data
+        //check for the presense of a file called reorder.txt; if we find it, that means we have to reorder the data
         NSString *reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
         NSString *sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
         if( sreorder != nil )
         {
+            NSLog(@"Reordering data...");
             int *reorder = malloc(nchs*sizeof(int));
             int k = 0;
             NSScanner *scanner = [NSScanner scannerWithString:sreorder];
