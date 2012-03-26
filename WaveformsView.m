@@ -490,12 +490,14 @@
     glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
     glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
     //indices
+    /*
     glGenBuffers(1,&indexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 2*numPoints/chunkSize*sizeof(GLuint), indices, GL_STATIC_DRAW);
     
     
     glIndexPointer(GL_UNSIGNED_INT, 0, (GLvoid*)0);
+     */
     //notify that we have loaded the data
     dataLoaded = YES;
     drawingMode = 0;//indicate that we are drawing everything
