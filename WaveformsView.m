@@ -598,6 +598,7 @@
     glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
     drawSpikes = YES;
     numSpikes = nspikes;
+    spikesLoaded = YES;
     [[[[[[NSApplication sharedApplication] mainMenu] itemWithTitle: @"View"] submenu] itemWithTitle:@"Hide spikes"] setEnabled:YES];
     
     [self setNeedsDisplay:YES];
@@ -664,7 +665,7 @@
         }
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
-        if ( drawSpikes == YES)
+        if ( (drawSpikes == YES) && ( spikesLoaded == YES))
         {
             glColor3f(1.0,0.0,0.0);
             glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
