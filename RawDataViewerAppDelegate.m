@@ -124,6 +124,7 @@
                 k+=1;
             }
             //we need a temporary array to hold the data for each channel
+            int16_t *tmp_data = malloc(npoints*sizeof(int16_t));
             //now loop through the data and reorder everything
             uint32_t ch,i,ppc;
             int16_t d;
@@ -132,14 +133,19 @@
             {
                 for(i=0;i<ppc;i++)
                 {
+                    /*
                     d = data[i*nchs+ch];
                     //subtract 1 since the ordering is (usually!) 1-based
                     data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
                     data[i*nchs+reorder[ch]-1] = d;
+                     */
+                    tmp_data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
                     
                 }
             }
             free(reorder);
+            memcpy(data, tmp_data, npoints*sizeof(int16_t));
+            free(tmp_data);
         }
         //test; compute covariance matrix
         float *cov = malloc(nchs*nchs*sizeof(float));
