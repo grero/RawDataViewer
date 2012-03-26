@@ -21,6 +21,7 @@
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
 @synthesize timeCoord,ampCoord;
+@synthesize drawSpikes;
 //@synthesize currentX,currentY;
 
 -(void)awakeFromNib
@@ -597,6 +598,8 @@
     glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
     drawSpikes = YES;
     numSpikes = nspikes;
+    [[[[[[NSApplication sharedApplication] mainMenu] itemWithTitle: @"View"] submenu] itemWithTitle:@"Hide spikes"] setEnabled:YES];
+    
     [self setNeedsDisplay:YES];
 }
 

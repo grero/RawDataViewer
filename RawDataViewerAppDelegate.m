@@ -206,6 +206,22 @@
     [wf setCurrentX :[sender floatValue]];
 }
 
+-(IBAction)toggleSpikeView:(id)sender
+{
+    if ([[sender title] isEqualToString:@"Show spikes"] )
+    {
+        [sender setTitle:@"Hide spikes"];
+        [wf setDrawSpikes:YES];
+        [wf setNeedsDisplay:YES];
+    }
+    else if( [[sender title] isEqualToString:@"Hide spikes"] )
+    {
+        [sender setTitle:@"Show spikes"];
+        [wf setDrawSpikes:NO];
+        [wf setNeedsDisplay:YES];
+    }
+}
+
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset
 {
     //read data from the file

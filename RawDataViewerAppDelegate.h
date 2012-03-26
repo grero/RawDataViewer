@@ -25,6 +25,7 @@
 -(IBAction)savePDFAs:(id)sender;
 -(IBAction)changeTime:(id)sender;
 -(IBAction)changeAmp:(id)sender;
+-(IBAction)toggleSpikeView:(id)sender;
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
 -(BOOL)loadSpikesFromFile:(NSString*)filename;
