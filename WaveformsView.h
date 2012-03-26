@@ -28,16 +28,16 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 	NSMutableArray *highlightedChannels;
 	//data to hold information on which waveforms are active
 	NSMutableIndexSet *waveformIndices;
-    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength;
-    GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan;
+    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes;
+    GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan,samplingRate;
     GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets;
     GLuint *indices;
     GLfloat dz,dx,dy,tx,ty;
-    GLuint indexBuffer,vertexBuffer,colorBuffer;
+    GLuint indexBuffer,vertexBuffer,colorBuffer,spikesBuffer;
     NSUInteger drawingMode; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
 
-    BOOL dataLoaded;
+    BOOL dataLoaded,drawSpikes;
     
     SignalProcessor *sp;
     IBOutlet NSTextField *timeCoord,*ampCoord;
@@ -68,6 +68,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(void) createVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger)timepoints andColor: (NSData*)color andOrder: (NSData*)order;
 -(void) createPeakVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints;
 -(void)createConnectedVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints;
+-(void)createSpikeVertices:(NSData*)spikes numberOfSpikes: (NSUInteger)nspikes channels:(NSData*)chs numberOfChannels: (NSData*)nchs;
 -(void) highlightWaveform:(NSUInteger)wfidx;
 -(void) highlightWaveforms:(NSData*)wfidx;
 -(void) highlightChannels:(NSArray*)channels;

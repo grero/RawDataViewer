@@ -80,6 +80,7 @@
     zoomStackLength = 50;
     zoomStack = malloc(zoomStackLength*4*sizeof(GLfloat));
     zoomStackIdx = 0;
+    drawSpikes = NO;
     sp = [[[[SignalProcessor alloc] init] retain] autorelease];
     return self;
 }
@@ -189,7 +190,7 @@
     offset = 0;
     xmin = 0;
     //sampling rate of 30 kHz
-    xmax = timepoints/30.0;
+    xmax = timepoints/samplingRate;
     windowSize = MIN(10000,xmax);
     //xmax = 20000;
     //find the minimum and maximum for each channel
@@ -230,13 +231,13 @@
             }
             k = ch*(npoints/chunkSize) + i/chunkSize;
             //x
-            vertices[6*k] = ((GLfloat)i)/30.0;
+            vertices[6*k] = ((GLfloat)i)/samplingRate;
             //y
             vertices[6*k+1] = trough+offset;
             //z
             vertices[6*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
             //x
-            vertices[6*k+3] = ((GLfloat)i)/30.0;
+            vertices[6*k+3] = ((GLfloat)i)/samplingRate;
             //y
             vertices[6*k+4] = peak+offset;
             //z
@@ -349,7 +350,9 @@
     //offset = 0;
     xmin = 0;
     //sampling rate of 30 kHz
-    xmax = timepoints/30.0;
+    samplingRate = 29.990;
+    xmax = timepoints/samplingRate;
+    
     windowSize = MIN(10000,xmax);
     //xmax = 20000;
     //find the minimum and maximum for each channel
@@ -402,7 +405,7 @@
 
                 
                 //x
-                vertices[3*k] = ((GLfloat)(i + j))/30.0;
+                vertices[3*k] = ((GLfloat)(i + j))/samplingRate;
                 //y
                 vertices[3*k+1] = d + offset;
                 //z
@@ -442,7 +445,7 @@
             
             
             //x
-            vertices[3*k] = ((GLfloat)(i + j))/30.0;
+            vertices[3*k] = ((GLfloat)(i + j))/samplingRate;
             //y
             vertices[3*k+1] = d + offset;
             //z
@@ -504,6 +507,99 @@
     [self setNeedsDisplay: YES];
 }
 
+-(void)createSpikeVertices:(NSData*)spikes numberOfSpikes: (NSUInteger)nspikes channels:(NSData*)chs numberOfChannels: (NSData*)nchs
+{
+    NSUInteger i,ch,k;
+    float *spikeData;
+    GLfloat *spikeVertices;
+    NSUInteger nvertices;
+    NSUInteger *nChannels,*channels;
+    
+    if(nchs != NULL)
+    {
+        nChannels = (NSUInteger*)[nchs bytes];
+    }
+    else
+    {
+        nChannels = malloc(nspikes*sizeof(NSUInteger));
+        for(i=0;i<nspikes;i++)
+        {
+            nChannels[i] = numChannels;
+        }
+    }
+    if(chs != NULL )
+    {
+        channels = (NSUInteger*)[chs bytes];
+    }
+    else
+    {
+        channels = malloc(nspikes*numChannels*sizeof(NSUInteger));
+        for(i=0;i<nspikes;i++)
+        {
+            for(k=0;k<numChannels;k++)
+            {
+                channels[i*numChannels+k] = k;
+            }
+        }
+    }
+    
+    nvertices = 0;
+    for(i=0;i<nspikes;i++)
+    {
+        nvertices+=nChannels[i];
+    }
+    spikeData = (float*)[spikes bytes];
+    
+    [[self openGLContext] makeCurrentContext];
+    glGenBuffers(1, &spikesBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 2*3*nvertices*sizeof(GLfloat), 0, GL_STATIC_DRAW);
+    spikeVertices = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    GLenum e = glGetError();
+    k=0;
+    for(i=0;i<nspikes;i++)
+    {
+        for(ch=0;ch<nChannels[i];ch++)
+        {
+            //x-value
+            spikeVertices[2*3*k] = spikeData[i];
+            if( (channels[ch]>0) && (channels[ch] < numChannels ) )
+            {
+                spikeVertices[2*3*k+1] = channelOffsets[channels[ch]]-0.5*(channelOffsets[channels[ch]+1]-channelOffsets[channels[ch]-1]);
+                spikeVertices[2*3*k+4] = channelOffsets[channels[ch]]+0.5*(channelOffsets[channels[ch]+1]-channelOffsets[channels[ch]-1]);
+            }
+            else if( channels[ch]==0 )
+            {
+                spikeVertices[2*3*k+1] = channelOffsets[channels[ch]]-0.5*(channelOffsets[channels[ch]+1]);
+                spikeVertices[2*3*k+4] = channelOffsets[channels[ch]]+0.5*(channelOffsets[channels[ch]+1]);
+            }
+            else if( channels[ch]==numChannels-1)
+            {
+                spikeVertices[2*3*k+1] = channelOffsets[channels[ch]]-0.5*(ymax-channelOffsets[channels[ch]-1]);
+                spikeVertices[2*3*k+4] = channelOffsets[channels[ch]]+0.5*(ymax-channelOffsets[channels[ch]-1]);
+            }
+            spikeVertices[2*3*k+3] = spikeData[i];
+            //z
+            spikeVertices[2*3*k+2] = 0.5;
+            spikeVertices[2*3*k+5] = 0.5;
+            k+=1;
+        }
+    }
+    if(chs==NULL)
+    {
+        free(channels);
+    }
+    if(nchs==NULL)
+    {
+        free(nChannels);
+    }
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+    drawSpikes = YES;
+    numSpikes = nspikes;
+    [self setNeedsDisplay:YES];
+}
+
 -(void) highlightChannels:(NSArray*)channels
 {
 	[[self openGLContext] makeCurrentContext];
@@ -554,7 +650,8 @@
             //draw everything
             NSUInteger ch,np;
             np = numPoints/numChannels;
-            
+            glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+            glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
             for(ch=0;ch<numChannels;ch++)
             {
                 glDrawArrays(GL_LINES, ch*np, np);
@@ -564,6 +661,18 @@
         }
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
+        if ( drawSpikes == YES)
+        {
+            glColor3f(1.0,0.0,0.0);
+            glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+            glDrawArrays(GL_LINES, 0, numSpikes);
+            glDisableClientState(GL_VERTEX_ARRAY);
+            //GLenum e = glGetError();
+            //NSLog(@"Error %d", e);
+        }
+        
         //draw a line at the currentX value
         glBegin(GL_LINES);
         glVertex3d(currentX, ymin+dy, 0.5);
@@ -1002,12 +1111,12 @@
         if( (xmax-dx)/xmax > 0.9 )
         {
             //we are approaching the end of the current buffer; notify that app that we need more data
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+dx*30.0],nil] forKeys:[NSArray arrayWithObjects:@"currenPos",nil]]];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+dx*samplingRate],nil] forKeys:[NSArray arrayWithObjects:@"currenPos",nil]]];
         }
         else if ((dx-xmin)/(xmax-xmin) < 0.1 )
         {
             //we are approaching the beginning of the current buffer; notify that app that we need more data
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+dx*30.0],nil] forKeys:[NSArray arrayWithObjects:@"currenPos",nil]]];   
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+dx*samplingRate],nil] forKeys:[NSArray arrayWithObjects:@"currenPos",nil]]];   
         }
         if( dx < xmin)
         {

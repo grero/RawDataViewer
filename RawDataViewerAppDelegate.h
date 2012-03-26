@@ -28,6 +28,7 @@
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
 -(BOOL)loadSpikesFromFile:(NSString*)filename;
+-(BOOL)loadSpikeTimeStampsFromFile:(NSString*)filename;
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;
