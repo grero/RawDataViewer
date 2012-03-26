@@ -17,7 +17,7 @@
     IBOutlet WaveformsView *wf;
     IBOutlet NSProgressIndicator *progress;
     NSData *signalData; //data containing the signals
-    
+    NSData *spikeForms;
 }
 
 -(IBAction)openFile:(id)sender;
@@ -27,6 +27,7 @@
 -(IBAction)changeAmp:(id)sender;
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
+-(BOOL)loadSpikesFromFile:(NSString*)filename;
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;

@@ -302,4 +302,41 @@
     return YES;
 }
 
+-(BOOL)loadSpikesFromFile:(NSString*)filename
+{
+    const char* fname;
+    FILE *fid;
+    uint32_t nspikes,i,tsize;
+    uint32_t *nchs,*chs;
+    float *spikes;
+    
+    fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
+    
+    fid = fopen(fname,"r");
+    if(fid<0)
+    {
+        return NO;
+    }
+    //read the number of spikes in the file
+    fread(&nspikes,sizeof(uint32_t),1,fid);
+    //get the number of channels per spike
+    fread(nchs,sizeof(uint32_t),nspikes,fid);
+    //find the total size
+    tsize = 0;
+    for(i=0;i<nspikes;i++)
+    {
+        tsize+=nchs[i];
+    }
+    //get the channels themselves
+    fread(chs,sizeof(uint32_t),tsize,fid);
+    //get the spikes
+    fread(spikes,sizeof(float),tsize*32,fid);
+          
+    if(spikeForms == NULL)
+    {
+        spikeForms = [NSData dataWithBytes:spikes length:tsize*32*sizeof(float)];
+    }
+    return YES;
+}
+
 @end
