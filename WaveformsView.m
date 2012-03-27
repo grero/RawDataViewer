@@ -193,7 +193,7 @@
     xmin = 0;
     //sampling rate of 30 kHz
     xmax = timepoints/samplingRate;
-    windowSize = MIN(10000,xmax);
+    windowSize = MIN(xmin+10000,xmax);
     //xmax = 20000;
     //find the minimum and maximum for each channel
     for(ch=0;ch<channels;ch++)
@@ -350,12 +350,13 @@
     limits = calloc(2*channels,sizeof(GLfloat));
     //this works because the data is organized in channel order
     //offset = 0;
-    xmin = 0;
-    //sampling rate of 30 kHz
     samplingRate = 29.990;
-    xmax = timepoints/samplingRate;
+    xmin = vertexOffset/samplingRate;
+    //sampling rate of 30 kHz
     
-    windowSize = MIN(10000,xmax);
+    xmax = xmin+timepoints/samplingRate;
+    
+    windowSize = MIN(xmin+10000,xmax);
     //xmax = 20000;
     //find the minimum and maximum for each channel
     queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
@@ -407,7 +408,7 @@
 
                 
                 //x
-                vertices[3*k] = ((GLfloat)(i + j))/samplingRate;
+                vertices[3*k] = xmin+((GLfloat)(i + j))/samplingRate;
                 //y
                 vertices[3*k+1] = d + offset;
                 //z
@@ -481,7 +482,10 @@
     
     [[self openGLContext] makeCurrentContext];
     //vertices have been created, now push those to the GPU
-    glGenBuffers(1, &vertexBuffer);
+    if(dataLoaded == NO )
+    {
+        glGenBuffers(1, &vertexBuffer);
+    }
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer  );
     //allocate space for the buffer
     glBufferData(GL_ARRAY_BUFFER, 2*3*numPoints*sizeof(GLfloat), 0, GL_STATIC_DRAW);
@@ -1038,6 +1042,10 @@
             }
             
         }
+        else
+        {
+            [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
+        }
         dx = zoomStack[zoomStackIdx*4];
         windowSize = zoomStack[zoomStackIdx*4+1];
         dy = zoomStack[zoomStackIdx*4+2];
@@ -1088,6 +1096,10 @@
                 [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(uint32_t)(maxch-minch)];
             });
         }
+        else
+        {
+            [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
+        }
 	}
 }
 
@@ -1120,12 +1132,12 @@
         if( (xmax-dx)/xmax > 0.9 )
         {
             //we are approaching the end of the current buffer; notify that app that we need more data
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+dx*samplingRate],nil] forKeys:[NSArray arrayWithObjects:@"currenPos",nil]]];
+            //[[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+0.5*windowSize*samplingRate],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
         }
         else if ((dx-xmin)/(xmax-xmin) < 0.1 )
         {
             //we are approaching the beginning of the current buffer; notify that app that we need more data
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+dx*samplingRate],nil] forKeys:[NSArray arrayWithObjects:@"currenPos",nil]]];   
+            //[[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+05*windowSize*samplingRate],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];   
         }
         if( dx < xmin)
         {
@@ -1190,6 +1202,22 @@
     [self setNeedsDisplay:YES];
      */
 }	
+
+-(void)moveUp:(id)sender
+{
+    vertexOffset+=(NSInteger)(1.0*(xmax-xmin)*samplingRate);
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
+    
+}
+
+-(void)moveDown:(id)sender
+{
+    if(vertexOffset>0)
+    {
+        vertexOffset = MAX(0,(NSInteger)vertexOffset-(NSInteger)(1.0*(xmax-xmin)*samplingRate));
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
+    }
+}
 
 -(void)setCurrentX:(GLfloat)_currentX
 {
