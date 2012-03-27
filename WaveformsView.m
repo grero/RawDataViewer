@@ -752,7 +752,7 @@
     if( [theEvent clickCount] == 2 )
     {
         //double click;reset window to 10000 points
-        windowSize = MIN(10000,xmax);
+        windowSize = MIN(10000+xmin,xmax);
         dx = 0;
         
         ySpan = ymax;
