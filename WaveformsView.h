@@ -39,7 +39,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 
     BOOL dataLoaded,drawSpikes,spikesLoaded;
     
-    SignalProcessor *sp;
+    IBOutlet SignalProcessor *sp;
     IBOutlet NSTextField *timeCoord,*ampCoord;
 }
 @property (assign,readwrite) GLfloat currentX,currentY;
@@ -47,6 +47,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 @property (retain,readwrite) NSMutableData *highlightWaves;
 @property (retain,readwrite) NSMutableArray *highlightedChannels;
 @property (assign,readwrite) BOOL drawSpikes;
+@property (assign) IBOutlet SignalProcessor *sp;
 
 //OpenGL related functions
 +(NSOpenGLPixelFormat*)defaultPixelFormat;

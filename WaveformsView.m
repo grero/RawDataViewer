@@ -22,6 +22,7 @@
 @synthesize highlightedChannels;
 @synthesize timeCoord,ampCoord;
 @synthesize drawSpikes;
+@synthesize sp;
 //@synthesize currentX,currentY;
 
 -(void)awakeFromNib
