@@ -39,12 +39,17 @@
     size_t nbytes;
     fname  = [filename cStringUsingEncoding:NSASCIIStringEncoding];
     //check what kind of file we are opening
-    NSRange r = [filename rangeOfString:@"waveforms.bin"];
-    if(r.location != NSNotFound )
+    NSRange rWf = [filename rangeOfString:@"waveforms.bin"];
+    if(rWf.location != NSNotFound )
     {
         res = [self loadSpikeTimeStampsFromFile:filename];
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
+    }
+    
+    else if([[filename pathExtension] isEqualToString:@"mat"])
+    {
+        res = [self loadHmmSortResultsFromFile:filename];
     }
     else
     {
@@ -415,6 +420,42 @@
     free(spikes);
     return YES;
     
+}
+
+-(BOOL)loadHmmSortResultsFromFile:(NSString*)filename
+{
+    const char* fname;
+    double *mlseq,*_spikeForms;
+    fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
+    
+    matvar_t *mlseqVar,*spikeFormsVar;
+	mat_t *mat;
+	
+	//open file
+	mat = Mat_Open(fname,MAT_ACC_RDONLY);
+    
+    //load the sequence
+	mlseqVar = Mat_VarRead(mat,"mlseq");
+	//int err = Mat_VarReadDataAll(mat,matvar);
+	//int nel = (matvar->nbytes)/(matvar->data_size);
+	mlseq = mlseqVar->data;
+    if(mlseq == NULL)
+    {
+        return NO;
+    }
+    spikeFormsVar = Mat_VarRead(mat,"spikeForms");
+    _spikeForms = spikeFormsVar->data;
+    
+    if( _spikeForms== NULL)
+    {
+        return NO;
+    }
+    
+    Mat_VarFree(mlseqVar);
+    Mat_VarFree(spikeFormsVar);
+	Mat_Close(mat);
+	return YES;
+
 }
 
 @end
