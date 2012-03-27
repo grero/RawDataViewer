@@ -552,7 +552,11 @@
     spikeData = (float*)[spikes bytes];
     
     [[self openGLContext] makeCurrentContext];
-    glGenBuffers(1, &spikesBuffer);
+    //only generate if we have not already loaded spikes
+    if(spikesLoaded == NO )
+    {
+        glGenBuffers(1, &spikesBuffer);
+    }
     glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
     glBufferData(GL_ARRAY_BUFFER, 2*3*nvertices*sizeof(GLfloat), 0, GL_STATIC_DRAW);
     spikeVertices = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
