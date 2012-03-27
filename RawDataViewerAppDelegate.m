@@ -481,6 +481,7 @@
     }
     //now loop through the sequence and put spikes where each template reaches its peak state
     //first count the number of spikes
+    nspikes = 0;
     for(j=0;j<ntemps;j++)
     {
         for(i=0;i<npoints;i++)
