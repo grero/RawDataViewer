@@ -10,6 +10,8 @@
 
 @implementation SignalProcessor
 
+@synthesize templateFile;
+
 - (id)init
 {
     self = [super init];
@@ -27,7 +29,33 @@
     [templates appendBytes:spike length:n*sizeof(float)];
     [numChannels appendBytes:&nchs length:sizeof(uint32_t)];
     ntemplates+=1;
-    [self saveTemplates:@"/tmp/templates.bin"];
+    //create file in the current working directory
+    if( templateFile == NULL )
+    {
+        NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
+        NSString *filename = [cwd stringByAppendingPathComponent:@"templates.bin"];
+        //check if we have write access
+        if( [[NSFileManager defaultManager] isWritableFileAtPath:filename] == NO )
+        {
+            //open up a save panel to get the file name
+            NSSavePanel *sPanel = [NSSavePanel savePanel];
+            int res = [sPanel runModal];;
+            if(res == NSOKButton )
+            {
+                filename = [sPanel filename];
+            }
+            else
+            {
+                filename = NULL;
+            }
+        }
+        [self setTemplateFile:filename];
+    }
+    if( templateFile != NULL)
+    {
+        [self saveTemplates:templateFile];
+    }
+    
 }
 
 -(BOOL)saveTemplates:(NSString*)filename

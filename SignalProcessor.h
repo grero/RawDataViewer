@@ -16,8 +16,11 @@
     NSMutableData *templates;
     NSMutableData *numChannels;
     uint32_t ntemplates;
+    NSString *templateFile;
     
 }
+
+@property (retain,readwrite) NSString *templateFile;
 
 -(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs;
 -(BOOL)saveTemplates:(NSString*)filename;
