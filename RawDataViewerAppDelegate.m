@@ -123,8 +123,23 @@
             return NO;
         }
         //check for the presense of a file called reorder.txt; if we find it, that means we have to reorder the data
-        NSString *reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
-        NSString *sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
+        NSString *sreorder,*reOrderPath;
+        NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
+        //check for reorder in cwd
+        NSLog(cwd);
+        if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:@"reorder.txt"]])
+        {
+            reOrderPath = [cwd stringByAppendingPathComponent: @"reorder.txt"];
+        }
+        else
+        {
+            reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
+        }
+        if([[NSFileManager defaultManager] isReadableFileAtPath:reOrderPath] == NO )
+        {
+            reOrderPath = [[[filename stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
+        }
+        sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
         if( sreorder != nil )
         {
             NSLog(@"Reordering data...");
@@ -308,8 +323,18 @@
         return NO;
     }
     //check for the presense of a file called reorder.txt; if we find it, that means we have to reoder the data
-    NSString *reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
-    NSString *sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
+    NSString *sreorder,*reOrderPath;
+    NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
+    //check for reorder in cwd
+    if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:@"reorder.txt"]])
+    {
+        reOrderPath = [cwd stringByAppendingPathComponent: @"reorder"];
+    }
+    else
+    {
+        reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
+    }
+    sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
     if( sreorder != nil )
     {
         int *reorder = malloc(nchs*sizeof(int));
