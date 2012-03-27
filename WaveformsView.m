@@ -84,7 +84,7 @@
     zoomStack = malloc(zoomStackLength*4*sizeof(GLfloat));
     zoomStackIdx = 0;
     drawSpikes = NO;
-    sp = [[[[SignalProcessor alloc] init] retain] autorelease];
+    spikeIdx = [[NSMutableData dataWithCapacity:100] retain];
     return self;
 }
 
@@ -531,7 +531,7 @@
         nChannels = malloc(nspikes*sizeof(NSUInteger));
         for(i=0;i<nspikes;i++)
         {
-            nChannels[i] = numChannels;
+            nChannels[i] = 2;
         }
     }
     if(chs != NULL )
@@ -540,13 +540,16 @@
     }
     else
     {
-        channels = malloc(nspikes*numChannels*sizeof(NSUInteger));
+        channels = malloc(nspikes*2*sizeof(NSUInteger));
         for(i=0;i<nspikes;i++)
         {
+            /*
             for(k=0;k<numChannels;k++)
             {
                 channels[i*numChannels+k] = k;
-            }
+            }*/
+            channels[i*2] = 0;
+            channels[i*2+1] = numChannels-1;
         }
     }
     
@@ -570,31 +573,33 @@
     k=0;
     for(i=0;i<nspikes;i++)
     {
-        for(ch=0;ch<nChannels[i];ch++)
-        {
+        //for(ch=0;ch<nChannels[i];ch++)
+        //{
             //x-value
-            spikeVertices[2*3*k] = spikeData[i];
-            if( (channels[ch]>0) && (channels[ch] < numChannels ) )
-            {
-                spikeVertices[2*3*k+1] = channelOffsets[channels[ch]]-0.5*(channelOffsets[channels[ch]+1]-channelOffsets[channels[ch]-1]);
-                spikeVertices[2*3*k+4] = channelOffsets[channels[ch]]+0.5*(channelOffsets[channels[ch]+1]-channelOffsets[channels[ch]-1]);
-            }
-            else if( channels[ch]==0 )
-            {
-                spikeVertices[2*3*k+1] = channelOffsets[channels[ch]]-0.5*(channelOffsets[channels[ch]+1]);
-                spikeVertices[2*3*k+4] = channelOffsets[channels[ch]]+0.5*(channelOffsets[channels[ch]+1]);
-            }
-            else if( channels[ch]==numChannels-1)
-            {
-                spikeVertices[2*3*k+1] = channelOffsets[channels[ch]]-0.5*(ymax-channelOffsets[channels[ch]-1]);
-                spikeVertices[2*3*k+4] = channelOffsets[channels[ch]]+0.5*(ymax-channelOffsets[channels[ch]-1]);
-            }
-            spikeVertices[2*3*k+3] = spikeData[i];
-            //z
-            spikeVertices[2*3*k+2] = 0.5;
-            spikeVertices[2*3*k+5] = 0.5;
-            k+=1;
+        spikeVertices[2*3*k] = spikeData[i];
+        if( channels[i*2] == 0 )
+        {
+            spikeVertices[2*3*k+1] = channelOffsets[channels[i*2]]-0.5*(channelOffsets[channels[i*2]+1]);
         }
+        else
+        {
+            spikeVertices[2*3*k+1] = channelOffsets[channels[i*2]]-0.5*(channelOffsets[channels[i*2]+1]-channelOffsets[channels[i*2]-1]);
+        }
+        if( channels[i*2+1]==numChannels-1 )
+        {
+            spikeVertices[2*3*k+4] = channelOffsets[channels[i*2+1]]+0.5*(ymax-channelOffsets[channels[i*2+1]-1]);
+        }
+        else
+        {
+           
+           spikeVertices[2*3*k+4] = channelOffsets[channels[i*2+1]]+0.5*(channelOffsets[channels[i*2+1]+1]-channelOffsets[channels[i*2+1]-1]);
+        }
+        spikeVertices[2*3*k+3] = spikeData[i];
+        //z
+        spikeVertices[2*3*k+2] = 0.5;
+        spikeVertices[2*3*k+5] = 0.5;
+        k+=1;
+        //}
     }
     if(chs==NULL)
     {
@@ -681,7 +686,7 @@
             glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
             glEnableClientState(GL_VERTEX_ARRAY);
             glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
-            glDrawArrays(GL_LINES, 0, numSpikes);
+            glDrawArrays(GL_LINES, 0, 2*numSpikes);
             glDisableClientState(GL_VERTEX_ARRAY);
             //GLenum e = glGetError();
             //NSLog(@"Error %d", e);
@@ -1094,8 +1099,11 @@
                         spikes[(ch-minch)*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
                     }
                 }
+                
                 [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(uint32_t)(maxch-minch)];
             });
+            [spikeIdx appendBytes:&currentX length:sizeof(GLfloat)];
+            [self createSpikeVertices:spikeIdx numberOfSpikes:([spikeIdx length])/sizeof(GLfloat) channels:NULL numberOfChannels:NULL];
         }
         else
         {
@@ -1267,7 +1275,6 @@
     [_pixelFormat release];
     [drawingColor release];
     [highlightColor release];
-	[waveformIndices release];
     [super dealloc];
 }
 

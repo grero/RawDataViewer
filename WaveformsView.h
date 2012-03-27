@@ -26,8 +26,6 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     NSData *drawingColor,*highlightColor;
     NSMutableData *highlightWaves;
 	NSMutableArray *highlightedChannels;
-	//data to hold information on which waveforms are active
-	NSMutableIndexSet *waveformIndices;
     NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes,endTime;
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan,samplingRate;
     GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets;
@@ -36,7 +34,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     GLuint indexBuffer,vertexBuffer,colorBuffer,spikesBuffer;
     NSUInteger drawingMode; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
-
+    NSMutableData *spikeIdx;
     BOOL dataLoaded,drawSpikes,spikesLoaded;
     
     IBOutlet SignalProcessor *sp;
