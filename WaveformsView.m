@@ -1114,7 +1114,8 @@
     if( [theEvent modifierFlags] & NSCommandKeyMask )
     {
         //if we are pressin the control key, we are requesting a zoom
-        windowSize +=windowSize*([theEvent deltaX]/10);
+        windowSize +=((windowSize-xmin)*([theEvent deltaX]/10)+xmin);
+        windowSize = MIN(windowSize,xmax);
     }
     else
     {
