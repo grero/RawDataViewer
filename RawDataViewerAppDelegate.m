@@ -111,6 +111,10 @@
         {
             npoints = (maxSize*1024*1024/(((uint32_t)nchs)*sizeof(int16_t)))*((uint32_t)nchs);
         }
+        if( npoints == 0 )
+        {
+            return NO;
+        }
         data = malloc(npoints*sizeof(int16_t));
         fseek(fid,headerSize,SEEK_SET);
         nbytes = fread(data,sizeof(int16_t),npoints,fid);
@@ -305,11 +309,21 @@
         return NO;
     }
     fseek(fid,0,SEEK_END);
-    npoints = (ftell(fid)-headerSize)/sizeof(int16_t)-offset*nchs;
-    //check that we are actually able to load; load a maximum of 100MB
+    npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
+    //notify the drawing window of the file size
+    [wf setEndTime:npoints/nchs];
+    npoints-=offset*nchs;
+    //check that we are actually able to load;
     if(npoints*sizeof(int16_t) > maxSize*1024*1024 )
     {
         npoints = (maxSize*1024*1024/(((uint32_t)nchs)*sizeof(int16_t)))*((uint32_t)nchs);
+    }
+    if( npoints <= 0 )
+    {
+        NSLog(@"No data read from  %s", fname);
+        [progress stopAnimation:self];
+        [[progress window] orderOut:self];
+        return NO;
     }
     data = malloc(npoints*sizeof(int16_t));
     fseek(fid,headerSize+offset*nchs*sizeof(int16_t),SEEK_SET);

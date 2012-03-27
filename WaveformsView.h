@@ -28,7 +28,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 	NSMutableArray *highlightedChannels;
 	//data to hold information on which waveforms are active
 	NSMutableIndexSet *waveformIndices;
-    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes;
+    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes,endTime;
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan,samplingRate;
     GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets;
     GLuint *indices;
@@ -47,6 +47,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 @property (retain,readwrite) NSMutableData *highlightWaves;
 @property (retain,readwrite) NSMutableArray *highlightedChannels;
 @property (assign,readwrite) BOOL drawSpikes;
+@property (assign,readwrite) NSUInteger endTime;
 @property (assign) IBOutlet SignalProcessor *sp;
 
 //OpenGL related functions

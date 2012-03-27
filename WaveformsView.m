@@ -23,6 +23,7 @@
 @synthesize timeCoord,ampCoord;
 @synthesize drawSpikes;
 @synthesize sp;
+@synthesize endTime;
 //@synthesize currentX,currentY;
 
 -(void)awakeFromNib
@@ -1207,7 +1208,10 @@
 
 -(void)moveUp:(id)sender
 {
+    //what happens when we reach the end?
+    
     vertexOffset+=(NSInteger)(1.0*(xmax-xmin)*samplingRate);
+    vertexOffset = MIN(vertexOffset,endTime-10000);
     [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
     
 }
