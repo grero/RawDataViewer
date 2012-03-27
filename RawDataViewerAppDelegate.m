@@ -14,6 +14,7 @@
 @synthesize window;
 @synthesize wf;
 @synthesize progress;
+@synthesize dataFileName;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	// Insert code here to initialize your application
@@ -23,11 +24,14 @@
     //Load NSUserDefaults and set values
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults registerDefaults:[NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:20.0] forKey:@"maxDataSize"]];
+    //Notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"loadMoreData" object:nil];
 }
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
     //read data from the file
     //start progress indicator
+    
     BOOL res;
     [[progress window] makeKeyAndOrderFront:self];
     [progress startAnimation:self];
@@ -98,6 +102,8 @@
             [[progress window] orderOut:self];
             return NO;
         }
+        //set the filename
+        [self setDataFileName:filename];
         fseek(fid,0,SEEK_END);
         npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
         //check that we are actually able to load; load a maximum of 100MB
@@ -244,7 +250,7 @@
     int16_t *data;
     size_t nbytes;
     
-    maxSize = 20; //maximum data size in MB
+    maxSize = [[NSUserDefaults standardUserDefaults] floatForKey:@"maxDataSize"];
     fname  = [filename cStringUsingEncoding:NSASCIIStringEncoding];
     fid = fopen(fname, "rb");
     //get the header size
@@ -284,14 +290,14 @@
         return NO;
     }
     fseek(fid,0,SEEK_END);
-    npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
+    npoints = (ftell(fid)-headerSize)/sizeof(int16_t)-offset*nchs;
     //check that we are actually able to load; load a maximum of 100MB
     if(npoints*sizeof(int16_t) > maxSize*1024*1024 )
     {
         npoints = (maxSize*1024*1024/(((uint32_t)nchs)*sizeof(int16_t)))*((uint32_t)nchs);
     }
     data = malloc(npoints*sizeof(int16_t));
-    fseek(fid,headerSize,SEEK_SET);
+    fseek(fid,headerSize+offset*nchs*sizeof(int16_t),SEEK_SET);
     nbytes = fread(data,sizeof(int16_t),npoints,fid);
     fclose(fid);
     if(nbytes != npoints )
@@ -516,5 +522,21 @@
 	return YES;
 
 }
+
+-(void)receiveNotification:(NSNotification*)notification
+{
+    if([[notification name] isEqualToString:@"loadMoreData"] )
+    {
+        //we are instructed to load more data
+        NSDictionary *dict = [notification userInfo];
+        NSInteger currentPos = [[dict objectForKey:@"currentPos"] intValue];
+        //currentPos is the position of where we are right now;
+        //temporarily remove self
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+        [self loadDataFromFile:[self dataFileName] atOffset:currentPos];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"loadMoreData" object:nil];
+    }
+}
+
 
 @end

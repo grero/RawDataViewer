@@ -19,6 +19,7 @@
     IBOutlet NSProgressIndicator *progress;
     NSData *signalData; //data containing the signals
     NSData *spikeForms;
+    NSString *dataFileName;
 }
 
 -(IBAction)openFile:(id)sender;
@@ -32,8 +33,10 @@
 -(BOOL)loadSpikesFromFile:(NSString*)filename;
 -(BOOL)loadSpikeTimeStampsFromFile:(NSString*)filename;
 -(BOOL)loadHmmSortResultsFromFile:(NSString*)filename;
+-(void)receiveNotification:(NSNotification*)notification;
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;
 @property (assign) IBOutlet NSProgressIndicator *progress;
+@property (retain,readwrite) NSString *dataFileName;
 @end
