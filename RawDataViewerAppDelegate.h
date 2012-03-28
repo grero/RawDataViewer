@@ -20,6 +20,7 @@
     NSData *signalData; //data containing the signals
     NSData *spikeForms;
     NSString *dataFileName;
+    NSUInteger numChannels;
     int *reorder;
 }
 
@@ -34,6 +35,7 @@
 -(BOOL)loadSpikesFromFile:(NSString*)filename;
 -(BOOL)loadSpikeTimeStampsFromFile:(NSString*)filename;
 -(BOOL)loadHmmSortResultsFromFile:(NSString*)filename;
+-(void)checkForReorderingForFile:(NSString*)filename;
 -(void)receiveNotification:(NSNotification*)notification;
 
 @property (assign) IBOutlet NSWindow *window;

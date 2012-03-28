@@ -102,6 +102,7 @@
             [[progress window] orderOut:self];
             return NO;
         }
+        numChannels = nchs;
         //set the filename
         [self setDataFileName:filename];
         fseek(fid,0,SEEK_END);
@@ -275,6 +276,7 @@
 {
     //read data from the file
     //start progress indicator
+    
     [[progress window] makeKeyAndOrderFront:self];
     [progress startAnimation:self];
     const char *fname;    
@@ -323,6 +325,7 @@
         [[progress window] orderOut:self];
         return NO;
     }
+    [self setDataFileName:filename];
     fseek(fid,0,SEEK_END);
     npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
     //notify the drawing window of the file size
@@ -352,6 +355,8 @@
         return NO;
     }
     //check for the presense of a file called reorder.txt; if we find it, that means we have to reoder the data
+    numChannels = nchs;
+    [self checkForReorderingForFile:filename];
     if(reorder != NULL )
     {
         NSLog(@"Reordering data...");
@@ -569,6 +574,51 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"loadMoreData" object:nil];
     }
 }
+-(void)checkForReorderingForFile:(NSString*)filename
+{
+    uint32_t i,k;
+    NSString *sreorder,*reOrderPath;
+    NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
+    //check for reorder in cwd
+    NSLog(cwd);
+    if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:@"reorder.txt"]])
+    {
+        reOrderPath = [cwd stringByAppendingPathComponent: @"reorder.txt"];
+    }
+    else
+    {
+        reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
+    }
+    if([[NSFileManager defaultManager] isReadableFileAtPath:reOrderPath] == NO )
+    {
+        reOrderPath = [[[filename stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
+    }
+    sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
+    if( sreorder != nil )
+    {
+        reorder = malloc(numChannels*sizeof(int));
+        k = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:sreorder];
+        [scanner setCharactersToBeSkipped:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        //find all the ints
+        while( ([scanner isAtEnd] == NO ) && (k < numChannels))
+        {
+            [scanner scanInt:reorder+k];
+            k+=1;
+        }
+        if (k < numChannels)
+        {
+            for(i=k;i<numChannels;i++)
+            {
+                //plus one because at this point we are using 1-based indexing
+                reorder[i] = i+1;
+            }
+        }
+    }
+}
+
+    
+
 
 
 @end
