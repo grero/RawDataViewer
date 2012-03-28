@@ -31,7 +31,7 @@
 {
     //read data from the file
     //start progress indicator
-    
+    uint32_t i,k;
     BOOL res;
     [[progress window] makeKeyAndOrderFront:self];
     [progress startAnimation:self];
@@ -127,40 +127,56 @@
             return NO;
         }
         //check for the presense of a file called reorder.txt; if we find it, that means we have to reorder the data
-        NSString *sreorder,*reOrderPath;
-        NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
-        //check for reorder in cwd
-        NSLog(cwd);
-        if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:@"reorder.txt"]])
+        if(reorder == NULL )
         {
-            reOrderPath = [cwd stringByAppendingPathComponent: @"reorder.txt"];
+            NSString *sreorder,*reOrderPath;
+            NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
+            //check for reorder in cwd
+            NSLog(cwd);
+            if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:@"reorder.txt"]])
+            {
+                reOrderPath = [cwd stringByAppendingPathComponent: @"reorder.txt"];
+            }
+            else
+            {
+                reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
+            }
+            if([[NSFileManager defaultManager] isReadableFileAtPath:reOrderPath] == NO )
+            {
+                reOrderPath = [[[filename stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
+            }
+            sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
+            if( sreorder != nil )
+            {
+                reorder = malloc(nchs*sizeof(int));
+                k = 0;
+                NSScanner *scanner = [NSScanner scannerWithString:sreorder];
+                [scanner setCharactersToBeSkipped:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                //find all the ints
+                while( ([scanner isAtEnd] == NO ) && (k < nchs))
+                {
+                    [scanner scanInt:reorder+k];
+                    k+=1;
+                }
+                if (k < nchs)
+                {
+                    for(i=k;i<nchs;i++)
+                    {
+                        //plus one because at this point we are using 1-based indexing
+                        reorder[i] = i+1;
+                    }
+                }
+            }
         }
-        else
-        {
-            reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
-        }
-        if([[NSFileManager defaultManager] isReadableFileAtPath:reOrderPath] == NO )
-        {
-            reOrderPath = [[[filename stringByDeletingLastPathComponent] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
-        }
-        sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
-        if( sreorder != nil )
+        //check again
+        if( reorder != NULL )
         {
             NSLog(@"Reordering data...");
-            int *reorder = malloc(nchs*sizeof(int));
-            int k = 0;
-            NSScanner *scanner = [NSScanner scannerWithString:sreorder];
-            [scanner setCharactersToBeSkipped:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            //find all the ints
-            while( ([scanner isAtEnd] == NO ) && (k < nchs))
-            {
-                [scanner scanInt:reorder+k];
-                k+=1;
-            }
+
             //we need a temporary array to hold the data for each channel
             int16_t *tmp_data = malloc(npoints*sizeof(int16_t));
             //now loop through the data and reorder everything
-            uint32_t ch,i,ppc;
+            uint32_t ch,ppc;
             int16_t d;
             ppc = npoints/(uint32_t)nchs;
             for(ch=0;ch<MIN(nchs,k);ch++)
@@ -177,7 +193,6 @@
                     
                 }
             }
-            free(reorder);
             memcpy(data, tmp_data, npoints*sizeof(int16_t));
             free(tmp_data);
         }
@@ -264,7 +279,7 @@
     [progress startAnimation:self];
     const char *fname;    
     FILE *fid;
-    uint32_t headerSize,samplingRate,npoints,maxSize;
+    uint32_t headerSize,samplingRate,npoints,maxSize,k,i;
     uint8_t nchs;
     int16_t *data;
     size_t nbytes;
@@ -337,47 +352,25 @@
         return NO;
     }
     //check for the presense of a file called reorder.txt; if we find it, that means we have to reoder the data
-    NSString *sreorder,*reOrderPath;
-    NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
-    //check for reorder in cwd
-    if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:@"reorder.txt"]])
+    if(reorder != NULL )
     {
-        reOrderPath = [cwd stringByAppendingPathComponent: @"reorder"];
-    }
-    else
-    {
-        reOrderPath = [[filename stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"reorder.txt"];
-    }
-    sreorder = [NSString stringWithContentsOfURL:[NSURL fileURLWithPath:reOrderPath isDirectory:NO]];
-    if( sreorder != nil )
-    {
-        int *reorder = malloc(nchs*sizeof(int));
-        int k = 0;
-        NSScanner *scanner = [NSScanner scannerWithString:sreorder];
-        [scanner setCharactersToBeSkipped:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        //find all the ints
-        while( ([scanner isAtEnd] == NO ) && (k < nchs))
-        {
-            [scanner scanInt:reorder+k];
-            k+=1;
-        }
+        NSLog(@"Reordering data...");
+        
         //we need a temporary array to hold the data for each channel
+        int16_t *tmp_data = malloc(npoints*sizeof(int16_t));
         //now loop through the data and reorder everything
-        uint32_t ch,i,ppc;
+        uint32_t ch,ppc;
         int16_t d;
         ppc = npoints/(uint32_t)nchs;
-        for(ch=0;ch<MIN(nchs,k);ch++)
+        for(ch=0;ch<nchs;ch++)
         {
             for(i=0;i<ppc;i++)
             {
-                d = data[i*nchs+ch];
-                //subtract 1 since the ordering is (usually!) 1-based
-                data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
-                data[i*nchs+reorder[ch]-1] = d;
-                
+                tmp_data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
             }
         }
-        free(reorder);
+        memcpy(data, tmp_data, npoints*sizeof(int16_t));
+        free(tmp_data);
     }
     
     //[wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];

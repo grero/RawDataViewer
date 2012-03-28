@@ -20,6 +20,7 @@
     NSData *signalData; //data containing the signals
     NSData *spikeForms;
     NSString *dataFileName;
+    int *reorder;
 }
 
 -(IBAction)openFile:(id)sender;
