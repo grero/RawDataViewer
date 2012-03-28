@@ -1150,7 +1150,7 @@
             //we are approaching the beginning of the current buffer; notify that app that we need more data
             //[[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset+05*windowSize*samplingRate],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];   
         }
-        if( dx < xmin)
+        if( dx < 0)
         {
             dx = 0;
         }
