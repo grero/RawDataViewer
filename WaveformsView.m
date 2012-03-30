@@ -1100,7 +1100,7 @@
                     }
                 }
                 
-                [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(uint32_t)(maxch-minch)];
+                [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(uint32_t)(maxch-minch) atTimePoint:currentX];
             });
             [spikeIdx appendBytes:&currentX length:sizeof(GLfloat)];
             [self createSpikeVertices:spikeIdx numberOfSpikes:([spikeIdx length])/sizeof(GLfloat) channels:NULL numberOfChannels:NULL];
