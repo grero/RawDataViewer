@@ -26,4 +26,5 @@
 -(BOOL)saveTemplates:(NSString*)filename;
 -(BOOL)loadSpikesFromFile:(NSString*)filename;
 -(BOOL)loadWaveformsFile:(NSString*)filename;
+-(BOOL)saveWaveformsFile:(NSString*)filename;
 @end

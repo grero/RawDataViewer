@@ -174,7 +174,7 @@
     //allocate space
     timestamps = malloc(numSpikes*sizeof(uint64_t));
     fread(timestamps, sizeof(uint64_t), numSpikes, fid);
-    //timestamps are stored with a precision of 0.1 millisecond, so we need to convert to milliseconds first
+    //timestamps are stored with a precision of microseconds, so we need to convert to milliseconds first
     _spikes = malloc(numSpikes*sizeof(float));
     for(i=0;i<numSpikes;i++)
     {
@@ -183,6 +183,66 @@
     free(timestamps);
     [spikes appendBytes:_spikes length:numSpikes*sizeof(float)];
     free(_spikes);
+    ntemplates+=numSpikes;
+    //TODO: add number of channels as well
+    //[numChannels appendBytes:<#(const void *)#> length:<#(NSUInteger)#>
+    return YES;
+}
+
+-(BOOL)saveWaveformsFile:(NSString *)filename
+{
+    //save to waveformsfile
+    FILE *fid;
+    const char *fname;
+    float *spikeForms;
+    float *_spikes;
+    uint32_t nspikes,nchs,timepts,headerSize,i,spikeFormsSize;
+    uint8_t _nchs;
+    int16_t *_spikeForms,*_timestamps;
+    
+    _spikes = (float*)[spikes bytes];
+    nspikes = [spikes length]/sizeof(float);
+    spikeForms = (float*)[templates bytes];
+    
+    
+    nchs = *((uint32_t*)[numChannels bytes]);
+    timepts = [templates length]/(sizeof(float)*nspikes*nchs);
+    spikeFormsSize = nspikes*timepts*nchs;
+    _spikeForms = malloc(spikeFormsSize*sizeof(int16_t));
+    //we need to convert to spike shapes to int16
+    for(i=0;i<spikeFormsSize;i++)
+    {
+        _spikeForms[i] = (int16_t)spikeForms[i];
+    }
+    _timestamps = malloc(nspikes*sizeof(int16_t));
+    for(i=0;i<nspikes;i++)
+    {
+        _timestamps[i] = (int16_t)(_spikes[i]*1000);
+    }
+    fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
+    fid = fopen(fname,"w");
+    if(fid<0)
+    {
+        return NO;
+    }
+    headerSize = 100;
+    //write the header size
+    fwrite(&headerSize, sizeof(uint32_t), 1, fid);
+    //write the number of spikes
+    fwrite(&nspikes,sizeof(uint32_t),1,fid);
+    //write the number of channels
+    _nchs = (uint8_t)nchs;
+    fwrite(&_nchs, sizeof(uint8_t), 1, fid);
+    fseek(fid,headerSize,0);
+    //write the spike shapes
+    fwrite(_spikeForms, nspikes*nchs*timepts, sizeof(int16_t), fid);
+    //we don't need _spikeforms any more
+    free(_spikeForms);
+    //write the timestamps
+    fwrite(_timestamps,nspikes,sizeof(int16_t),fid);
+    free(_timestamps);
+    fclose(fid);
+    
     return YES;
 }
 
