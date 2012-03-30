@@ -244,11 +244,11 @@
     fwrite(&_nchs, sizeof(uint8_t), 1, fid);
     fseek(fid,headerSize,0);
     //write the spike shapes
-    fwrite(_spikeForms, nspikes*nchs*timepts, sizeof(int16_t), fid);
+    fwrite(_spikeForms,  sizeof(int16_t),nspikes*nchs*timepts, fid);
     //we don't need _spikeforms any more
     free(_spikeForms);
     //write the timestamps
-    fwrite(_timestamps,nspikes,sizeof(uint64_t),fid);
+    fwrite(_timestamps,sizeof(uint64_t),nspikes,fid);
     free(_timestamps);
     fclose(fid);
     
