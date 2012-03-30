@@ -143,9 +143,8 @@
     uint64_t *timestamps;
     float *_spikes;
     float *spikeForms;
-    
     uint8_t nchs;
-    uint32_t headerSize,numSpikes,timepts,i;
+    uint32_t headerSize,numSpikes,timepts,i,_nchs;
     
     timepts = 32;
     fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
@@ -175,6 +174,7 @@
     timestamps = malloc(numSpikes*sizeof(uint64_t));
     fread(timestamps, sizeof(uint64_t), numSpikes, fid);
     //timestamps are stored with a precision of microseconds, so we need to convert to milliseconds first
+    fclose(fid);
     _spikes = malloc(numSpikes*sizeof(float));
     for(i=0;i<numSpikes;i++)
     {
@@ -185,7 +185,12 @@
     free(_spikes);
     ntemplates+=numSpikes;
     //TODO: add number of channels as well
-    //[numChannels appendBytes:<#(const void *)#> length:<#(NSUInteger)#>
+    _nchs = (uint32_t)nchs;
+    for(i=0;i<numSpikes;i++)
+    {
+        [numChannels appendBytes:&_nchs length:sizeof(uint32_t)];
+    }
+    
     return YES;
 }
 
@@ -245,7 +250,5 @@
     
     return YES;
 }
-
-
 
 @end
