@@ -11,6 +11,8 @@
 @implementation SignalProcessor
 
 @synthesize templateFile;
+@synthesize spikes,templates;
+@synthesize ntemplates;
 
 - (id)init
 {
@@ -26,9 +28,10 @@
     return self;
 }
 
--(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs
+-(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs atTimePoint:(float)timept
 {
     [templates appendBytes:spike length:n*sizeof(float)];
+    [spikes appendBytes:&timept length:sizeof(float)];
     [numChannels appendBytes:&nchs length:sizeof(uint32_t)];
     ntemplates+=1;
     //create file in the current working directory
@@ -60,7 +63,8 @@
     }
     if( templateFile != NULL)
     {
-        [self saveTemplates:templateFile];
+        //[self saveTemplates:templateFile];
+        [self saveWaveformsFile:templateFile];
     }
     
 }
