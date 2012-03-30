@@ -18,6 +18,8 @@
     if (self) {
         templates = [[[[NSMutableData alloc] init] retain] autorelease];
         numChannels  = [[[[NSMutableData alloc] init] retain] autorelease];
+        spikes  = [[[[NSMutableData alloc] init] retain] autorelease];
+
         ntemplates = 0;
         }
     
@@ -130,6 +132,57 @@
     [templates appendBytes:spikes length:nspikes*sizeof(float)];
     [numChannels appendBytes:nchs length:nspikes*sizeof(uint32_t)];
     ntemplates+=1;
+    //determine where to put the spike
+    return YES;
+}
+
+-(BOOL)loadWaveformsFile:(NSString *)filename
+{
+    const char* fname;
+    FILE *fid;
+    uint64_t *timestamps;
+    float *_spikes;
+    float *spikeForms;
+    
+    uint8_t nchs;
+    uint32_t headerSize,numSpikes,timepts,i;
+    
+    timepts = 32;
+    fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
+    
+    fid = fopen(fname,"r");
+    if(fid<0)
+    {
+        return NO;
+    }
+    
+    //get the headersize
+    fread(&headerSize,sizeof(uint32_t),1,fid);
+    //get the number of spikes
+    fread(&numSpikes,sizeof(uint32_t),1,fid);
+    //get the number of channels
+    fread(&nchs,sizeof(uint8_t),1,fid);
+    //read the spikeForms
+    spikeForms = malloc(numSpikes*((uint32_t)nchs)*timepts*sizeof(float));
+    fseek(fid, headerSize, 0);
+    fread(spikeForms, sizeof(float), numSpikes*((uint32_t)nchs)*timepts, fid);
+    [templates appendBytes:spikeForms length:numSpikes*((uint32_t)nchs)*timepts*sizeof(float)];
+    free(spikeForms);
+    //seek to the appropriate position
+    fseek(fid, headerSize+numSpikes*(uint32_t)nchs*timepts*2, 0);
+    //read the timestamps
+    //allocate space
+    timestamps = malloc(numSpikes*sizeof(uint64_t));
+    fread(timestamps, sizeof(uint64_t), numSpikes, fid);
+    //timestamps are stored with a precision of 0.1 millisecond, so we need to convert to milliseconds first
+    _spikes = malloc(numSpikes*sizeof(float));
+    for(i=0;i<numSpikes;i++)
+    {
+        _spikes[i] = 0.001*(float)timestamps[i];
+    }
+    free(timestamps);
+    [spikes appendBytes:_spikes length:numSpikes*sizeof(float)];
+    free(_spikes);
     return YES;
 }
 
