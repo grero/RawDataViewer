@@ -16,6 +16,7 @@
 @synthesize sp;
 @synthesize progress;
 @synthesize dataFileName;
+@synthesize workspace;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	// Insert code here to initialize your application
@@ -47,7 +48,7 @@
     NSRange rWf = [filename rangeOfString:@"waveforms.bin"];
     if(rWf.location != NSNotFound )
     {
-        res = [self loadSpikeTimeStampsFromFile:filename];
+        res = [sp loadWaveformsFile:filename];
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
         return res;
@@ -106,6 +107,17 @@
         numChannels = nchs;
         //set the filename
         [self setDataFileName:filename];
+        //attempt to get a dictionary for this file
+        if( [[NSUserDefaults standardUserDefaults] dictionaryForKey:filename] == nil )
+        {
+            //no workspace found, so create one
+            workspace = [NSMutableDictionary dictionaryWithCapacity:3];
+            //[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObject:workspace forKey:filename]];
+        }
+        else
+        {
+            workspace = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:filename]];
+        }
         fseek(fid,0,SEEK_END);
         npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
         //check that we are actually able to load; load a maximum of 100MB
@@ -614,6 +626,28 @@
                 //plus one because at this point we are using 1-based indexing
                 reorder[i] = i+1;
             }
+        }
+    }
+}
+
+-(void)processWorkspace
+{
+    //set various default attributes based on what we find in the workspace
+    if(workspace != nil)
+    {
+        NSString *spikeFile = [workspace objectForKey:@"spikeFile"];
+        if( spikeFile != nil)
+        {
+            //ask user if the file should be used
+            NSAlert *alert = [NSAlert alertWithMessageText:[NSString stringWithFormat:@"You have already created a spike file for this data called %@. Do you want to continue using it, or create a new file?",spikeFile]  defaultButton:@"Use old file" alternateButton:@"Create a new file" otherButton:nil informativeTextWithFormat:nil];
+            NSInteger res = [alert runModal];
+            if( res == NSAlertFirstButtonReturn )
+            {
+                //Use the file, i.e. load the spikes
+                [sp loadSpikesFromFile:spikeFile];
+                
+            }
+            [sp setTemplateFile:spikeFile];
         }
     }
 }
