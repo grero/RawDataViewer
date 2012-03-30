@@ -13,7 +13,7 @@
     
     //NSMutableArray *templates;
     //array of arrays
-    NSMutableData *templates;
+    NSMutableData *templates,*spikes;
     NSMutableData *numChannels;
     uint32_t ntemplates;
     NSString *templateFile;
@@ -21,7 +21,12 @@
 }
 
 @property (retain,readwrite) NSString *templateFile;
+@property (retain,readwrite) NSMutableData *spikes,*templates;
+@property (readonly)  uint32_t ntemplates;
 
--(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs;
+-(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs atTimePoint:(float)timept;
 -(BOOL)saveTemplates:(NSString*)filename;
+-(BOOL)loadSpikesFromFile:(NSString*)filename;
+-(BOOL)loadWaveformsFile:(NSString*)filename;
+-(BOOL)saveWaveformsFile:(NSString*)filename;
 @end

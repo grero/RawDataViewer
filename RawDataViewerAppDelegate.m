@@ -13,6 +13,7 @@
 
 @synthesize window;
 @synthesize wf;
+@synthesize sp;
 @synthesize progress;
 @synthesize dataFileName;
 
@@ -46,7 +47,9 @@
     NSRange rWf = [filename rangeOfString:@"waveforms.bin"];
     if(rWf.location != NSNotFound )
     {
-        res = [self loadSpikeTimeStampsFromFile:filename];
+        res = [sp loadWaveformsFile:filename];
+        [wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil];
+
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
         return res;
@@ -103,8 +106,11 @@
             return NO;
         }
         numChannels = nchs;
+        numActiveChannels = nchs;
         //set the filename
         [self setDataFileName:filename];
+
+
         fseek(fid,0,SEEK_END);
         npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
         //check that we are actually able to load; load a maximum of 100MB
@@ -159,6 +165,7 @@
                     [scanner scanInt:reorder+k];
                     k+=1;
                 }
+                numActiveChannels = k;
                 if (k < nchs)
                 {
                     for(i=k;i<nchs;i++)
@@ -180,7 +187,7 @@
             uint32_t ch,ppc;
             int16_t d;
             ppc = npoints/(uint32_t)nchs;
-            for(ch=0;ch<MIN(nchs,k);ch++)
+            for(ch=0;ch<numActiveChannels;ch++)
             {
                 for(i=0;i<ppc;i++)
                 {
@@ -367,11 +374,11 @@
         uint32_t ch,ppc;
         int16_t d;
         ppc = npoints/(uint32_t)nchs;
-        for(ch=0;ch<nchs;ch++)
+        for(ch=0;ch<numActiveChannels;ch++)
         {
             for(i=0;i<ppc;i++)
             {
-                tmp_data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
+                tmp_data[i*numChannels+ch] = data[i*numChannels+reorder[ch]-1];
             }
         }
         memcpy(data, tmp_data, npoints*sizeof(int16_t));
