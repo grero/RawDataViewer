@@ -207,7 +207,8 @@
     float *_spikes;
     uint32_t nspikes,nchs,timepts,headerSize,i,spikeFormsSize;
     uint8_t _nchs;
-    int16_t *_spikeForms,*_timestamps;
+    int16_t *_spikeForms;
+    uint64_t *_timestamps;
     
     _spikes = (float*)[spikes bytes];
     nspikes = [spikes length]/sizeof(float);
