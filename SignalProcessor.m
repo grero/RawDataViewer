@@ -223,10 +223,10 @@
     {
         _spikeForms[i] = (int16_t)spikeForms[i];
     }
-    _timestamps = malloc(nspikes*sizeof(int16_t));
+    _timestamps = malloc(nspikes*sizeof(uint64_t));
     for(i=0;i<nspikes;i++)
     {
-        _timestamps[i] = (int16_t)(_spikes[i]*1000);
+        _timestamps[i] = (uint64_t)(_spikes[i]*1000);
     }
     fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
     fid = fopen(fname,"w");
@@ -248,7 +248,7 @@
     //we don't need _spikeforms any more
     free(_spikeForms);
     //write the timestamps
-    fwrite(_timestamps,nspikes,sizeof(int16_t),fid);
+    fwrite(_timestamps,nspikes,sizeof(uint64_t),fid);
     free(_timestamps);
     fclose(fid);
     
