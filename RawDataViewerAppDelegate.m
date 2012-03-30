@@ -13,6 +13,7 @@
 
 @synthesize window;
 @synthesize wf;
+@synthesize sp;
 @synthesize progress;
 @synthesize dataFileName;
 
