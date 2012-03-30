@@ -49,6 +49,7 @@
     if(rWf.location != NSNotFound )
     {
         res = [sp loadWaveformsFile:filename];
+        [wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil];
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
         return res;
