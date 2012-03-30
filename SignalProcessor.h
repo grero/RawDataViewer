@@ -24,4 +24,5 @@
 
 -(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs;
 -(BOOL)saveTemplates:(NSString*)filename;
+-(BOOL)loadSpikesFromFile:(NSString*)filename;
 @end
