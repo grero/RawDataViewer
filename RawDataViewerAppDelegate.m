@@ -181,12 +181,14 @@
         {
             NSLog(@"Reordering data...");
 
-            //we need a temporary array to hold the data for each channel
-            int16_t *tmp_data = malloc(npoints*sizeof(int16_t));
-            //now loop through the data and reorder everything
             uint32_t ch,ppc;
-            int16_t d;
             ppc = npoints/(uint32_t)nchs;
+            //we need a temporary array to hold the data for each channel
+            int16_t *tmp_data = malloc(ppc*numActiveChannels*sizeof(int16_t));
+            //now loop through the data and reorder everything
+           
+            int16_t d;
+            
             for(ch=0;ch<numActiveChannels;ch++)
             {
                 for(i=0;i<ppc;i++)
@@ -197,18 +199,18 @@
                     data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
                     data[i*nchs+reorder[ch]-1] = d;
                      */
-                    tmp_data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
+                    tmp_data[i*numActiveChannels+ch] = data[i*nchs+reorder[ch]-1];
                     
                 }
             }
-            memcpy(data, tmp_data, npoints*sizeof(int16_t));
+            memcpy(data, tmp_data, ppc*numActiveChannels*sizeof(int16_t));
             free(tmp_data);
         }
         //test; compute covariance matrix
-        float *cov = malloc(nchs*nchs*sizeof(float));
-        computeCovariance(data, nchs, npoints/nchs, 1, cov);
+        float *cov = malloc(numActiveChannels*numActiveChannels*sizeof(float));
+        computeCovariance(data, numActiveChannels, npoints/numActiveChannels, 1, cov);
         //[wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
-        [wf createConnectedVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
+        [wf createConnectedVertices:[NSData dataWithBytes:data length:(npoints/nchs)*numActiveChannels*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)numActiveChannels andTimePoints:(NSUInteger)npoints/nchs];
 
         //we don't need to keep the data
         free(data);
@@ -368,25 +370,27 @@
     {
         NSLog(@"Reordering data...");
         
-        //we need a temporary array to hold the data for each channel
-        int16_t *tmp_data = malloc(npoints*sizeof(int16_t));
-        //now loop through the data and reorder everything
         uint32_t ch,ppc;
         int16_t d;
         ppc = npoints/(uint32_t)nchs;
+        //we need a temporary array to hold the data for each channel
+        int16_t *tmp_data = malloc(ppc*numActiveChannels*sizeof(int16_t));
+        //now loop through the data and reorder everything
+        
         for(ch=0;ch<numActiveChannels;ch++)
         {
             for(i=0;i<ppc;i++)
             {
-                tmp_data[i*numChannels+ch] = data[i*numChannels+reorder[ch]-1];
+                tmp_data[i*numActiveChannels+ch] = data[i*numChannels+reorder[ch]-1];
             }
         }
+        npoints = (npoints/nchs)*numActiveChannels;
         memcpy(data, tmp_data, npoints*sizeof(int16_t));
         free(tmp_data);
     }
     
     //[wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
-    [wf createConnectedVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
+    [wf createConnectedVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)numActiveChannels andTimePoints:(NSUInteger)npoints/numActiveChannels];
     
     //we don't need to keep the data
     free(data);
