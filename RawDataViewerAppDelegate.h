@@ -11,16 +11,19 @@
 #import "WaveformsView.h"
 #import "computations.h"
 #import "utils.h"
+#import "SignalProcessor.h"
 #import <matio.h>
 
 @interface RawDataViewerAppDelegate : NSObject <NSApplicationDelegate> {
     IBOutlet NSWindow *window;
     IBOutlet WaveformsView *wf;
+    IBOutlet SignalProcessor *sp;
     IBOutlet NSProgressIndicator *progress;
     NSData *signalData; //data containing the signals
     NSData *spikeForms;
     NSString *dataFileName;
-    NSUInteger numChannels;
+    NSUInteger numChannels,numActiveChannels;
+
     int *reorder;
 }
 
@@ -40,6 +43,7 @@
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;
+@property (assign) IBOutlet SignalProcessor *sp;
 @property (assign) IBOutlet NSProgressIndicator *progress;
 @property (retain,readwrite) NSString *dataFileName;
 @end

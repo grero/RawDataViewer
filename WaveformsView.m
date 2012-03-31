@@ -449,7 +449,7 @@
             
             
             //x
-            vertices[3*k] = ((GLfloat)(i + j))/samplingRate;
+            vertices[3*k] = xmin+((GLfloat)(i + j))/samplingRate;
             //y
             vertices[3*k+1] = d + offset;
             //z
