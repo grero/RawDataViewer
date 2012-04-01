@@ -23,7 +23,7 @@
     NSData *spikeForms;
     NSString *dataFileName;
     NSUInteger numChannels,numActiveChannels;
-
+    NSMutableDictionary *workspace;
     int *reorder;
 }
 
@@ -40,10 +40,13 @@
 -(BOOL)loadHmmSortResultsFromFile:(NSString*)filename;
 -(void)checkForReorderingForFile:(NSString*)filename;
 -(void)receiveNotification:(NSNotification*)notification;
+-(void)processWorkspace;
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;
 @property (assign) IBOutlet SignalProcessor *sp;
+
 @property (assign) IBOutlet NSProgressIndicator *progress;
 @property (retain,readwrite) NSString *dataFileName;
+@property (retain,readwrite) NSMutableDictionary *workspace;
 @end

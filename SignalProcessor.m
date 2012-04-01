@@ -194,6 +194,9 @@
     {
         [numChannels appendBytes:&_nchs length:sizeof(uint32_t)];
     }
+
+    //this assumes we want to keep using the same file
+    [self setTemplateFile:filename];
     
     return YES;
 }

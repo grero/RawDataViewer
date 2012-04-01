@@ -1090,20 +1090,22 @@
                 {
                     maxch++;
                 }
-                spikes = malloc((maxch-minch)*32*sizeof(float));
-                for(ch=minch;ch<maxch;ch++)
+                //we don't really want to store just the active channels; this should perhaps be made a preference
+                spikes = malloc(numChannels*32*sizeof(float));
+                for(ch=0;ch<numChannels;ch++)
+                //for(ch=minch;ch<maxch;ch++)
                 {
                     for (i=0; i<32; i++) 
                     {
                         j = currentXidx-10+i;
-                        spikes[(ch-minch)*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
+                        spikes[ch*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
                     }
                 }
                 
-                [sp addTemplate:spikes length:32*(maxch-minch) numChannels:(uint32_t)(maxch-minch)];
+                [sp addTemplate:spikes length:32*numChannels numChannels:(uint32_t)numChannels atTimePoint:currentX];
             });
             [spikeIdx appendBytes:&currentX length:sizeof(GLfloat)];
-            [self createSpikeVertices:spikeIdx numberOfSpikes:([spikeIdx length])/sizeof(GLfloat) channels:NULL numberOfChannels:NULL];
+            [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:NULL numberOfChannels:NULL];
         }
         else
         {
