@@ -12,6 +12,7 @@
 #import "computations.h"
 #import "utils.h"
 #import "SignalProcessor.h"
+#import "fileReader.h"
 #import <matio.h>
 
 @interface RawDataViewerAppDelegate : NSObject <NSApplicationDelegate> {
