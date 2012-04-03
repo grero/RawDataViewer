@@ -1092,13 +1092,28 @@
                 }
                 //we don't really want to store just the active channels; this should perhaps be made a preference
                 spikes = malloc(numChannels*32*sizeof(float));
-                for(ch=0;ch<numChannels;ch++)
+                //we want to fill the non-active channel with zeros
+                for(ch=0;ch<minch;ch++)
+                {
+                    for(i=0;i<32;i++)
+                    {
+                        spikes[ch*32+i] = 0;
+                    }
+                }
+                for(ch=minch;ch<maxch;ch++)
                 //for(ch=minch;ch<maxch;ch++)
                 {
                     for (i=0; i<32; i++) 
                     {
                         j = currentXidx-10+i;
                         spikes[ch*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
+                    }
+                }
+                for(ch=maxch;ch<numChannels;ch++)
+                {
+                    for(i=0;i<32;i++)
+                    {
+                        spikes[ch*32+i] = 0;
                     }
                 }
                 
