@@ -497,87 +497,23 @@
     double *mlseq,*_spikeForms,minpt,d;
     float *spikes;
     uint32_t ntemps,nchs,timepts,npoints,i,j,ch,k;
-    int *minpts;
+    int *minpts,res;
     uint32_t nspikes;
     fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
-    
-    matvar_t *mlseqVar,*spikeFormsVar;
-	mat_t *mat;
-	
-	//open file
-	mat = Mat_Open(fname,MAT_ACC_RDONLY);
-    
-    //load the sequence
-	mlseqVar = Mat_VarRead(mat,"mlseq");
-	//int err = Mat_VarReadDataAll(mat,matvar);
-	//int nel = (matvar->nbytes)/(matvar->data_size);
-	mlseq = mlseqVar->data;
-    if(mlseq == NULL)
+    res = readHMMFromMatfile(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes);
+    if( res==-1)
     {
+        //matlab read failed, try hdf5 read
+        res = readHMMFromHDF5file(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes);
+    }
+    if( res != 0)
+    {
+        //could not read file; return
         return NO;
     }
-    ntemps = mlseqVar->dims[0];
-    npoints = mlseqVar->dims[1];
-    spikeFormsVar = Mat_VarRead(mat,"spikeForms");
-    _spikeForms = spikeFormsVar->data;
-    
-    if( _spikeForms== NULL)
-    {
-        return NO;
-    }
-    nchs = spikeFormsVar->dims[1];
-    timepts = spikeFormsVar->dims[2];
-    //find the maximum point of each template; this will be where the spike was "triggered"
-    minpts = malloc(ntemps*sizeof(int));
-    for(i=0;i<ntemps;i++)
-    {
-        minpt = INFINITY;
-        for(ch=0;ch<nchs;ch++)
-        {
-            
-            for(j=0;j<timepts;j++)
-            {
-                //column order
-                d = _spikeForms[j*ntemps*nchs+ch*ntemps + i];
-                minpts[i] = (d<minpt) ? j : minpts[i];
-                minpt = (d<minpt) ? d : minpt;
-            }
-        }
-    }
-    //now loop through the sequence and put spikes where each template reaches its peak state
-    //first count the number of spikes
-    nspikes = 0;
-    for(j=0;j<ntemps;j++)
-    {
-        for(i=0;i<npoints;i++)
-        {
-            if(mlseq[i*ntemps+j] == minpts[j] )
-            {
-                nspikes+=1;
-            }
-        }
-    }
-    //now allocate space for the spikes
-    spikes = malloc(nspikes*sizeof(float));
-    k = 0;
-    for(j=0;j<ntemps;j++)
-    {
-        for(i=0;i<npoints;i++)
-        {
-        
-            if(mlseq[i*ntemps+j] == minpts[j] )
-            {
-                spikes[k] = ((float)i)/29.990;
-                k+=1;
-            }
-        }
-    }
-    free(minpts);
     [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL];
     free(spikes);
-    Mat_VarFree(mlseqVar);
-    Mat_VarFree(spikeFormsVar);
-	Mat_Close(mat);
+  
 	return YES;
 
 }
