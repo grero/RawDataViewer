@@ -11,8 +11,8 @@
 @implementation SignalProcessor
 
 @synthesize templateFile;
-@synthesize spikes,templates;
-@synthesize ntemplates;
+@synthesize spikes,templates,cinv;
+@synthesize ntemplates,nspikes;
 
 - (id)init
 {
@@ -23,6 +23,7 @@
         spikes  = [[[[NSMutableData alloc] init] retain] autorelease];
 
         ntemplates = 0;
+        nspikes = 0;
         }
     
     return self;
@@ -145,8 +146,8 @@
     const char* fname;
     FILE *fid;
     uint64_t *timestamps;
-    float *_spikes;
-    float *spikeForms;
+    float *_spikes,s;
+    int16_t *spikeForms;
     uint8_t nchs;
     uint32_t headerSize,numSpikes,timepts,i,_nchs;
     
@@ -166,10 +167,15 @@
     //get the number of channels
     fread(&nchs,sizeof(uint8_t),1,fid);
     //read the spikeForms
-    spikeForms = malloc(numSpikes*((uint32_t)nchs)*timepts*sizeof(float));
+    spikeForms = malloc(numSpikes*((uint32_t)nchs)*timepts*sizeof(int16_t));
     fseek(fid, headerSize, 0);
-    fread(spikeForms, sizeof(float), numSpikes*((uint32_t)nchs)*timepts, fid);
-    [templates appendBytes:spikeForms length:numSpikes*((uint32_t)nchs)*timepts*sizeof(float)];
+    fread(spikeForms, sizeof(int16_t), numSpikes*((uint32_t)nchs)*timepts, fid);
+    //convert to float
+    for(i=0;i<numSpikes*((uint32_t)nchs)*timepts;i++)
+    {
+        s = (float)spikeForms[i];
+        [templates appendBytes:&s length:sizeof(float)];
+    }
     free(spikeForms);
     //seek to the appropriate position
     fseek(fid, headerSize+numSpikes*(uint32_t)nchs*timepts*2, 0);
@@ -194,7 +200,7 @@
     {
         [numChannels appendBytes:&_nchs length:sizeof(uint32_t)];
     }
-
+    nspikes+=numSpikes;
     //this assumes we want to keep using the same file
     [self setTemplateFile:filename];
     
@@ -257,6 +263,84 @@
     fclose(fid);
     
     return YES;
+}
+
+-(void)decodeData:(NSData*)data numRows: (uint32_t)nrows numCols:(uint32_t)ncols channelOffsets:(NSData*)offsets
+{
+    
+    float *spikeForms,*_data,*mD,*_cinv,*_offsets,*_tmpData,*bp,sq;
+    double d;
+    uint32_t i,j,k,l,timepts,*C,_nspikes;
+    _data = (float*)[data bytes];
+    spikeForms = (float*)[[self templates] bytes];
+    timepts = [[self templates] length]/(ntemplates*nrows*sizeof(float));
+    _cinv = (float*)[[self cinv] bytes];
+    _offsets = (float*)[offsets bytes];
+    //loop through spikeforms
+    mD = malloc(timepts*sizeof(float));
+    C = calloc(ntemplates*(ncols-timepts),sizeof(uint32_t));
+    _tmpData = malloc(timepts*nrows*sizeof(float));
+    bp = malloc(ntemplates*(ncols-timepts)*sizeof(float));
+    _nspikes=0;
+    for(i=0;i<ntemplates;i++)
+    {
+        //use a step of 3 since we are expecting to analyze the vertex array
+        for(j=0;j<ncols-timepts;j++)
+        {
+            //copy into temporary data
+            for(k=0;k<nrows;k++)
+            {
+                for(l=0;l<timepts;l++)
+                {
+                    _tmpData[k*timepts+l] = _data[k*ncols*3+3*(j+l)+1];
+                }
+            }
+            malanobisDistance(_tmpData, nrows, timepts, 1,_offsets,_cinv, spikeForms+i*nrows*timepts, 1,mD);
+            //compute the probability that a distance larger than or equal to this could be optained by chance
+            for(k=0;k<timepts;k++)
+            {
+                d = 1-chi2_cdf((double)(mD[k]), nrows);
+                //check if the probability of the measured distance, under the assumption of zero mean gaussian, is less than 0.05
+                if(d < 0.05)
+                {
+                    C[i*(ncols-timepts)+j]+=1;
+                }
+                
+            }
+            //compute the probabilty of getting C number of violations by chance assuming that the violations are binomially distributed with p = 0.05. If the resulting probability is itself not greater than 0.05, we have a match
+            bp[i*(ncols-timepts)+j] = gsl_ran_binomial_pdf(C[i*(ncols-timepts)+j],0.05,timepts);
+            if(bp[i*(ncols-timepts)+j] > 0.05)
+            {
+                _nspikes+=1;
+            }
+        }          
+    }
+    _nspikes = 0;
+    //go through and create spikes
+    //nspikes = ntemplates;
+    for(i=0;i<ntemplates;i++)
+    {
+        for(j=0;j<(ncols-timepts);j++)
+        {
+            d = bp[i*(ncols-timepts)+j];
+            if(d > 0.05)
+            {
+                _nspikes+=1;
+                //since we normally trigger of the 10th point
+                //get the x-value of the corresponding vertex
+                sq = _data[3*(j+10)];
+                //add this timepoint to the spikes
+                [[self spikes] appendBytes:&sq length:sizeof(float)];
+                nspikes+=1;
+                //ntemplates+=1;
+            }
+        }
+    }
+    //ntemplates = nspikes;
+    free(_tmpData);
+    free(mD);
+    free(C);
+    free(bp);
 }
 
 @end

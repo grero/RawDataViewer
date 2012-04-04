@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "computations.h"
 
 @interface SignalProcessor : NSObject {
     IBOutlet NSView *signalView;
@@ -14,19 +15,21 @@
     //NSMutableArray *templates;
     //array of arrays
     NSMutableData *templates,*spikes;
-    NSMutableData *numChannels;
-    uint32_t ntemplates;
+    NSMutableData *numChannels,*cinv;
+    uint32_t ntemplates,nspikes;
     NSString *templateFile;
     
 }
 
 @property (retain,readwrite) NSString *templateFile;
-@property (retain,readwrite) NSMutableData *spikes,*templates;
-@property (readonly)  uint32_t ntemplates;
+@property (retain,readwrite) NSMutableData *spikes,*templates,*cinv;
+@property (readonly)  uint32_t ntemplates,nspikes;
 
 -(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs atTimePoint:(float)timept;
 -(BOOL)saveTemplates:(NSString*)filename;
 -(BOOL)loadSpikesFromFile:(NSString*)filename;
 -(BOOL)loadWaveformsFile:(NSString*)filename;
 -(BOOL)saveWaveformsFile:(NSString*)filename;
+-(void)decodeData:(NSData*)data numRows: (uint32_t)nrows numCols:(uint32_t)ncols channelOffsets:(NSData*)offsets;
+
 @end

@@ -1122,6 +1122,13 @@
             [spikeIdx appendBytes:&currentX length:sizeof(GLfloat)];
             [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:NULL numberOfChannels:NULL];
         }
+        else if( [[theEvent characters] isEqualToString:@"d"] )
+        {
+            //decode the current view using the already extracted spikes
+            [sp decodeData:[NSData dataWithBytesNoCopy:vertices length:numPoints*3*sizeof(GLfloat) freeWhenDone:NO] numRows:numChannels numCols:numPoints/numChannels channelOffsets:[NSData dataWithBytesNoCopy:channelOffsets length:numChannels*sizeof(GLfloat) freeWhenDone:NO]];
+            [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp nspikes] channels:NULL numberOfChannels:NULL];
+        }
+        
         else
         {
             [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
