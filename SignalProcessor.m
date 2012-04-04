@@ -11,7 +11,7 @@
 @implementation SignalProcessor
 
 @synthesize templateFile;
-@synthesize spikes,templates,cinv;
+@synthesize spikes,templates,cinv,cells;
 @synthesize ntemplates,nspikes;
 
 - (id)init
@@ -265,25 +265,42 @@
     return YES;
 }
 
+-(BOOL)loadClusterIDs:(NSString*)filename
+{
+    const char *fname;
+    
+    fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
+    //clusterids are con
+}
+
 -(void)decodeData:(NSData*)data numRows: (uint32_t)nrows numCols:(uint32_t)ncols channelOffsets:(NSData*)offsets
 {
     
-    float *spikeForms,*_data,*mD,*_cinv,*_offsets,*_tmpData,*bp,sq;
+    float *spikeForms,*_data,*_cinv,*_offsets,*bp,sq;
     double d;
     uint32_t i,j,k,l,timepts,*C,_nspikes;
+    dispatch_queue_t queue;
+    
     _data = (float*)[data bytes];
     spikeForms = (float*)[[self templates] bytes];
     timepts = [[self templates] length]/(ntemplates*nrows*sizeof(float));
     _cinv = (float*)[[self cinv] bytes];
     _offsets = (float*)[offsets bytes];
     //loop through spikeforms
-    mD = malloc(timepts*sizeof(float));
+    
     C = calloc(ntemplates*(ncols-timepts),sizeof(uint32_t));
-    _tmpData = malloc(timepts*nrows*sizeof(float));
+    
     bp = malloc(ntemplates*(ncols-timepts)*sizeof(float));
     _nspikes=0;
-    for(i=0;i<ntemplates;i++)
+    queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    //TODO: should also do template combinations here
+    dispatch_apply(ntemplates, queue, ^(size_t i)
+    //for(i=0;i<ntemplates;i++)
     {
+        uint32_t j,k,l;
+        float d;
+        float *mD = malloc(timepts*sizeof(float));
+        float *_tmpData = malloc(timepts*nrows*sizeof(float));
         //use a step of 3 since we are expecting to analyze the vertex array
         for(j=0;j<ncols-timepts;j++)
         {
@@ -309,12 +326,11 @@
             }
             //compute the probabilty of getting C number of violations by chance assuming that the violations are binomially distributed with p = 0.05. If the resulting probability is itself not greater than 0.05, we have a match
             bp[i*(ncols-timepts)+j] = gsl_ran_binomial_pdf(C[i*(ncols-timepts)+j],0.05,timepts);
-            if(bp[i*(ncols-timepts)+j] > 0.05)
-            {
-                _nspikes+=1;
-            }
-        }          
-    }
+        }
+        free(_tmpData);
+        free(mD);
+    });
+    
     _nspikes = 0;
     //go through and create spikes
     //nspikes = ntemplates;
@@ -337,8 +353,7 @@
         }
     }
     //ntemplates = nspikes;
-    free(_tmpData);
-    free(mD);
+    
     free(C);
     free(bp);
 }
