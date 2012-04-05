@@ -49,7 +49,7 @@
     if(rWf.location != NSNotFound )
     {
         res = [sp loadWaveformsFile:filename];
-        [wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil];
+        [wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil cellID:NULL];
 
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
@@ -487,7 +487,7 @@
         spikes[i] = 0.001*(float)timestamps[i];
     }
     free(timestamps);
-    [wf createSpikeVertices:[NSData dataWithBytes:spikes length:numSpikes*sizeof(float)] numberOfSpikes:numSpikes channels:NULL numberOfChannels:NULL];
+    [wf createSpikeVertices:[NSData dataWithBytes:spikes length:numSpikes*sizeof(float)] numberOfSpikes:numSpikes channels:NULL numberOfChannels:NULL cellID:NULL];
     free(spikes);
     return YES;
     
@@ -513,7 +513,7 @@
         //could not read file; return
         return NO;
     }
-    [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL];
+    [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL cellID:NULL];
     free(spikes);
   
 	return YES;

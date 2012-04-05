@@ -514,13 +514,14 @@
     [self setNeedsDisplay: YES];
 }
 
--(void)createSpikeVertices:(NSData*)spikes numberOfSpikes: (NSUInteger)nspikes channels:(NSData*)chs numberOfChannels: (NSData*)nchs
+-(void)createSpikeVertices:(NSData*)spikes numberOfSpikes: (NSUInteger)nspikes channels:(NSData*)chs numberOfChannels: (NSData*)nchs cellID:(NSData*)cellid
 {
     NSUInteger i,ch,k;
     float *spikeData;
     GLfloat *spikeVertices;
     NSUInteger nvertices;
     NSUInteger *nChannels,*channels;
+    uint32_t *cids;
     
     if(nchs != NULL)
     {
@@ -552,7 +553,10 @@
             channels[i*2+1] = numChannels-1;
         }
     }
-    
+    if(cellid != NULL )
+    {
+        cids = (uint32_t*)[cellid bytes];
+    }
     nvertices = 0;
     for(i=0;i<nspikes;i++)
     {
@@ -1120,13 +1124,13 @@
                 [sp addTemplate:spikes length:32*numChannels numChannels:(uint32_t)numChannels atTimePoint:currentX];
             });
             [spikeIdx appendBytes:&currentX length:sizeof(GLfloat)];
-            [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:NULL numberOfChannels:NULL];
+            [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:NULL numberOfChannels:NULL cellID:NULL];
         }
         else if( [[theEvent characters] isEqualToString:@"d"] )
         {
             //decode the current view using the already extracted spikes
             [sp decodeData:[NSData dataWithBytesNoCopy:vertices length:numPoints*3*sizeof(GLfloat) freeWhenDone:NO] numRows:numChannels numCols:numPoints/numChannels channelOffsets:[NSData dataWithBytesNoCopy:channelOffsets length:numChannels*sizeof(GLfloat) freeWhenDone:NO]];
-            [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp nspikes] channels:NULL numberOfChannels:NULL];
+            [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp nspikes] channels:NULL numberOfChannels:NULL cellID:NULL];
         }
         
         else
