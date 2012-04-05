@@ -500,20 +500,20 @@
     float *spikes;
     uint32_t ntemps,nchs,timepts,npoints,i,j,ch,k;
     int *minpts,res;
-    uint32_t nspikes;
+    uint32_t nspikes, *cids;
     fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
-    res = readHMMFromMatfile(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes);
+    res = readHMMFromMatfile(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes, &cids);
     if( res==-1)
     {
         //matlab read failed, try hdf5 read
-        res = readHMMFromHDF5file(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes);
+        res = readHMMFromHDF5file(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes,&cids);
     }
     if( res != 0)
     {
         //could not read file; return
         return NO;
     }
-    [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL cellID:NULL];
+    [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL cellID:[NSData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
     free(spikes);
   
 	return YES;

@@ -35,7 +35,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     NSUInteger drawingMode; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
     NSMutableData *spikeIdx;
-    BOOL dataLoaded,drawSpikes,spikesLoaded;
+    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors;
     
     IBOutlet SignalProcessor *sp;
     IBOutlet NSTextField *timeCoord,*ampCoord;

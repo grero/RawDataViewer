@@ -9,7 +9,7 @@
 #import "fileReader.h"
 
 
-int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes)
+int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids)
 {
     uint32_t _npoints,_nchs,_nstates,_nspikes,_ntemps,k;
     double minpt,*mlseq,d;
@@ -90,6 +90,8 @@ int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes
     *nspikes = _nspikes;
     //now allocate space for the spikes
     *spikes = malloc(_nspikes*sizeof(float));
+    *cids = malloc((*nspikes)*sizeof(uint32_t));
+
     k = 0;
     for(j=0;j<_ntemps;j++)
     {
@@ -99,6 +101,7 @@ int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes
             if(mlseq[i*_ntemps+j] == minpts[j] )
             {
                 (*spikes)[k] = ((float)i)/29.990;
+                (*cids)[k] = j;
                 k+=1;
             }
         }
@@ -112,7 +115,7 @@ int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes
 
 }
 
-int readHMMFromHDF5file(const char *fname, double **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes)
+int readHMMFromHDF5file(const char *fname, double **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids)
 {
     hid_t file_id;
     herr_t status;
@@ -187,6 +190,7 @@ int readHMMFromHDF5file(const char *fname, double **spikeforms, uint32_t *nspike
     }
     //now allocate space for the spikes
     *spikes = malloc((*nspikes)*sizeof(float));
+    *cids = malloc((*nspikes)*sizeof(uint32_t));
     k = 0;
     for(j=0;j<_ntemps;j++)
     {
@@ -196,6 +200,7 @@ int readHMMFromHDF5file(const char *fname, double **spikeforms, uint32_t *nspike
             if(mlseq[i*_ntemps+j] == minpts[j] )
             {
                 (*spikes)[k] = ((float)i)/29.990;
+                (*cids)[k] = j;
                 k+=1;
             }
         }

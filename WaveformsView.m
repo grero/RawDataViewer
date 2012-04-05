@@ -521,6 +521,7 @@
     GLfloat *spikeVertices;
     NSUInteger nvertices;
     NSUInteger *nChannels,*channels;
+    GLfloat *spikeColors;
     uint32_t *cids;
     
     if(nchs != NULL)
@@ -555,7 +556,20 @@
     }
     if(cellid != NULL )
     {
+        spikeColors = malloc(nspikes*3*sizeof(GLfloat));
         cids = (uint32_t*)[cellid bytes];
+        for(i=0;i<nspikes;i++)
+        {
+            //this is just a round-about way of making sure all spikes belonging to the same cells get the same color
+            srandom(cids[i]);
+            spikeColors[3*i] = ((GLfloat)random())/RAND_MAX;
+            spikeColors[3*i+1] = ((GLfloat)random())/RAND_MAX;
+            spikeColors[3*i+2] = ((GLfloat)random())/RAND_MAX;
+        }
+        useSpikeColors = YES;
+    }
+    else{
+        useSpikeColors = NO;
     }
     nvertices = 0;
     for(i=0;i<nspikes;i++)
@@ -571,7 +585,14 @@
         glGenBuffers(1, &spikesBuffer);
     }
     glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 2*3*nvertices*sizeof(GLfloat), 0, GL_STATIC_DRAW);
+    if(useSpikeColors==YES)
+    {
+        glBufferData(GL_ARRAY_BUFFER, 2*3*nvertices*sizeof(GLfloat), 0, GL_STATIC_DRAW);
+    }
+    else
+    {
+        glBufferData(GL_ARRAY_BUFFER, 3*nvertices*sizeof(GLfloat), 0, GL_STATIC_DRAW);
+    }
     spikeVertices = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
     GLenum e = glGetError();
     k=0;
@@ -605,6 +626,20 @@
         k+=1;
         //}
     }
+    if(useSpikeColors == YES)
+    {
+        //fill the last part of the buffer with the colors
+        for(i=0;i<nspikes;i++)
+        {
+            spikeVertices[3*nvertices+2*3*i] = spikeColors[3*i];
+            spikeVertices[3*nvertices+2*3*i+1] = spikeColors[3*i+1];
+            spikeVertices[3*nvertices+2*3*i+2] = spikeColors[3*i+2];
+            
+            spikeVertices[3*nvertices+2*3*i+3] = spikeColors[3*i];
+            spikeVertices[3*nvertices+2*3*i+4] = spikeColors[3*i+1];
+            spikeVertices[3*nvertices+2*3*i+5] = spikeColors[3*i+2];
+        }
+    }
     if(chs==NULL)
     {
         free(channels);
@@ -615,6 +650,7 @@
     }
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+    glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*nvertices*sizeof(GLfloat)));
     drawSpikes = YES;
     numSpikes = nspikes;
     spikesLoaded = YES;
@@ -686,10 +722,18 @@
         glDisableClientState(GL_COLOR_ARRAY);
         if ( (drawSpikes == YES) && ( spikesLoaded == YES))
         {
-            glColor3f(1.0,0.0,0.0);
             glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
             glEnableClientState(GL_VERTEX_ARRAY);
             glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+            if( useSpikeColors == NO )
+            {
+                glColor3f(1.0,0.0,0.0);
+            }
+            else
+            {
+                glEnableClientState(GL_COLOR_ARRAY);
+                glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numSpikes*2*sizeof(GLfloat)));                
+            }
             glDrawArrays(GL_LINES, 0, 2*numSpikes);
             glDisableClientState(GL_VERTEX_ARRAY);
             //GLenum e = glGetError();
