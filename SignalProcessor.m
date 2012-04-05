@@ -324,7 +324,7 @@
                 }
                 
             }
-            //compute the probabilty of getting C number of violations by chance assuming that the violations are binomially distributed with p = 0.05. If the resulting probability is itself not greater than 0.05, we have a match
+            //compute the probabilty of getting C number of violations by chance assuming that the violations are binomially distributed with p = 0.05. If the resulting probability is itself  greater than 0.05, we have a match
             bp[i*(ncols-timepts)+j] = gsl_ran_binomial_pdf(C[i*(ncols-timepts)+j],0.05,timepts);
         }
         free(_tmpData);
