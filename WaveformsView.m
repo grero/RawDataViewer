@@ -1092,7 +1092,15 @@
                 }
                 //we don't really want to store just the active channels; this should perhaps be made a preference
                 spikes = malloc(numChannels*32*sizeof(float));
-                for(ch=0;ch<numChannels;ch++)
+                //we want to fill the non-active channel with zeros
+                for(ch=0;ch<minch;ch++)
+                {
+                    for(i=0;i<32;i++)
+                    {
+                        spikes[ch*32+i] = 0;
+                    }
+                }
+                for(ch=minch;ch<maxch;ch++)
                 //for(ch=minch;ch<maxch;ch++)
                 {
                     for (i=0; i<32; i++) 
@@ -1101,12 +1109,26 @@
                         spikes[ch*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
                     }
                 }
+                for(ch=maxch;ch<numChannels;ch++)
+                {
+                    for(i=0;i<32;i++)
+                    {
+                        spikes[ch*32+i] = 0;
+                    }
+                }
                 
                 [sp addTemplate:spikes length:32*numChannels numChannels:(uint32_t)numChannels atTimePoint:currentX];
             });
             [spikeIdx appendBytes:&currentX length:sizeof(GLfloat)];
             [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:NULL numberOfChannels:NULL];
         }
+        else if( [[theEvent characters] isEqualToString:@"d"] )
+        {
+            //decode the current view using the already extracted spikes
+            [sp decodeData:[NSData dataWithBytesNoCopy:vertices length:numPoints*3*sizeof(GLfloat) freeWhenDone:NO] numRows:numChannels numCols:numPoints/numChannels channelOffsets:[NSData dataWithBytesNoCopy:channelOffsets length:numChannels*sizeof(GLfloat) freeWhenDone:NO]];
+            [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp nspikes] channels:NULL numberOfChannels:NULL];
+        }
+        
         else
         {
             [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];

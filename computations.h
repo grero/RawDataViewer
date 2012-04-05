@@ -17,6 +17,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_randist.h>
+#include "utils.h"
 
 void computeCovariance(int16_t *data, uint32_t nrows, uint32_t ncols, uint8_t rowvar,float *output);
+void malanobisDistance(float *data, uint32_t nrows, uint32_t ncols,uint32_t step, float *columnOffsets, float *cinv, float *mu,uint32_t mustep,float *output);
 

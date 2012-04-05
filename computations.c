@@ -74,3 +74,35 @@ void computeCovariance(int16_t *data, uint32_t nrows, uint32_t ncols, uint8_t ro
     }
     free(m);
 }
+
+void malanobisDistance(float *data, uint32_t nrows, uint32_t ncols,uint32_t step, float *columnOffsets, float *cinv, float *mu,uint32_t mustep,float *output)
+{
+    //compute the mahalobis distance 
+    uint32_t i,j,k;
+    float *d,*q;
+    d = malloc(nrows*sizeof(float));
+    q = calloc(nrows,sizeof(float));
+    for(i=0;i<ncols;i++)
+    {
+        output[i] = 0;
+        for(j=0;j<nrows;j++)
+        {
+            d[j] = ((data[j*ncols*step+i*step] -columnOffsets[j])- mu[j*ncols*mustep+i*mustep]);
+            q[j] = 0;        
+        }
+        for(k=0;k<nrows;k++)
+        {
+            for(j=0;j<nrows;j++)
+            {
+                q[k]+=d[j]*cinv[j*nrows+k];
+            }
+        }
+        for(j=0;j<nrows;j++)
+        {
+            output[i]+=q[j]*d[j];
+        }
+        
+    }
+    free(d);
+    free(q);
+}
