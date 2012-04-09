@@ -496,8 +496,8 @@
 -(BOOL)loadHmmSortResultsFromFile:(NSString*)filename
 {
     const char* fname;
-    double *mlseq,*_spikeForms,minpt,d;
-    float *spikes;
+    double *mlseq,minpt,d;
+    float *spikes,*_spikeForms;
     uint32_t ntemps,nchs,timepts,npoints,i,j,ch,k;
     int *minpts,res;
     uint32_t nspikes, *cids;
@@ -513,7 +513,13 @@
         //could not read file; return
         return NO;
     }
+    [sp setTemplates:[NSMutableData dataWithBytes:_spikeForms length:nspikes*nchs*timepts*sizeof(float)]];
+    [sp setSpikes:[NSMutableData dataWithBytes:spikes length:nspikes*sizeof(float)]];
+    [sp setNspikes:nspikes];
+    [sp setNtemplates:nspikes];
+    [sp setCids:[NSMutableData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
     [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL cellID:[NSData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
+    [wf createTemplateVertices:[sp templates] timestamps:[sp spikes] numberOfSpikes:nspikes timepts:timepts channels:NULL numberOfChannels:NULL cellID:[sp cids]];
     free(spikes);
   
 	return YES;

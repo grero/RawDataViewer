@@ -9,7 +9,7 @@
 #import "fileReader.h"
 
 
-int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids)
+int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids)
 {
     uint32_t _npoints,_nchs,_nstates,_nspikes,_ntemps,k;
     double minpt,*mlseq,d;
@@ -54,8 +54,8 @@ int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes
     *nchs = _nchs;
     *nstates = _nstates;
     //figure out what data type spikeForms is
-    *spikeforms = malloc(_ntemps*_nchs*_nstates*sizeof(double));
-    memcpy(*spikeforms,spikeFormsVar->data,_ntemps*_nchs*_nstates*sizeof(double));
+    *spikeforms = malloc(_ntemps*_nchs*_nstates*sizeof(float));
+    memcpy(*spikeforms,spikeFormsVar->data,_ntemps*_nchs*_nstates*sizeof(float));
     //find the minium point of each template; this will be where the spike was "triggered"
 
     minpts = malloc(_ntemps*sizeof(int));
@@ -115,7 +115,7 @@ int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes
 
 }
 
-int readHMMFromHDF5file(const char *fname, double **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids)
+int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids)
 {
     hid_t file_id;
     herr_t status;
@@ -133,7 +133,7 @@ int readHMMFromHDF5file(const char *fname, double **spikeforms, uint32_t *nspike
     //allocate space for spikeforms
     *spikeforms = malloc(spikeFormDims[0]*spikeFormDims[1]*spikeFormDims[2]*sizeof(double));
     //read the data set
-    status = H5LTread_dataset_double(file_id,"/spikeForms",*spikeforms);
+    status = H5LTread_dataset_float(file_id,"/spikeForms",*spikeforms);
     if(status != 0 )
     {
         return status;
