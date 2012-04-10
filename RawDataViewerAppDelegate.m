@@ -500,23 +500,23 @@
     float *spikes,*_spikeForms;
     uint32_t ntemps,nchs,timepts,npoints,i,j,ch,k;
     int *minpts,res;
-    uint32_t nspikes, *cids;
+    uint32_t nspikes, *cids,nSpikeForms;
     fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
-    res = readHMMFromMatfile(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes, &cids);
+    res = readHMMFromMatfile(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes, &cids,&nSpikeForms);
     if( res==-1)
     {
         //matlab read failed, try hdf5 read
-        res = readHMMFromHDF5file(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes,&cids);
+        res = readHMMFromHDF5file(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes,&cids,&nSpikeForms);
     }
     if( res != 0)
     {
         //could not read file; return
         return NO;
     }
-    [sp setTemplates:[NSMutableData dataWithBytes:_spikeForms length:nspikes*nchs*timepts*sizeof(float)]];
+    [sp setTemplates:[NSMutableData dataWithBytes:_spikeForms length:nSpikeForms*nchs*timepts*sizeof(float)]];
     [sp setSpikes:[NSMutableData dataWithBytes:spikes length:nspikes*sizeof(float)]];
     [sp setNspikes:nspikes];
-    [sp setNtemplates:nspikes];
+    [sp setNtemplates:nSpikeForms];
     [sp setCids:[NSMutableData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
     [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL cellID:[NSData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
     [wf createTemplateVertices:[sp templates] timestamps:[sp spikes] numberOfSpikes:nspikes timepts:timepts channels:NULL numberOfChannels:NULL cellID:[sp cids]];

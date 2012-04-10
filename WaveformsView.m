@@ -753,7 +753,7 @@
     {
         float d,q;
         int minpt;
-        //in_offset = 0;
+        in_offset = cids[i]*numChannels*timepts;
         //find the location of the minimm point
         for(ch=0;ch<nChannels[i];ch++)
         {
@@ -806,16 +806,17 @@
             }
             if ((i<nspikes-1) || (ch<nChannels[i]-1))
             {
+                l = timepts+1;
                 //add an extra point unless we at the last channel of the last spike
-                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)] = spikeVertices[3*(out_offset+ch*(timepts+2)+timepts)];
-                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+1] = spikeVertices[3*(out_offset+ch*(timepts+2)+timepts)+1];
-                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+2] = spikeVertices[3*(out_offset+ch*(timepts+2)+timepts)+2]-3.0;
+                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)] = _timestamps[i]+(-minpt+l-2)/samplingRate;
+                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+1] = spikeData[in_offset+ch*timepts+l-2] + channelOffsets[channels[2*i]+ch];
+                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+2] = -4.0;
             }
         }
         out_offset+=nChannels[i]*(timepts+2);
-        in_offset+=nChannels[i]*timepts;
+        //in_offset+=nChannels[i]*timepts;
     }
-    uint32_t offset;
+    int32_t offset;
     if(useSpikeColors == YES)
     {
         //fill the last part of the buffer with the colors
@@ -824,21 +825,7 @@
         {
             for(ch=0;ch<nChannels[i];ch++)
             {
-                if( (i>0) || (ch>0) ) 
-                {
-                    l = 0;
-                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+1)+l) ] = spikeColors[3*i];
-                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+1)+l)+1] = spikeColors[3*i+1];
-                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+1)+l)+2] = spikeColors[3*i+2];
-                    for(l=1;l<timepts+1;l++)
-                    {
-                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l) ] = spikeColors[3*i];
-                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+1] = spikeColors[3*i+1];
-                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+2] = spikeColors[3*i+2];
-                        
-                    }
-                }
-                else
+                if( (ch==0) && (i==0) )
                 {
                     //ch==0
                     for(l=0;l<timepts;l++)
@@ -848,21 +835,34 @@
                         spikeVertices[3*nvertices+3*(offset+l)+2] = spikeColors[3*i+2];
                         
                     }
-
-
+                    offset-=1;
+                    
+                    
                 }
 
+                else
+                {
+                    l = 0;
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l) ] = spikeColors[3*i];
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+1] = spikeColors[3*i+1];
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+2] = spikeColors[3*i+2];
+                    for(l=1;l<timepts+1;l++)
+                    {
+                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l) ] = spikeColors[3*i];
+                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+1] = spikeColors[3*i+1];
+                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+2] = spikeColors[3*i+2];
+                        
+                    }
+                }
+                
                 if ((i<nspikes-1) || (ch<nChannels[i]-1))
                 {
-                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts)] = spikeVertices[3*nvertices+3*(offset+ch*(timepts+1)+timepts) ];
-                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts)+1] = spikeVertices[3*nvertices+3*(offset+ch*(timepts+1)+timepts)+1 ];
-                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts)+2] = spikeVertices[3*nvertices+3*(offset+ch*(timepts+1)+timepts)+2 ];
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts+1)] = spikeColors[3*i]; 
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts+1)+1] = spikeColors[3*i+1];
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts+1)+2] = spikeColors[3*i+2];
                 }
             }
-            if(i==0)
-            {
-                offset-=1;
-            }
+            
             offset+=nChannels[i]*(timepts+2);
         }
     }
@@ -979,13 +979,17 @@
             }
             else
             {
-                glColor3f(1.0,0.0,0.0);
-                //glEnableClientState(GL_COLOR_ARRAY);
-                //glColorPointer(3, GL_FLOAT, 0, <#const GLvoid *pointer#>)
+                //glColor3f(1.0,0.0,0.0);
+                glEnableClientState(GL_COLOR_ARRAY);
+                glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numTemplateVertices*sizeof(GLfloat)));
             }
-            glDrawArrays(GL_LINES, 0, numTemplateVertices/2);
-            glDrawArrays(GL_LINES, 1, numTemplateVertices/2);
+            glDrawArrays(GL_LINES, 0, numTemplateVertices);
+            glDrawArrays(GL_LINES, 1, numTemplateVertices-1);
             glDisableClientState(GL_VERTEX_ARRAY);
+            if(useSpikeColors == YES)
+            {
+                glDisableClientState(GL_COLOR_ARRAY);
+            }
         }
         //draw a line at the currentX value
         glBegin(GL_LINES);

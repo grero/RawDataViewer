@@ -9,7 +9,7 @@
 #import "fileReader.h"
 
 
-int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids)
+int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids, uint32_t *nSpikeForms)
 {
     uint32_t _npoints,_nchs,_nstates,_nspikes,_ntemps,k;
     double minpt,*mlseq,d;
@@ -53,6 +53,7 @@ int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes,
     _nchs = spikeFormsVar->dims[1];
     *nchs = _nchs;
     *nstates = _nstates;
+    *nSpikeForms = spikeFormsVar->dims[0];
     //figure out what data type spikeForms is
     *spikeforms = malloc(_ntemps*_nchs*_nstates*sizeof(float));
     memcpy(*spikeforms,spikeFormsVar->data,_ntemps*_nchs*_nstates*sizeof(float));
@@ -115,7 +116,7 @@ int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes,
 
 }
 
-int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids)
+int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids, uint32_t *nSpikeForms)
 {
     hid_t file_id;
     herr_t status;
@@ -131,7 +132,7 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
         return status;
     }
     //allocate space for spikeforms
-    *spikeforms = malloc(spikeFormDims[0]*spikeFormDims[1]*spikeFormDims[2]*sizeof(double));
+    *spikeforms = malloc(spikeFormDims[0]*spikeFormDims[1]*spikeFormDims[2]*sizeof(float));
     //read the data set
     status = H5LTread_dataset_float(file_id,"/spikeForms",*spikeforms);
     if(status != 0 )
@@ -142,7 +143,7 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
     *nstates = spikeFormDims[2];
     _timepts = spikeFormDims[2];
     _nchs = spikeFormDims[1];
-    
+    *nSpikeForms = spikeFormDims[0];
     //read the sequence
     status = H5LTget_dataset_info(file_id,"/mlseq",mlseqDims,NULL,NULL);
     if(status != 0 )
