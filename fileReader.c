@@ -93,11 +93,10 @@ int readHMMFromMatfile(const char *fname, double **spikeforms, uint32_t *nspikes
     *cids = malloc((*nspikes)*sizeof(uint32_t));
 
     k = 0;
-    for(j=0;j<_ntemps;j++)
+    for(i=0;i<_npoints;i++)
     {
-        for(i=0;i<_npoints;i++)
+        for(j=0;j<_ntemps;j++)
         {
-            
             if(mlseq[i*_ntemps+j] == minpts[j] )
             {
                 (*spikes)[k] = ((float)i)/29.990;
@@ -192,11 +191,10 @@ int readHMMFromHDF5file(const char *fname, double **spikeforms, uint32_t *nspike
     *spikes = malloc((*nspikes)*sizeof(float));
     *cids = malloc((*nspikes)*sizeof(uint32_t));
     k = 0;
-    for(j=0;j<_ntemps;j++)
+    for(i=0;i<_npoints;i++)
     {
-        for(i=0;i<_npoints;i++)
+        for(j=0;j<_ntemps;j++)
         {
-            
             if(mlseq[i*_ntemps+j] == minpts[j] )
             {
                 (*spikes)[k] = ((float)i)/29.990;

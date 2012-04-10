@@ -1176,6 +1176,67 @@
             [sp decodeData:[NSData dataWithBytesNoCopy:vertices length:numPoints*3*sizeof(GLfloat) freeWhenDone:NO] numRows:numChannels numCols:numPoints/numChannels channelOffsets:[NSData dataWithBytesNoCopy:channelOffsets length:numChannels*sizeof(GLfloat) freeWhenDone:NO]];
             [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp nspikes] channels:NULL numberOfChannels:NULL cellID:NULL];
         }
+        else if( [[theEvent characters] isEqualToString:@"n"] )
+        {
+            //go the next spike
+            //map the spikevertices first
+            [[self openGLContext] makeCurrentContext];
+            glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
+            GLfloat *spikeVertices = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
+            int i = 0;
+            if( ( currentX > xmax) || (currentX < xmin) )
+            {
+                currentX = xmin;
+            }
+            while( (currentX >= spikeVertices[2*3*i] ) && (i<numSpikes-1) && (spikeVertices[2*3*i] <= xmax) )
+            {
+                i+=1;
+            }
+            if(spikeVertices[2*3*i] < xmax)
+            {
+                currentX = spikeVertices[2*3*i];
+                //update the zoom
+                windowSize = 5+xmin;
+                dx = currentX-2.5-xmin;
+                
+                //give the array back
+                glUnmapBuffer(GL_ARRAY_BUFFER);
+                [self setNeedsDisplay:YES];
+            }
+            else{
+                glUnmapBuffer(GL_ARRAY_BUFFER);
+            }
+        }
+        else if( [[theEvent characters] isEqualToString:@"p"] )
+        {
+            [[self openGLContext] makeCurrentContext];
+            glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
+            GLfloat *spikeVertices = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
+            int i = numSpikes-1;
+            currentX = MAX(currentX,xmin);
+            while( (currentX <= spikeVertices[2*3*i] ) && (i>0) && (spikeVertices[2*3*i] >= xmin))
+            {
+                i-=1;
+            }
+            if (spikeVertices[2*3*i] > xmin )
+            {
+                currentX = spikeVertices[2*3*i];
+                //update the zoom
+                windowSize = 5+xmin;
+                dx = currentX-2.5-xmin;
+                
+                //give the array back
+                glUnmapBuffer(GL_ARRAY_BUFFER);
+                [self setNeedsDisplay:YES];
+
+            }
+            else
+            {
+                glUnmapBuffer(GL_ARRAY_BUFFER);
+   
+            }
+   
+        }
         
         else
         {
