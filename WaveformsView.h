@@ -31,11 +31,11 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets;
     GLuint *indices;
     GLfloat dz,dx,dy,tx,ty;
-    GLuint indexBuffer,vertexBuffer,colorBuffer,spikesBuffer;
-    NSUInteger drawingMode; //which mode are we using to draw (peak/all)
+    GLuint indexBuffer,vertexBuffer,colorBuffer,spikesBuffer,templatesBuffer;
+    NSUInteger drawingMode,numTemplateVertices; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
     NSMutableData *spikeIdx;
-    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors;
+    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded;
     
     IBOutlet SignalProcessor *sp;
     IBOutlet NSTextField *timeCoord,*ampCoord;
@@ -69,6 +69,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(void) createPeakVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints;
 -(void)createConnectedVertices: (NSData*)vertex_data withNumberOfWaves: (NSUInteger)nwaves channels: (NSUInteger)channels andTimePoints: (NSUInteger) timepoints;
 -(void)createSpikeVertices:(NSData*)spikes numberOfSpikes: (NSUInteger)nspikes channels:(NSData*)chs numberOfChannels: (NSData*)nchs cellID:(NSData*)cellid;
+-(void)createTemplateVertices:(NSData*)spikes timestamps:(NSData*)timestamps numberOfSpikes: (NSUInteger)nspikes timepts:(NSInteger)timepts channels:(NSData*)chs numberOfChannels: (NSData*)nchs cellID:(NSData*)cellid;
 -(void) highlightWaveform:(NSUInteger)wfidx;
 -(void) highlightWaveforms:(NSData*)wfidx;
 -(void) highlightChannels:(NSArray*)channels;

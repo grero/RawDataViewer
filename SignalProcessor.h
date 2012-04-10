@@ -14,7 +14,7 @@
     
     //NSMutableArray *templates;
     //array of arrays
-    NSMutableData *templates,*spikes;
+    NSMutableData *templates,*spikes,*cids;
     NSMutableData *numChannels,*cinv;
     NSMutableDictionary *cells;
     uint32_t ntemplates,nspikes;
@@ -23,9 +23,9 @@
 }
 
 @property (retain,readwrite) NSString *templateFile;
-@property (retain,readwrite) NSMutableData *spikes,*templates,*cinv;
+@property (retain,readwrite) NSMutableData *spikes,*templates,*cinv,*cids;
 @property (retain,readwrite) NSMutableDictionary *cells;
-@property (readonly)  uint32_t ntemplates,nspikes;
+@property (assign,readwrite)  uint32_t ntemplates,nspikes;
 
 -(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs atTimePoint:(float)timept;
 -(BOOL)saveTemplates:(NSString*)filename;
