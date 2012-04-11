@@ -84,6 +84,7 @@
     zoomStack = malloc(zoomStackLength*4*sizeof(GLfloat));
     zoomStackIdx = 0;
     drawSpikes = NO;
+    templatesLoaded = NO;
     spikeIdx = [[NSMutableData dataWithCapacity:100] retain];
     return self;
 }
@@ -658,6 +659,230 @@
     
     [self setNeedsDisplay:YES];
 }
+-(void)createTemplateVertices:(NSData*)spikes timestamps:(NSData*)timestamps numberOfSpikes: (NSUInteger)nspikes timepts:(NSInteger)timepts channels:(NSData*)chs numberOfChannels: (NSData*)nchs cellID:(NSData*)cellid
+{
+    NSUInteger i,ch,k;
+    int l;
+    float *spikeData,*_timestamps;
+    GLfloat *spikeVertices;
+    NSUInteger nvertices;
+    NSUInteger *nChannels,*channels;
+    GLfloat *spikeColors;
+    uint32_t *cids,in_offset;
+    int32_t out_offset;
+    
+    if(nchs != NULL)
+    {
+        nChannels = (NSUInteger*)[nchs bytes];
+    }
+    else
+    {
+        nChannels = malloc(nspikes*sizeof(NSUInteger));
+        for(i=0;i<nspikes;i++)
+        {
+            nChannels[i] = numChannels;
+        }
+    }
+    if(chs != NULL )
+    {
+        channels = (NSUInteger*)[chs bytes];
+    }
+    else
+    {
+        channels = malloc(nspikes*2*sizeof(NSUInteger));
+        for(i=0;i<nspikes;i++)
+        {
+            /*
+             for(k=0;k<numChannels;k++)
+             {
+             channels[i*numChannels+k] = k;
+             }*/
+            channels[i*2] = 0;
+            channels[i*2+1] = numChannels-1;
+        }
+    }
+    if(cellid != NULL )
+    {
+        spikeColors = malloc(nspikes*3*sizeof(GLfloat));
+        cids = (uint32_t*)[cellid bytes];
+        for(i=0;i<nspikes;i++)
+        {
+            //this is just a round-about way of making sure all spikes belonging to the same cells get the same color
+            srandom(cids[i]);
+            spikeColors[3*i] = ((GLfloat)random())/RAND_MAX;
+            spikeColors[3*i+1] = ((GLfloat)random())/RAND_MAX;
+            spikeColors[3*i+2] = ((GLfloat)random())/RAND_MAX;
+        }
+        useSpikeColors = YES;
+    }
+    else{
+        useSpikeColors = NO;
+    }
+    nvertices = 0;
+    for(i=0;i<nspikes;i++)
+    {
+        //+2 because we add an extra point to the beginning and end of each template
+        nvertices+=nChannels[i]*(timepts+2);
+    }
+    //.. then we remove the first and the last point
+    nvertices-=2;
+    numTemplateVertices = nvertices;
+    spikeData = (float*)[spikes bytes];
+    _timestamps = (float*)[timestamps bytes];
+    [[self openGLContext] makeCurrentContext];
+    //only generate if we have not already loaded spikes
+    if(templatesLoaded == NO )
+    {
+        glGenBuffers(1, &templatesBuffer);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, templatesBuffer);
+    if(useSpikeColors==YES)
+    {
+        glBufferData(GL_ARRAY_BUFFER, 2*3*nvertices*sizeof(GLfloat), 0, GL_STATIC_DRAW);
+    }
+    else
+    {
+        glBufferData(GL_ARRAY_BUFFER, 3*nvertices*sizeof(GLfloat), 0, GL_STATIC_DRAW);
+    }
+    spikeVertices = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    GLenum e = glGetError();
+    k=0;
+    in_offset = 0;
+    out_offset = 0;
+    for(i=0;i<nspikes;i++)
+    {
+        float d,q;
+        int minpt;
+        in_offset = cids[i]*numChannels*timepts;
+        //find the location of the minimm point
+        for(ch=0;ch<nChannels[i];ch++)
+        {
+            for(l=0;l<timepts;l++)
+            {
+                q = spikeData[in_offset+ch*timepts+l];
+                minpt = (q<d)?l:minpt;
+                d = (q<d)?q:d;
+            }
+            
+        }
+        for(ch=0;ch<nChannels[i];ch++)
+        {
+            if( (ch==0) && (i==0) )
+            {
+                //ch==0
+                for(l=0;l<timepts;l++)
+                {
+                    //x-value
+                    spikeVertices[3*l] = _timestamps[i]+(-minpt+l)/samplingRate;
+                    //y-vaue
+                    spikeVertices[3*l+1] = spikeData[in_offset+ch*timepts+l] + channelOffsets[channels[2*i]+ch];
+                    //z-value
+                    spikeVertices[3*l+2] = 1.0;
+                }
+                out_offset = -1;
+                
+            }
+
+            else 
+            {
+                l = 0;
+                //x-value
+                spikeVertices[3*(out_offset+ch*(timepts+2)+l)] = _timestamps[i]+(-minpt+l)/samplingRate;
+                //y-vaue
+                spikeVertices[3*(out_offset+ch*(timepts+2)+l)+1] = spikeData[in_offset+ch*timepts+l] + channelOffsets[channels[2*i]+ch];
+                //z-value
+                spikeVertices[3*(out_offset+ch*(timepts+2)+l)+2] = -3.5;
+
+            
+                for(l=1;l<timepts+1;l++)
+                {
+                    //x-value
+                    spikeVertices[3*(out_offset+ch*(timepts+2)+l)] = _timestamps[i]+(-minpt+l-1)/samplingRate;
+                    //y-vaue
+                    spikeVertices[3*(out_offset+ch*(timepts+2)+l)+1] = spikeData[in_offset+ch*timepts+l-1] + channelOffsets[channels[2*i]+ch];
+                    //z-value
+                    spikeVertices[3*(out_offset+ch*(timepts+2)+l)+2] = 1.0;
+                }
+            }
+            if ((i<nspikes-1) || (ch<nChannels[i]-1))
+            {
+                l = timepts+1;
+                //add an extra point unless we at the last channel of the last spike
+                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)] = _timestamps[i]+(-minpt+l-2)/samplingRate;
+                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+1] = spikeData[in_offset+ch*timepts+l-2] + channelOffsets[channels[2*i]+ch];
+                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+2] = -4.0;
+            }
+        }
+        out_offset+=nChannels[i]*(timepts+2);
+        //in_offset+=nChannels[i]*timepts;
+    }
+    int32_t offset;
+    if(useSpikeColors == YES)
+    {
+        //fill the last part of the buffer with the colors
+        offset = 0;
+        for(i=0;i<nspikes;i++)
+        {
+            for(ch=0;ch<nChannels[i];ch++)
+            {
+                if( (ch==0) && (i==0) )
+                {
+                    //ch==0
+                    for(l=0;l<timepts;l++)
+                    {
+                        spikeVertices[3*nvertices+3*(offset+l) ] = spikeColors[3*i];
+                        spikeVertices[3*nvertices+3*(offset+l)+1] = spikeColors[3*i+1];
+                        spikeVertices[3*nvertices+3*(offset+l)+2] = spikeColors[3*i+2];
+                        
+                    }
+                    offset-=1;
+                    
+                    
+                }
+
+                else
+                {
+                    l = 0;
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l) ] = spikeColors[3*i];
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+1] = spikeColors[3*i+1];
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+2] = spikeColors[3*i+2];
+                    for(l=1;l<timepts+1;l++)
+                    {
+                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l) ] = spikeColors[3*i];
+                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+1] = spikeColors[3*i+1];
+                        spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+l)+2] = spikeColors[3*i+2];
+                        
+                    }
+                }
+                
+                if ((i<nspikes-1) || (ch<nChannels[i]-1))
+                {
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts+1)] = spikeColors[3*i]; 
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts+1)+1] = spikeColors[3*i+1];
+                    spikeVertices[3*nvertices+3*(offset+ch*(timepts+2)+timepts+1)+2] = spikeColors[3*i+2];
+                }
+            }
+            
+            offset+=nChannels[i]*(timepts+2);
+        }
+    }
+    if(chs==NULL)
+    {
+        free(channels);
+    }
+    if(nchs==NULL)
+    {
+        free(nChannels);
+    }
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+    //glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*nvertices*sizeof(GLfloat)));
+    drawTemplates = YES;
+    numSpikes = nspikes;
+    templatesLoaded = YES;
+    
+    [self setNeedsDisplay:YES];
+}
 
 -(void) highlightChannels:(NSArray*)channels
 {
@@ -736,10 +961,36 @@
             }
             glDrawArrays(GL_LINES, 0, 2*numSpikes);
             glDisableClientState(GL_VERTEX_ARRAY);
+            if(useSpikeColors == YES)
+            {
+                glDisableClientState(GL_COLOR_ARRAY);
+            }
             //GLenum e = glGetError();
             //NSLog(@"Error %d", e);
         }
-        
+        if( (drawTemplates) && ( templatesLoaded == YES))
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, templatesBuffer);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+            if( useSpikeColors == NO )
+            {
+                glColor3f(1.0,0.0,0.0);
+            }
+            else
+            {
+                //glColor3f(1.0,0.0,0.0);
+                glEnableClientState(GL_COLOR_ARRAY);
+                glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numTemplateVertices*sizeof(GLfloat)));
+            }
+            glDrawArrays(GL_LINES, 0, numTemplateVertices);
+            glDrawArrays(GL_LINES, 1, numTemplateVertices-1);
+            glDisableClientState(GL_VERTEX_ARRAY);
+            if(useSpikeColors == YES)
+            {
+                glDisableClientState(GL_COLOR_ARRAY);
+            }
+        }
         //draw a line at the currentX value
         glBegin(GL_LINES);
         glVertex3d(currentX, ymin+dy, 0.5);
