@@ -25,7 +25,8 @@
     NSString *dataFileName;
     NSUInteger numChannels,numActiveChannels;
     NSMutableDictionary *workspace;
-    int *reorder;
+    int *reorder,reorderMax;
+    BOOL reorderMissing;
 }
 
 -(IBAction)openFile:(id)sender;
