@@ -41,7 +41,7 @@
     FILE *fid;
     uint32_t headerSize,samplingRate,npoints,maxSize;
     uint8_t nchs;
-    int16_t *data;
+    int16_t *data,*tmp_data;
     size_t nbytes;
     fname  = [filename cStringUsingEncoding:NSASCIIStringEncoding];
     //check what kind of file we are opening
@@ -171,19 +171,26 @@
                 NSScanner *scanner = [NSScanner scannerWithString:sreorder];
                 [scanner setCharactersToBeSkipped:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
                 //find all the ints
+                reorderMax = -1;
+                int reorderMin = 100;
                 while( ([scanner isAtEnd] == NO ) && (k < nchs))
                 {
                     [scanner scanInt:reorder+k];
+                    reorderMax = MAX(reorderMax,reorder[k]);
+                    reorderMin = MIN(reorderMin,reorder[k]);
                     k+=1;
+                    
                 }
+                
                 numActiveChannels = k;
-                if (k < nchs)
+                if (reorderMin ==0)
                 {
                     for(i=k;i<nchs;i++)
                     {
                         //plus one because at this point we are using 1-based indexing
                         reorder[i] = i+1;
                     }
+                    reorderMax+=1;
                 }
             }
         }
@@ -195,27 +202,44 @@
             uint32_t ch,ppc;
             ppc = npoints/(uint32_t)nchs;
             //we need a temporary array to hold the data for each channel
-            int16_t *tmp_data = malloc(ppc*numActiveChannels*sizeof(int16_t));
+            int16_t *tmp_data;
             //now loop through the data and reorder everything
            
             int16_t d;
             
-            for(ch=0;ch<numActiveChannels;ch++)
+            if(reorderMax > nchs )
             {
-                for(i=0;i<ppc;i++)
+                //this means that we have missing channels
+                tmp_data = calloc(ppc*(reorderMax),sizeof(int16_t));
+                for(ch=0;ch<numActiveChannels;ch++)
                 {
-                    /*
-                    d = data[i*nchs+ch];
-                    //subtract 1 since the ordering is (usually!) 1-based
-                    data[i*nchs+ch] = data[i*nchs+reorder[ch]-1];
-                    data[i*nchs+reorder[ch]-1] = d;
-                     */
-                    tmp_data[i*numActiveChannels+ch] = data[i*nchs+reorder[ch]-1];
-                    
+                    for(i=0;i<ppc;i++)
+                    {
+                        tmp_data[i*(reorderMax)+reorder[ch]-1] = data[i*numChannels+ch];
+                    }
+                }
+                numActiveChannels = reorderMax;
+                
+            }
+            else
+            {
+                //we need a temporary array to hold the data for each channel
+                tmp_data = malloc(ppc*numActiveChannels*sizeof(int16_t));
+                
+                //now loop through the data and reorder everything
+                
+                for(ch=0;ch<numActiveChannels;ch++)
+                {
+                    for(i=0;i<ppc;i++)
+                    {
+                        tmp_data[i*numActiveChannels+ch] = data[i*numChannels+reorder[ch]-1];
+                    }
                 }
             }
-            memcpy(data, tmp_data, ppc*numActiveChannels*sizeof(int16_t));
-            free(tmp_data);
+            free(data);
+            data = tmp_data;
+            //memcpy(data, tmp_data, ppc*numActiveChannels*sizeof(int16_t));
+            //free(tmp_data);
         }
         //test; compute covariance matrix
         float *cov = malloc(numActiveChannels*numActiveChannels*sizeof(float));
@@ -305,7 +329,7 @@
     FILE *fid;
     uint32_t headerSize,samplingRate,npoints,maxSize,k,i;
     uint8_t nchs;
-    int16_t *data;
+    int16_t *data,*tmp_data;
     size_t nbytes;
     
     maxSize = [[NSUserDefaults standardUserDefaults] floatForKey:@"maxDataSize"];
@@ -383,23 +407,44 @@
     {
         NSLog(@"Reordering data...");
         
-        uint32_t ch,ppc;
+        uint32_t ch,ppc,tnchs;
         int16_t d;
         ppc = npoints/(uint32_t)nchs;
-        //we need a temporary array to hold the data for each channel
-        int16_t *tmp_data = malloc(ppc*numActiveChannels*sizeof(int16_t));
+        if(reorderMax > nchs )
+        {
+            //this means that we have missing channels
+            tmp_data = calloc(ppc*(reorderMax),sizeof(int16_t));
+            tnchs = MIN(nchs,numActiveChannels);
+            for(ch=0;ch<tnchs;ch++)
+            {
+                for(i=0;i<ppc;i++)
+                {
+                    tmp_data[i*(reorderMax)+reorder[ch]-1] = data[i*numChannels+ch];
+                }
+            }
+            numActiveChannels = reorderMax;
+
+        }
+        else
+        {
+            //we need a temporary array to hold the data for each channel
+            tmp_data = malloc(ppc*numActiveChannels*sizeof(int16_t));
+        
         //now loop through the data and reorder everything
         
-        for(ch=0;ch<numActiveChannels;ch++)
-        {
-            for(i=0;i<ppc;i++)
+            for(ch=0;ch<numActiveChannels;ch++)
             {
-                tmp_data[i*numActiveChannels+ch] = data[i*numChannels+reorder[ch]-1];
+                for(i=0;i<ppc;i++)
+                {
+                    tmp_data[i*numActiveChannels+ch] = data[i*numChannels+reorder[ch]-1];
+                }
             }
         }
         npoints = (npoints/nchs)*numActiveChannels;
-        memcpy(data, tmp_data, npoints*sizeof(int16_t));
-        free(tmp_data);
+        free(data);
+        data = tmp_data;
+        //memcpy(data, tmp_data, npoints*sizeof(int16_t));
+        //free(tmp_data);
     }
     
     //[wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
@@ -547,8 +592,9 @@
 }
 -(void)checkForReorderingForFile:(NSString*)filename
 {
-    uint32_t i,k;
+    uint32_t i,k,l;
     NSString *sreorder,*reOrderPath;
+    int mxCh;
     NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
     //check for reorder in cwd
     NSLog(cwd);
@@ -572,11 +618,17 @@
         NSScanner *scanner = [NSScanner scannerWithString:sreorder];
         [scanner setCharactersToBeSkipped:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         //find all the ints
+        int reorderMin = 100;
+        reorderMax = -1;
         while( ([scanner isAtEnd] == NO ) && (k < numChannels))
         {
             [scanner scanInt:reorder+k];
+            reorderMax = MAX(reorderMax,reorder[k]);
+            reorderMin = MIN(reorderMin,reorder[k]);
             k+=1;
+
         }
+        
         if (k < numChannels)
         {
             for(i=k;i<numChannels;i++)
@@ -584,7 +636,9 @@
                 //plus one because at this point we are using 1-based indexing
                 reorder[i] = i+1;
             }
+            reorderMax+=1;
         }
+    
     }
 }
 
