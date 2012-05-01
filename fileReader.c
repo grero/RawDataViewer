@@ -190,6 +190,23 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
     uint32_t _ntemps,_nchs,_timepts,_npoints,i,j,k,ch;
     
     file_id = H5Fopen (fname, H5F_ACC_RDONLY, H5P_DEFAULT);
+    free(_spikeforms);
+    //read the sequence
+    status = H5LTget_dataset_info(file_id,"/mlseq",mlseqDims,NULL,NULL);
+    if(status != 0 )
+    {
+        return status;
+    }
+    //allocate space for the sequence
+    mlseq = malloc(mlseqDims[0]*mlseqDims[1]*sizeof(int));
+    status = H5LTread_dataset_int(file_id,"/mlseq",mlseq);
+    if( status!=0)
+    {
+        return status;
+    }
+    _ntemps = mlseqDims[1];
+    _npoints = mlseqDims[0];
+
     status = H5LTget_dataset_info(file_id,"/spikeForms",spikeFormDims,NULL,NULL);
     if(status != 0 )
     {
@@ -218,35 +235,39 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
     _timepts = spikeFormDims[2];
     _nchs = spikeFormDims[1];
     *nSpikeForms = spikeFormDims[0];
-    //convert from double to float
-    for(i=0;i<*nSpikeForms;i++)
+    //check; nSpikeForms should be equal to _ntemps; if not we need to transpose the spikeforms
+    if( _ntemps == *nSpikeForms )
     {
-        for(j=0;j<_nchs;j++)
+        //convert from double to float
+        for(i=0;i<*nSpikeForms;i++)
         {
-            for(k=0;k<_timepts;k++)
+            for(j=0;j<_nchs;j++)
             {
-                (*spikeforms)[i*_nchs*_timepts+j*_timepts + k] = (float)(_spikeforms[i*_nchs*_timepts+j*_timepts+k]);
+                for(k=0;k<_timepts;k++)
+                {
+                    (*spikeforms)[i*_nchs*_timepts+j*_timepts + k] = (float)(_spikeforms[i*_nchs*_timepts+j*_timepts+k]);
+                }
             }
         }
     }
+    else
+    {
+        for(i=0;i<spikeFormDims[0];i++)
+        {
+            for(j=0;j<spikeFormDims[1];j++)
+            {
+                for(k=0;k<spikeFormDims[2];k++)
+                {
+                    (*spikeforms)[k*spikeFormDims[1]*spikeFormDims[0]+j*spikeFormDims[0] + i] = (float)(_spikeforms[i*spikeFormDims[1]*spikeFormDims[2] + j*spikeFormDims[2] + k]);
+                }
+            }
+        }
+    }
+    *nSpikeForms = _ntemps;
+    _timepts = spikeFormDims[0];
+    *nstates = _timepts;
     //free the temporary variable
-    free(_spikeforms);
-    //read the sequence
-    status = H5LTget_dataset_info(file_id,"/mlseq",mlseqDims,NULL,NULL);
-    if(status != 0 )
-    {
-        return status;
-    }
-    //allocate space for the sequence
-    mlseq = malloc(mlseqDims[0]*mlseqDims[1]*sizeof(int));
-    status = H5LTread_dataset_int(file_id,"/mlseq",mlseq);
-    if( status!=0)
-    {
-        return status;
-    }
-    _ntemps = mlseqDims[1];
-    _npoints = mlseqDims[0];
-    
+        
     minpts = malloc(_ntemps*sizeof(int));
     for(i=0;i<_ntemps;i++)
     {
