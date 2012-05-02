@@ -19,6 +19,7 @@
     NSMutableDictionary *cells;
     uint32_t ntemplates,nspikes;
     NSString *templateFile;
+    double samplingRate;
     
 }
 
@@ -26,6 +27,7 @@
 @property (retain,readwrite) NSMutableData *spikes,*templates,*cinv,*cids;
 @property (retain,readwrite) NSMutableDictionary *cells;
 @property (assign,readwrite)  uint32_t ntemplates,nspikes;
+@property (assign,readwrite) double samplingRate;
 
 -(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs atTimePoint:(float)timept;
 -(BOOL)saveTemplates:(NSString*)filename;

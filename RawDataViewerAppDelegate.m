@@ -106,6 +106,7 @@
             [[progress window] orderOut:self];
             return NO;
         }
+        [sp setSamplingRate:(double)samplingRate];
         numChannels = nchs;
         numActiveChannels = nchs;
         //set the filename
@@ -371,6 +372,7 @@
         [[progress window] orderOut:self];
         return NO;
     }
+    [sp setSamplingRate:(double)samplingRate];
     [self setDataFileName:filename];
     fseek(fid,0,SEEK_END);
     npoints = (ftell(fid)-headerSize)/sizeof(int16_t);

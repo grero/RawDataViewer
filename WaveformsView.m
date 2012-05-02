@@ -352,7 +352,7 @@
     limits = calloc(2*channels,sizeof(GLfloat));
     //this works because the data is organized in channel order
     //offset = 0;
-    samplingRate = 29.990;
+    samplingRate = [sp samplingRate]/1000.0;
     xmin = vertexOffset/samplingRate;
     //sampling rate of 30 kHz
     

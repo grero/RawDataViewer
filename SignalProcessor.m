@@ -12,7 +12,7 @@
 
 @synthesize templateFile;
 @synthesize spikes,templates,cinv,cells,cids;
-@synthesize ntemplates,nspikes;
+@synthesize ntemplates,nspikes,samplingRate;
 
 - (id)init
 {
