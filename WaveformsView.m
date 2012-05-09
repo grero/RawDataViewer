@@ -1523,7 +1523,7 @@
             [self moveLeft:self];
         }
         //dz = [theEvent deltaY];
-        dx += [theEvent deltaX]*0.001*windowSize;
+        dx += [theEvent deltaX]*0.001*(windowSize-xmin);
         if( (xmax-dx)/xmax > 0.9 )
         {
             //we are approaching the end of the current buffer; notify that app that we need more data
