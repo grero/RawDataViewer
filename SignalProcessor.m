@@ -358,4 +358,15 @@
     free(bp);
 }
 
+-(void)findPeaks:(float*)data length:(NSUInteger)length stride:(NSUInteger)stride;
+{
+    //search the vector indirectly
+    /*
+    vDSP_Length *idx;
+    idx = malloc(length*sizeof(vDSP_Length));
+    vDSP_vsorti(data,idx,NULL,)
+     */
+    
+}
+
 @end
