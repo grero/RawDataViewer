@@ -1,0 +1,430 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		256AC3DA0F4B6AC300CF3369 /* RawDataViewerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 256AC3D90F4B6AC300CF3369 /* RawDataViewerAppDelegate.m */; };
+		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
+		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		DB4201F61512F517004FB6B4 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB4201F51512F517004FB6B4 /* Accelerate.framework */; };
+		DB72614F151C536F00D1F2E7 /* computations.c in Sources */ = {isa = PBXBuildFile; fileRef = DB72614E151C536F00D1F2E7 /* computations.c */; };
+		DB7261D0151C561200D1F2E7 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = DB7261CE151C561200D1F2E7 /* utils.c */; };
+		DB7261D2151C567F00D1F2E7 /* libgsl.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DB7261D1151C567F00D1F2E7 /* libgsl.0.dylib */; };
+		DB85EA13151D5CF5002ECBC1 /* SignalProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = DB85EA12151D5CF5002ECBC1 /* SignalProcessor.m */; };
+		DB9804FD150A1A2E002F7069 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB9804FC150A1A2E002F7069 /* OpenGL.framework */; };
+		DB9CB65415176966005FABD6 /* OpenPanelDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9CB65315176966005FABD6 /* OpenPanelDelegate.m */; };
+		DB9D37741519C619006118BC /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB9D37731519C619006118BC /* AudioUnit.framework */; };
+		DB9D37771519C68C006118BC /* AudioController.m in Sources */ = {isa = PBXBuildFile; fileRef = DB9D37761519C68C006118BC /* AudioController.m */; };
+		DBA0272613F26D8800FAB4FB /* WaveformsView.m in Sources */ = {isa = PBXBuildFile; fileRef = DBA0272513F26D8800FAB4FB /* WaveformsView.m */; };
+		DBC39475152051F4005CFB49 /* libmatio.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DBC39474152051F4005CFB49 /* libmatio.2.dylib */; };
+		DBC5CCAA1532EDED008D94AB /* libhdf5_hl.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBD0A665152A9E0B00122BEA /* libhdf5_hl.6.dylib */; };
+		DBC5CCAB1532EDED008D94AB /* libhdf5.6.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBD0A666152A9E0B00122BEA /* libhdf5.6.dylib */; };
+		DBC5CCAC1532EDED008D94AB /* libmatio.2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBC39474152051F4005CFB49 /* libmatio.2.dylib */; };
+		DBC5CCAD1532EDED008D94AB /* libgsl.0.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DB7261D1151C567F00D1F2E7 /* libgsl.0.dylib */; };
+		DBD0A664152A950100122BEA /* fileReader.c in Sources */ = {isa = PBXBuildFile; fileRef = DBD0A663152A950100122BEA /* fileReader.c */; };
+		DBD0A667152A9E0B00122BEA /* libhdf5_hl.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DBD0A665152A9E0B00122BEA /* libhdf5_hl.6.dylib */; };
+		DBD0A668152A9E0B00122BEA /* libhdf5.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DBD0A666152A9E0B00122BEA /* libhdf5.6.dylib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DBC5CCA81532EDC2008D94AB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DBC5CCAA1532EDED008D94AB /* libhdf5_hl.6.dylib in CopyFiles */,
+				DBC5CCAB1532EDED008D94AB /* libhdf5.6.dylib in CopyFiles */,
+				DBC5CCAC1532EDED008D94AB /* libmatio.2.dylib in CopyFiles */,
+				DBC5CCAD1532EDED008D94AB /* libgsl.0.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		1DDD58150DA1D0A300B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		256AC3D80F4B6AC300CF3369 /* RawDataViewerAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RawDataViewerAppDelegate.h; sourceTree = "<group>"; };
+		256AC3D90F4B6AC300CF3369 /* RawDataViewerAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RawDataViewerAppDelegate.m; sourceTree = "<group>"; };
+		256AC3F00F4B6AF500CF3369 /* RawDataViewer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RawDataViewer_Prefix.pch; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		8D1107310486CEB800E47090 /* RawDataViewer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RawDataViewer-Info.plist"; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* RawDataViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RawDataViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB4201F51512F517004FB6B4 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		DB72614E151C536F00D1F2E7 /* computations.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = computations.c; sourceTree = "<group>"; };
+		DB726150151C537E00D1F2E7 /* computations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = computations.h; sourceTree = "<group>"; };
+		DB7261CE151C561200D1F2E7 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = "<group>"; };
+		DB7261CF151C561200D1F2E7 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
+		DB7261D1151C567F00D1F2E7 /* libgsl.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgsl.0.dylib; path = ../../../../../../usr/local/lib/libgsl.0.dylib; sourceTree = "<group>"; };
+		DB85EA11151D5CF5002ECBC1 /* SignalProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalProcessor.h; sourceTree = "<group>"; };
+		DB85EA12151D5CF5002ECBC1 /* SignalProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalProcessor.m; sourceTree = "<group>"; };
+		DB9804FC150A1A2E002F7069 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		DB9CB65215176966005FABD6 /* OpenPanelDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenPanelDelegate.h; sourceTree = "<group>"; };
+		DB9CB65315176966005FABD6 /* OpenPanelDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OpenPanelDelegate.m; sourceTree = "<group>"; };
+		DB9D37731519C619006118BC /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		DB9D37751519C68C006118BC /* AudioController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioController.h; sourceTree = "<group>"; };
+		DB9D37761519C68C006118BC /* AudioController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioController.m; sourceTree = "<group>"; };
+		DBA0272413F26D8800FAB4FB /* WaveformsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaveformsView.h; sourceTree = "<group>"; };
+		DBA0272513F26D8800FAB4FB /* WaveformsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaveformsView.m; sourceTree = "<group>"; };
+		DBC39474152051F4005CFB49 /* libmatio.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmatio.2.dylib; path = ../../../../../../usr/local/lib/libmatio.2.dylib; sourceTree = "<group>"; };
+		DBD0A662152A947300122BEA /* fileReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fileReader.h; sourceTree = "<group>"; };
+		DBD0A663152A950100122BEA /* fileReader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fileReader.c; sourceTree = "<group>"; };
+		DBD0A665152A9E0B00122BEA /* libhdf5_hl.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5_hl.6.dylib; path = ../../../../../../usr/local/hdf5/lib/libhdf5_hl.6.dylib; sourceTree = "<group>"; };
+		DBD0A666152A9E0B00122BEA /* libhdf5.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5.6.dylib; path = ../../../../../../usr/local/hdf5/lib/libhdf5.6.dylib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DBD0A667152A9E0B00122BEA /* libhdf5_hl.6.dylib in Frameworks */,
+				DBD0A668152A9E0B00122BEA /* libhdf5.6.dylib in Frameworks */,
+				DBC39475152051F4005CFB49 /* libmatio.2.dylib in Frameworks */,
+				DB7261D2151C567F00D1F2E7 /* libgsl.0.dylib in Frameworks */,
+				DB9D37741519C619006118BC /* AudioUnit.framework in Frameworks */,
+				DB4201F61512F517004FB6B4 /* Accelerate.framework in Frameworks */,
+				DB9804FD150A1A2E002F7069 /* OpenGL.framework in Frameworks */,
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				DBA0272413F26D8800FAB4FB /* WaveformsView.h */,
+				DBA0272513F26D8800FAB4FB /* WaveformsView.m */,
+				DB85EA11151D5CF5002ECBC1 /* SignalProcessor.h */,
+				DB85EA12151D5CF5002ECBC1 /* SignalProcessor.m */,
+				DB9D37751519C68C006118BC /* AudioController.h */,
+				DB9D37761519C68C006118BC /* AudioController.m */,
+				256AC3D80F4B6AC300CF3369 /* RawDataViewerAppDelegate.h */,
+				256AC3D90F4B6AC300CF3369 /* RawDataViewerAppDelegate.m */,
+				DB9CB65215176966005FABD6 /* OpenPanelDelegate.h */,
+				DB9CB65315176966005FABD6 /* OpenPanelDelegate.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107320486CEB800E47090 /* RawDataViewer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* RawDataViewer */ = {
+			isa = PBXGroup;
+			children = (
+				DBD0A665152A9E0B00122BEA /* libhdf5_hl.6.dylib */,
+				DBD0A666152A9E0B00122BEA /* libhdf5.6.dylib */,
+				DBC39474152051F4005CFB49 /* libmatio.2.dylib */,
+				DB7261D1151C567F00D1F2E7 /* libgsl.0.dylib */,
+				DB9D37731519C619006118BC /* AudioUnit.framework */,
+				DB4201F51512F517004FB6B4 /* Accelerate.framework */,
+				DB9804FC150A1A2E002F7069 /* OpenGL.framework */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = RawDataViewer;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				DB72614E151C536F00D1F2E7 /* computations.c */,
+				DBD0A662152A947300122BEA /* fileReader.h */,
+				DB7261CE151C561200D1F2E7 /* utils.c */,
+				DBD0A663152A950100122BEA /* fileReader.c */,
+				DB7261CF151C561200D1F2E7 /* utils.h */,
+				DB726150151C537E00D1F2E7 /* computations.h */,
+				256AC3F00F4B6AF500CF3369 /* RawDataViewer_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107310486CEB800E47090 /* RawDataViewer-Info.plist */,
+				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
+				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* RawDataViewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "RawDataViewer" */;
+			buildPhases = (
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+				DBC5CCA81532EDC2008D94AB /* CopyFiles */,
+				DBC5CCA91532EDC6008D94AB /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RawDataViewer;
+			productInstallPath = "$(HOME)/Applications";
+			productName = RawDataViewer;
+			productReference = 8D1107320486CEB800E47090 /* RawDataViewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0440;
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RawDataViewer" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* RawDataViewer */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D1107260486CEB800E47090 /* RawDataViewer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		DBC5CCA91532EDC6008D94AB /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "install_name_tool -change /usr/local/hdf5/lib/libhdf5.6.dylib @rpath/libhdf5.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /usr/local/hdf5/lib/libhdf5_hl.6.dylib @rpath/libhdf5_hl.6.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /usr/local/lib/libmatio.2.dylib @rpath/libmatio.2.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /usr/local/lib/libgsl.0.dylib @rpath/libgsl.0.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\n\ninstall_name_tool -id \"@rpath/libhdf5.6.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5.6.dylib\"\ninstall_name_tool -id \"@rpath/libhdf5_hl.6.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5_hl.6.dylib\"\ninstall_name_tool -id \"@rpath/libmatio.2.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libmatio.2.dylib\"\ninstall_name_tool -id \"@rpath/libgsl.0.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libgsl.0.dylib\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072D0486CEB800E47090 /* main.m in Sources */,
+				256AC3DA0F4B6AC300CF3369 /* RawDataViewerAppDelegate.m in Sources */,
+				DBA0272613F26D8800FAB4FB /* WaveformsView.m in Sources */,
+				DB9CB65415176966005FABD6 /* OpenPanelDelegate.m in Sources */,
+				DB9D37771519C68C006118BC /* AudioController.m in Sources */,
+				DB72614F151C536F00D1F2E7 /* computations.c in Sources */,
+				DB7261D0151C561200D1F2E7 /* utils.c in Sources */,
+				DB85EA13151D5CF5002ECBC1 /* SignalProcessor.m in Sources */,
+				DBD0A664152A950100122BEA /* fileReader.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C165DFE840E0CC02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1DDD58140DA1D0A300B32029 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1DDD58150DA1D0A300B32029 /* English */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C01FCF4B08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = RawDataViewer_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/hdf5/include,
+					"/usr/local/include",
+				);
+				INFOPLIST_FILE = "RawDataViewer-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/hdf5/lib,
+					"/usr/local/lib/**",
+				);
+				PRODUCT_NAME = RawDataViewer;
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = RawDataViewer_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					/usr/local/hdf5/include,
+					"/usr/local/include",
+				);
+				INFOPLIST_FILE = "RawDataViewer-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/hdf5/lib,
+					"/usr/local/lib/**",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = RawDataViewer;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
+				SDKROOT = macosx10.8;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
+				SDKROOT = macosx10.8;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "RawDataViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4B08A954540054247B /* Debug */,
+				C01FCF4C08A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RawDataViewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

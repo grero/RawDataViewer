@@ -1,0 +1,270 @@
+// !$*UTF8*$!
+{
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = DBA0271B13F26D6900FAB4FB /* RawDataViewer */;
+		activeTarget = 8D1107260486CEB800E47090 /* RawDataViewer */;
+		addToTargets = (
+			8D1107260486CEB800E47090 /* RawDataViewer */,
+		);
+		codeSenseManager = DBA0272813F26D8800FAB4FB /* Code sense */;
+		executables = (
+			DBA0271B13F26D6900FAB4FB /* RawDataViewer */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					356,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					316,
+					60,
+					20,
+					48.16259765625,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 366031158;
+			PBXWorkspaceStateSaveDate = 366031158;
+		};
+		perUserProjectItems = {
+			DBBD2562140C96AE00A2A041 /* PBXTextBookmark */ = DBBD2562140C96AE00A2A041 /* PBXTextBookmark */;
+			DBC5E9E115D131CF008D2ADB /* XCBuildMessageTextBookmark */ = DBC5E9E115D131CF008D2ADB /* XCBuildMessageTextBookmark */;
+			DBC5E9EB15D131CF008D2ADB /* PBXTextBookmark */ = DBC5E9EB15D131CF008D2ADB /* PBXTextBookmark */;
+			DBC5E9ED15D131CF008D2ADB /* PBXTextBookmark */ = DBC5E9ED15D131CF008D2ADB /* PBXTextBookmark */;
+			DBC5E9EE15D131CF008D2ADB /* PBXTextBookmark */ = DBC5E9EE15D131CF008D2ADB /* PBXTextBookmark */;
+			DBD2C4731404DDFB0008110D /* PBXTextBookmark */ = DBD2C4731404DDFB0008110D /* PBXTextBookmark */;
+			DBD2C4741404DDFB0008110D /* PBXTextBookmark */ = DBD2C4741404DDFB0008110D /* PBXTextBookmark */;
+			DBEB956815D12E8C0061B484 /* PlistBookmark */ = DBEB956815D12E8C0061B484 /* PlistBookmark */;
+			DBEB956E15D12E8C0061B484 /* PBXTextBookmark */ = DBEB956E15D12E8C0061B484 /* PBXTextBookmark */;
+			DBEB956F15D12E8C0061B484 /* PBXTextBookmark */ = DBEB956F15D12E8C0061B484 /* PBXTextBookmark */;
+		};
+		sourceControlManager = DBA0272713F26D8800FAB4FB /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	8D1107260486CEB800E47090 /* RawDataViewer */ = {
+		activeExec = 0;
+		executables = (
+			DBA0271B13F26D6900FAB4FB /* RawDataViewer */,
+		);
+	};
+	DBA0271B13F26D6900FAB4FB /* RawDataViewer */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = RawDataViewer;
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+	};
+	DBA0272413F26D8800FAB4FB /* WaveformsView.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1149, 1235}}";
+			sepNavSelRange = "{926, 0}";
+			sepNavVisRange = "{165, 1694}";
+			sepNavWindowFrame = "{{15, 93}, {1208, 680}}";
+		};
+	};
+	DBA0272513F26D8800FAB4FB /* WaveformsView.m */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1149, 21450}}";
+			sepNavSelRange = "{7255, 0}";
+			sepNavVisRange = "{6297, 1301}";
+			sepNavWindowFrame = "{{44, 4}, {1208, 680}}";
+		};
+	};
+	DBA0272713F26D8800FAB4FB /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	DBA0272813F26D8800FAB4FB /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	DBBD2562140C96AE00A2A041 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		name = "fileReaders.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 350;
+		vrLoc = 0;
+	};
+	DBC5E9E115D131CF008D2ADB /* XCBuildMessageTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "#error Never include this file directly. Use <lzma.h> instead.";
+		fRef = DBEB956215D12E670061B484 /* Block.h */;
+		fallbackIsa = XCBuildMessageTextBookmark;
+		rLen = 1;
+		rLoc = 15;
+		rType = 1;
+	};
+	DBC5E9EB15D131CF008D2ADB /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = DBC5E9EC15D131CF008D2ADB /* Block.h */;
+		name = "Block.h: 16";
+		rLen = 0;
+		rLoc = 292;
+		rType = 0;
+		vrLen = 572;
+		vrLoc = 103;
+	};
+	DBC5E9EC15D131CF008D2ADB /* Block.h */ = {
+		isa = PBXFileReference;
+		name = Block.h;
+		path = /usr/local/include/lzma/Block.h;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {544, 6994}}";
+			sepNavSelRange = "{292, 0}";
+			sepNavVisRange = "{103, 572}";
+		};
+	};
+	DBC5E9ED15D131CF008D2ADB /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = DBA0272513F26D8800FAB4FB /* WaveformsView.m */;
+		name = "WaveformsView.m: 285";
+		rLen = 0;
+		rLoc = 7255;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 6297;
+	};
+	DBC5E9EE15D131CF008D2ADB /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = DBA0272413F26D8800FAB4FB /* WaveformsView.h */;
+		name = "WaveformsView.h: 31";
+		rLen = 0;
+		rLoc = 926;
+		rType = 0;
+		vrLen = 1694;
+		vrLoc = 165;
+	};
+	DBD2C4731404DDFB0008110D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = DBA0272513F26D8800FAB4FB /* WaveformsView.m */;
+		name = "WaveformsView.m: 370";
+		rLen = 0;
+		rLoc = 9414;
+		rType = 0;
+		vrLen = 434;
+		vrLoc = 10944;
+	};
+	DBD2C4741404DDFB0008110D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = DBD2C4751404DDFB0008110D /* readFeature.c */;
+		name = "readFeature.c: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 417;
+		vrLoc = 142;
+	};
+	DBD2C4751404DDFB0008110D /* readFeature.c */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.c;
+		name = readFeature.c;
+		path = /Users/roger/Documents/programming/Cocoa/FeatureViewer/readFeature.c;
+		sourceTree = "<absolute>";
+	};
+	DBEB956215D12E670061B484 /* Block.h */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.c.h;
+		name = Block.h;
+		path = /usr/local/include/lzma/Block.h;
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {544, 6994}}";
+			sepNavSelRange = "{292, 0}";
+			sepNavVisRange = "{103, 572}";
+		};
+	};
+	DBEB956815D12E8C0061B484 /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 8D1107310486CEB800E47090 /* RawDataViewer-Info.plist */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+		);
+		name = "/Users/roger/Documents/programming/Cocoa/RawDataViewer/RawDataViewer-Info.plist";
+		rLen = 0;
+		rLoc = 9223372036854775808;
+	};
+	DBEB956E15D12E8C0061B484 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = DBA0272513F26D8800FAB4FB /* WaveformsView.m */;
+		name = "WaveformsView.m: 285";
+		rLen = 0;
+		rLoc = 7255;
+		rType = 0;
+		vrLen = 1301;
+		vrLoc = 6297;
+	};
+	DBEB956F15D12E8C0061B484 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = DBA0272413F26D8800FAB4FB /* WaveformsView.h */;
+		name = "WaveformsView.h: 31";
+		rLen = 0;
+		rLoc = 926;
+		rType = 0;
+		vrLen = 1694;
+		vrLoc = 165;
+	};
+}
