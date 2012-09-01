@@ -14,7 +14,7 @@ int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes,
     uint32_t _npoints,_nchs,_nstates,_nspikes,_ntemps,k;
     double minpt,*mlseq,d;
     int* minpts,i,ch,j;
-    matvar_t *mlseqVar,*spikeFormsVar, *dataVar;
+    matvar_t *mlseqVar,*spikeFormsVar, *dataVar, *tmpVar;
 	mat_t *mat;
     
     //open file
@@ -24,6 +24,29 @@ int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes,
         //if we cannot open the file, try using the hdf5 library instead
         return -1;
     }
+    //this is a hack which allows me to work on tdt data
+    dataVar = Mat_VarRead(mat, "strm");
+    if(dataVar != NULL )
+    {
+        //data should have dimensions of _nchs X _npoints
+        int npts = dataVar->dims[1];
+        *npoints = npts;
+        *data = malloc(npts*_nchs*sizeof(int16_t));
+        for(i=0;i<npts;i++)
+        {
+            for(j=0;j<_nchs;j++)
+            {
+                //column order
+                (*data)[i*_nchs+j] = (int16_t)(((double*)dataVar->data)[i*_nchs+j]);
+            }
+        }
+        tmpVar = Mat_VarRead(mat, "freq");
+        *spikes = malloc(1*sizeof(double));
+        **spikes = *(float*)(tmpVar->data);
+        //3 to indicate somethign different
+        return 3;
+    }
+
     //load the sequence
 	mlseqVar = Mat_VarRead(mat,"mlseq");
 	//int err = Mat_VarReadDataAll(mat,matvar);
