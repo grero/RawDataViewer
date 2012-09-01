@@ -86,6 +86,7 @@
     drawSpikes = NO;
     templatesLoaded = NO;
     spikeIdx = [[NSMutableData dataWithCapacity:100] retain];
+    drawCurrentX = YES;
     return self;
 }
 
@@ -991,13 +992,16 @@
                 glDisableClientState(GL_COLOR_ARRAY);
             }
         }
-        //draw a line at the currentX value
-        glBegin(GL_LINES);
-        glVertex3d(currentX, ymin+dy, 0.5);
-        glColor3f(1.0, 0, 0);
-        glVertex3d(currentX, ySpan+dy, 0.5);
-        glColor3f(1.0, 0, 0);
-        glEnd();
+        if( drawCurrentX)
+        {
+            //draw a line at the currentX value
+            glBegin(GL_LINES);
+            glVertex3d(currentX, ymin+dy, 0.5);
+            glColor3f(1.0, 0, 0);
+            glVertex3d(currentX, ySpan+dy, 0.5);
+            glColor3f(1.0, 0, 0);
+            glEnd();
+        }
         //GLenum e = glGetError();
         //NSLog(@"gl error: %d", e);
     }
@@ -1327,6 +1331,8 @@
 
 - (void)keyDown:(NSEvent *)theEvent
 {
+    //print the keycode
+    NSLog(@"keycode: %d", [theEvent keyCode]);
     if ([theEvent modifierFlags] & NSNumericPadKeyMask) {
         
         //we don't want to use interpret keys because moving the mouse and using the right/left arrow keys are interpreted as the event, by default
@@ -1364,6 +1370,15 @@
     {
         if( [[theEvent characters] isEqualToString:@"e"] )
         {
+            //create local points to global variables
+            float *_vertices, *_channelOffsets, _currentX,_currentY;
+            _vertices = vertices;
+            _channelOffsets = channelOffsets;
+            _currentX = currentX;
+            _currentY = currentY;
+            int np,_numChannels;
+            _numChannels = numChannels;
+            np = numPoints/numChannels;
             //dispath this piece of code
             dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
             dispatch_async(queue, ^{
@@ -1371,27 +1386,26 @@
                 float *spikes;
                 
                 int i,j,currentXidx;
-                int ch,np,minch,maxch;
-                np = numPoints/numChannels;
+                int ch,minch,maxch;
                 //figure out which channel we are at
                 minch = 0;
                 currentXidx = 0;
                 //find the index of the currentX point
-                while( (vertices[3*currentXidx] < currentX) && (currentXidx<np) )
+                while( (_vertices[3*currentXidx] < _currentX) && (currentXidx<np) )
                 {
                     currentXidx++;
                 }
-                while( (ymin+dy > channelOffsets[minch]) && (minch < numChannels) )
+                while( (ymin+dy > _channelOffsets[minch]) && (minch < _numChannels) )
                 {
                     minch++;
                 }
                 maxch=minch;
-                while( (ySpan+dy > channelOffsets[maxch]) && (maxch < numChannels) )
+                while( (ySpan+dy > _channelOffsets[maxch]) && (maxch < _numChannels) )
                 {
                     maxch++;
                 }
                 //we don't really want to store just the active channels; this should perhaps be made a preference
-                spikes = malloc(numChannels*32*sizeof(float));
+                spikes = malloc(_numChannels*32*sizeof(float));
                 //we want to fill the non-active channel with zeros
                 for(ch=0;ch<minch;ch++)
                 {
@@ -1406,10 +1420,10 @@
                     for (i=0; i<32; i++) 
                     {
                         j = currentXidx-10+i;
-                        spikes[ch*32+i] = vertices[3*(ch*np+j)+1] - channelOffsets[ch];
+                        spikes[ch*32+i] = _vertices[3*(ch*np+j)+1] - _channelOffsets[ch];
                     }
                 }
-                for(ch=maxch;ch<numChannels;ch++)
+                for(ch=maxch;ch<_numChannels;ch++)
                 {
                     for(i=0;i<32;i++)
                     {
@@ -1417,7 +1431,7 @@
                     }
                 }
                 
-                [sp addTemplate:spikes length:32*numChannels numChannels:(uint32_t)numChannels atTimePoint:currentX];
+                [sp addTemplate:spikes length:32*_numChannels numChannels:(uint32_t)_numChannels atTimePoint:_currentX];
             });
             [spikeIdx appendBytes:&currentX length:sizeof(GLfloat)];
             [self createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:NULL numberOfChannels:NULL cellID:NULL];
@@ -1488,6 +1502,32 @@
    
             }
    
+        }
+        else if ([[theEvent characters] isEqualToString:@"a"])
+        {
+            if( spikeIdx != nil)
+            {
+                drawCurrentX = NO;
+                //turn off curser
+                [NSCursor hide];
+                unsigned int _spidx = 0;
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:_spidx], @"spikeIdx", nil];
+                animationTimer = [[NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(animateTransition:) userInfo:userInfo repeats:YES] retain];
+            }
+        }
+        else if (([theEvent keyCode] == 49))
+        {
+            //space bar
+            if ( animationTimer != nil)
+            {
+                //pause the timer
+                [animationTimer invalidate];
+                [animationTimer release];
+            }
+            //turn cursor back on
+            [NSCursor unhide];
+            drawCurrentX = YES;
+            
         }
         
         else
@@ -1647,6 +1687,72 @@
 {
     return currentY;
 }
+
+-(void)animateTransition: (NSTimer*)timer
+{
+    GLfloat endx,step,startx,d,*_spikeIdx;
+    unsigned int _spidx,_nspikes;
+    _spidx = [[[timer userInfo] objectForKey:@"spikeIdx"] unsignedIntValue];
+    glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
+    _spikeIdx = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
+    _nspikes = numSpikes;
+    if (_spidx == 0)
+    {
+        startx = 0;
+    }
+    else
+    {
+        startx = _spikeIdx[6*((_spidx-1)%_nspikes)];
+    }
+    endx = _spikeIdx[6*_spidx];
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    d = (endx-startx)-currentX;
+    //step = expf(-d*d/1000.0);
+    //step = (1.0/(1+expf(currentX-0.95*endx)))*(1.0/(1+expf(-(currentX-1.1*startx))));
+    d = (endx-startx);
+    //spend 2 seconds per transition; the first 10% of the transition should take 100ms
+    if ( fabs(currentX-endx)<5 )
+    {
+        //spend 2 seconds around each spike
+        step = (5/2)*0.01;
+    }
+    else
+    {
+        step = ((d-5)/2)*0.01;
+    }
+    
+    if(currentX < endx )
+    {
+        currentX+=step;
+        //update the zoom
+        windowSize = 10+xmin;
+        dx = currentX-5-xmin;
+
+        [self setNeedsDisplay:YES];
+    }
+    else
+    {
+        [timer invalidate];
+        [animationTimer release];
+        if( (currentX >= _spikeIdx[6*(_nspikes-1)]) || (currentX >= xmax))
+        {
+            //reset
+            currentX = 0;
+            _spidx = 0;
+        }
+        else
+        {
+            _spidx = (_spidx+1) % _nspikes; 
+        }
+        
+        //schedule a new timer if there are still more spikes
+        
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:_spidx], @"spikeIdx", nil];
+        animationTimer = [[NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(animateTransition:) userInfo:userInfo repeats:YES] retain];
+        
+    }
+}
+
 
 -(void)dealloc
 {

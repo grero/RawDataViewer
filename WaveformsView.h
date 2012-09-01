@@ -35,10 +35,11 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     NSUInteger drawingMode,numTemplateVertices; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
     NSMutableData *spikeIdx;
-    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded;
+    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded,drawCurrentX;
     
     IBOutlet SignalProcessor *sp;
     IBOutlet NSTextField *timeCoord,*ampCoord;
+    NSTimer *animationTimer;
 }
 @property (assign,readwrite) GLfloat currentX,currentY;
 @property (assign,readwrite) IBOutlet NSTextField *timeCoord,*ampCoord;
@@ -80,6 +81,6 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(NSImage*)image;
 -(void) createAxis;
 -(void)saveToPDFAtURL:(NSURL*)url;
-
+-(void)animateTransition: (NSTimer*)timer;
 
 @end
