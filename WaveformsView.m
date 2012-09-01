@@ -1086,6 +1086,7 @@
             [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y]];
             currentX = dataPoint.x;
             currentY = dataPoint.y;
+            [[timeCoord window] orderFront:self];
 
         }
         else
@@ -1646,6 +1647,7 @@
 {
     return currentY;
 }
+
 -(void)dealloc
 {
     free(vertices);
