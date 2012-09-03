@@ -243,10 +243,10 @@
             //free(tmp_data);
         }
         //test; compute covariance matrix
-        float *cov = malloc(numActiveChannels*numActiveChannels*sizeof(float));
-        computeCovariance(data, numActiveChannels, npoints/numActiveChannels, 1, cov);
-        matrix_inverse(cov, numActiveChannels, NULL);
-        [sp setCinv:[NSData dataWithBytes:cov length:numActiveChannels*numActiveChannels*sizeof(float)]];
+        //float *cov = malloc(numActiveChannels*numActiveChannels*sizeof(float));
+        //computeCovariance(data, numActiveChannels, npoints/numActiveChannels, 1, cov);
+        //matrix_inverse(cov, numActiveChannels, NULL);
+        //[sp setCinv:[NSData dataWithBytes:cov length:numActiveChannels*numActiveChannels*sizeof(float)]];
         //[wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
         [wf createConnectedVertices:[NSData dataWithBytes:data length:(npoints/nchs)*numActiveChannels*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)numActiveChannels andTimePoints:(NSUInteger)npoints/nchs];
 
