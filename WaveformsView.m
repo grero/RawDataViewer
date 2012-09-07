@@ -1670,7 +1670,35 @@
 {
     
     //center on currentX
-    dx = _currentX-0.5*(windowSize-xmin)-xmin;
+    //check if currentX is within limits
+    NSUInteger offset;
+    GLfloat _xmin,_dx;
+    _dx = _currentX-0.5*(windowSize-xmin);
+    if( _currentX > xmax)
+    {
+        //need to load more data
+        //find out how many windows we need to skip
+        offset = _currentX/(xmax-xmin);
+        vertexOffset+=offset*(NSInteger)(1.0*(xmax-xmin)*samplingRate);
+        vertexOffset = MIN(vertexOffset,endTime-10000);
+        _xmin = vertexOffset/samplingRate;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
+    }
+    else if( _currentX < xmin )
+    {
+        offset = ceil((xmin-_currentX)/(xmax-xmin));
+        if(vertexOffset>0)
+        {
+            vertexOffset = MAX(0,(NSInteger)vertexOffset-offset*(NSInteger)(1.0*(xmax-xmin)*samplingRate));
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
+        }
+
+    }
+    else
+    {
+        _xmin = xmin;
+    }
+    dx = _dx-_xmin;
     currentX = _currentX;
 
     [self setNeedsDisplay:YES];
