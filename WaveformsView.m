@@ -1505,14 +1505,18 @@
         }
         else if ([[theEvent characters] isEqualToString:@"a"])
         {
-            if( spikeIdx != nil)
+            //only do this if the timer is not already running
+            if( animationTimer == nil )
             {
-                drawCurrentX = NO;
-                //turn off curser
-                [NSCursor hide];
-                unsigned int _spidx = 0;
-                NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:_spidx], @"spikeIdx", nil];
-                animationTimer = [[NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(animateTransition:) userInfo:userInfo repeats:YES] retain];
+                if( spikeIdx != nil)
+                {
+                    drawCurrentX = NO;
+                    //turn off cursor
+                    [NSCursor hide];
+                    unsigned int _spidx = 0;
+                    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:_spidx], @"spikeIdx", nil];
+                    animationTimer = [[NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(animateTransition:) userInfo:userInfo repeats:YES] retain];
+                }
             }
         }
         else if (([theEvent keyCode] == 49))
@@ -1521,8 +1525,12 @@
             if ( animationTimer != nil)
             {
                 //pause the timer
-                [animationTimer invalidate];
+                if( [animationTimer isValid])
+                {
+                    [animationTimer invalidate];
+                }
                 [animationTimer release];
+                animationTimer = nil;
             }
             //turn cursor back on
             [NSCursor unhide];
@@ -1662,9 +1670,9 @@
 {
     
     //center on currentX
-    dx = _currentX-xmin-0.5*windowSize;
+    dx = _currentX-0.5*(windowSize-xmin)-xmin;
     currentX = _currentX;
-    
+
     [self setNeedsDisplay:YES];
 }
 
