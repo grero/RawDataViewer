@@ -35,6 +35,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     NSUInteger drawingMode,numTemplateVertices; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
     NSMutableData *spikeIdx;
+	NSMutableIndexSet *selectedChannels;
     BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded,drawCurrentX;
     
     IBOutlet SignalProcessor *sp;
@@ -82,5 +83,6 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(void) createAxis;
 -(void)saveToPDFAtURL:(NSURL*)url;
 -(void)animateTransition: (NSTimer*)timer;
+-(void)selectChannels:(NSIndexSet*)_channels;
 
 @end

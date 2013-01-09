@@ -418,10 +418,18 @@
                 vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
                 
                 //color
-                colors[3*k] = 1.0f;
-                colors[3*k+1] = 0.5f;
-                colors[3*k+2] = 0.3f;
-                
+				if( [selectedChannels containsIndex: c])
+				{
+					colors[3*k] = 1.0f;
+					colors[3*k+1] = 0.0f;
+					colors[3*k+2] = 0.0f;
+				}
+				else
+				{
+					colors[3*k] = 1.0f;
+					colors[3*k+1] = 0.5f;
+					colors[3*k+2] = 0.3f;
+				} 
                 
             }
     
@@ -458,9 +466,19 @@
             vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
             
             //color
-            colors[3*k] = 1.0f;
-            colors[3*k+1] = 0.5f;
-            colors[3*k+2] = 0.3f;
+           
+			if( [selectedChannels containsIndex: c])
+			{
+				colors[3*k] = 1.0f;
+				colors[3*k+1] = 0.0f;
+				colors[3*k+2] = 0.0f;
+			}
+			else
+			{
+				colors[3*k] = 1.0f;
+				colors[3*k+1] = 0.5f;
+				colors[3*k+2] = 0.3f;
+			} 
 
         }
     });
@@ -1090,6 +1108,55 @@
             [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y]];
             currentX = dataPoint.x;
             currentY = dataPoint.y;
+
+		}
+        if([theEvent modifierFlags] & NSShiftKeyMask )
+		{
+			//get the channel
+			int	ch = 0;
+			while( channelOffsets[ch] < dataPoint.y )
+				ch++;
+			/*
+			//change to red
+			//change the color
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer  );
+			float *_colors,*_c;
+			_colors = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+			int np = (int)(numPoints/numChannels);
+			if( selectedChannels != NULL )
+			{
+				if( [selectedChannels count] > 0)
+				{
+
+					_ch = [selectedChannels firstIndex];
+					_c = _colors + 3*numPoints + 3*_ch*np;
+					for(i=0;i<np;i++)
+					{
+						_c[3*i] = 1.0f;
+						_c[3*i+1] = 0.5f;
+						_c[3*i+2] = 0.3f;
+					}
+					[selectedChannels removeIndex: _ch];
+			    }		
+				[selectedChannels addIndex: ch];
+			}
+			else
+			{
+				selectedChannels = [[NSMutableIndexSet indexSetWithIndex: ch] retain];
+			}
+			_c = _colors + 3*numPoints + 3*ch*np;
+			for(i=0;i<np;i++)
+			{
+				_c[3*i] = 1.0;
+				_c[3*i+1] = 0.0;
+				_c[3*i+2] = 0.0;
+			}
+			glUnmapBuffer(GL_ARRAY_BUFFER);
+			*/
+			NSLog(@"Selected channel: %d", ch);
+			NSLog(@"currentY: %f", currentY);
+			NSLog(@"channelOffset[ch] = %f",channelOffsets[ch]);
+			[self selectChannels: [NSIndexSet indexSetWithIndex: ch]];
             [[timeCoord window] orderFront:self];
 
         }
@@ -1789,6 +1856,49 @@
     }
 }
 
+-(void)selectChannels:(NSIndexSet*)_channels
+{
+	float *_colors,*_c;
+	NSUInteger np,ch,i;
+	//change the color
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer  );
+	_colors = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+	np = (NSUInteger)(numPoints/numChannels);
+	if( selectedChannels == NULL )
+	{
+		selectedChannels = [[NSMutableIndexSet indexSet] retain];
+	}
+	ch = [_channels firstIndex];
+	while(ch != NSNotFound )
+	{
+		NSLog(@"ch = %d" ,ch);
+		_c = _colors + 3*numPoints + 3*ch*np;
+		if( [selectedChannels containsIndex: ch] )
+		{
+			//channel already selected; deselect
+			for(i=0;i<np;i++)
+			{
+				_c[3*i] = 1.0f;
+				_c[3*i+1] = 0.5f;
+				_c[3*i+2] = 0.3f;
+			}
+			[selectedChannels removeIndex: ch];
+		}
+		else
+		{
+			for(i=0;i<np;i++)
+			{
+				_c[3*i] = 1.0;
+				_c[3*i+1] = 0.0;
+				_c[3*i+2] = 0.0;
+			}
+			[selectedChannels addIndex: ch];
+		}
+		ch = [_channels indexGreaterThanIndex: ch];
+	}
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+
+}
 
 -(void)dealloc
 {
