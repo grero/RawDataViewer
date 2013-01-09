@@ -1734,7 +1734,7 @@
     _nspikes = numSpikes;
     if (_spidx == 0)
     {
-        startx = 0;
+        startx = xmin;
     }
     else
     {
