@@ -930,10 +930,10 @@
 		//[self drawLabels];
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		
         glOrtho(xmin+dx, windowSize+dx, ymin+dy, ySpan+dy, -2.0+dz, 3.0+dz);
         		//activate the dynamicbuffer
-        
+       	glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glEnableClientState(GL_VERTEX_ARRAY);
 
@@ -966,6 +966,12 @@
         glDisableClientState(GL_COLOR_ARRAY);
         if ( (drawSpikes == YES) && ( spikesLoaded == YES))
         {
+			glMatrixMode(GL_PROJECTION);
+			glPushMatrix();
+			glLoadIdentity();
+			glOrtho(xmin+dx, windowSize+dx, 0, 1, -2.0+dz, 3.0+dz);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
             glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
             glEnableClientState(GL_VERTEX_ARRAY);
             glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
@@ -984,6 +990,9 @@
             {
                 glDisableClientState(GL_COLOR_ARRAY);
             }
+			glMatrixMode(GL_PROJECTION);
+			glPopMatrix();
+			glMatrixMode(GL_MODELVIEW);
             //GLenum e = glGetError();
             //NSLog(@"Error %d", e);
         }
