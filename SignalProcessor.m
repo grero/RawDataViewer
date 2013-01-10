@@ -146,10 +146,10 @@
     const char* fname;
     FILE *fid;
     uint64_t *timestamps;
-    float *_spikes,s;
+    float *_spikes,s,fconv;
     int16_t *spikeForms;
     uint8_t nchs;
-    uint32_t headerSize,numSpikes,timepts,i,_nchs;
+    uint32_t headerSize,numSpikes,timepts,i,_nchs,conv;
     
     timepts = 32;
     fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
@@ -166,6 +166,8 @@
     fread(&numSpikes,sizeof(uint32_t),1,fid);
     //get the number of channels
     fread(&nchs,sizeof(uint8_t),1,fid);
+	fread(&conv,sizeof(uint32_t),1,fid);
+	fread(&timepts,sizeof(uint32_t),1,fid);
     //read the spikeForms
     spikeForms = malloc(numSpikes*((uint32_t)nchs)*timepts*sizeof(int16_t));
     fseek(fid, headerSize, 0);
@@ -186,9 +188,11 @@
     //timestamps are stored with a precision of microseconds, so we need to convert to milliseconds first
     fclose(fid);
     _spikes = malloc(numSpikes*sizeof(float));
+	//convert from microseconds to miliseconds
+	fconv = 0.001;
     for(i=0;i<numSpikes;i++)
     {
-        _spikes[i] = 0.001*(float)timestamps[i];
+        _spikes[i] = fconv*(float)timestamps[i];
     }
     free(timestamps);
     [spikes appendBytes:_spikes length:numSpikes*sizeof(float)];
