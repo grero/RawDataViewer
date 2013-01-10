@@ -218,7 +218,7 @@
     const char *fname;
     float *spikeForms;
     float *_spikes;
-    uint32_t nspikes,nchs,timepts,headerSize,i,spikeFormsSize;
+    uint32_t nspikes,nchs,timepts,headerSize,i,spikeFormsSize,conv;
     uint8_t _nchs;
     int16_t *_spikeForms;
     uint64_t *_timestamps;
@@ -227,7 +227,7 @@
     nspikes = [spikes length]/sizeof(float);
     spikeForms = (float*)[templates bytes];
     
-    
+   	conv = 1000.0; 
     nchs = *((uint32_t*)[numChannels bytes]);
     timepts = [templates length]/(sizeof(float)*nspikes*nchs);
     spikeFormsSize = nspikes*timepts*nchs;
@@ -256,6 +256,8 @@
     //write the number of channels
     _nchs = (uint8_t)nchs;
     fwrite(&_nchs, sizeof(uint8_t), 1, fid);
+	fwrite(&conv,sizeof(uint32_t),1,fid);
+	fwrite(&timepts,sizeof(uint32_t),1,fid);
     fseek(fid,headerSize,0);
     //write the spike shapes
     fwrite(_spikeForms,  sizeof(int16_t),nspikes*nchs*timepts, fid);
