@@ -88,6 +88,7 @@
     templatesLoaded = NO;
     spikeIdx = [[NSMutableData dataWithCapacity:100] retain];
     drawCurrentX = YES;
+	drawThresholds = NO;
     return self;
 }
 
@@ -940,6 +941,7 @@
         
         //glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
         glEnableClientState(GL_COLOR_ARRAY);
+		NSUInteger ch,np;
         if( drawingMode == 1)
         {
             //only draw peaks
@@ -951,7 +953,6 @@
         else if (drawingMode == 0 )
         {
             //draw everything
-            NSUInteger ch,np;
             np = numPoints/numChannels;
             glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
             glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
@@ -964,6 +965,17 @@
         }
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_COLOR_ARRAY);
+		if( drawThresholds )
+		{
+			//draw extraction thresholds for each channel
+			for(ch = 0; ch < numChannels;ch++)
+			{
+				glBegin(GL_LINES);
+				glVertex3f(xmin+dx,extractionThresholds[ch]+channelOffsets[ch],0.5);
+	            glVertex3f(windowSize+dx,extractionThresholds[ch]+channelOffsets[ch],0.5);
+				glEnd();
+			}
+		}
         if ( (drawSpikes == YES) && ( spikesLoaded == YES))
         {
 			//glMatrixMode(GL_PROJECTION);

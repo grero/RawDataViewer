@@ -28,7 +28,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 	NSMutableArray *highlightedChannels;
     NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes,endTime;
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan,samplingRate;
-    GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets;
+    GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets,*extractionThresholds;
     GLuint *indices;
     GLfloat dz,dx,dy,tx,ty;
     GLuint indexBuffer,vertexBuffer,colorBuffer,spikesBuffer,templatesBuffer;
@@ -36,7 +36,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     GLfloat currentX,currentY;
     NSMutableData *spikeIdx;
 	NSMutableIndexSet *selectedChannels;
-    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded,drawCurrentX;
+    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded,drawCurrentX,drawThresholds;
     
     IBOutlet SignalProcessor *sp;
     IBOutlet NSTextField *timeCoord,*ampCoord;
