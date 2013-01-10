@@ -39,11 +39,11 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded,drawCurrentX,drawThresholds;
     
     IBOutlet SignalProcessor *sp;
-    IBOutlet NSTextField *timeCoord,*ampCoord;
+    IBOutlet NSTextField *timeCoord,*ampCoord,*chCoord;
     NSTimer *animationTimer;
 }
 @property (assign,readwrite) GLfloat currentX,currentY;
-@property (assign,readwrite) IBOutlet NSTextField *timeCoord,*ampCoord;
+@property (assign,readwrite) IBOutlet NSTextField *timeCoord,*ampCoord,*chCoord;
 @property (retain,readwrite) NSMutableData *highlightWaves;
 @property (retain,readwrite) NSMutableArray *highlightedChannels;
 @property (assign,readwrite) BOOL drawSpikes;

@@ -20,7 +20,7 @@
 
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
-@synthesize timeCoord,ampCoord;
+@synthesize timeCoord,ampCoord,chCoord;
 @synthesize drawSpikes;
 @synthesize sp;
 @synthesize endTime;
@@ -87,7 +87,7 @@
     drawSpikes = NO;
     templatesLoaded = NO;
     spikeIdx = [[NSMutableData dataWithCapacity:100] retain];
-    drawCurrentX = YES;
+    drawCurrentX = NO;
 	drawThresholds = NO;
     return self;
 }
@@ -1004,9 +1004,9 @@
             {
                 glDisableClientState(GL_COLOR_ARRAY);
             }
-			glMatrixMode(GL_PROJECTION);
-			glPopMatrix();
-			glMatrixMode(GL_MODELVIEW);
+			//glMatrixMode(GL_PROJECTION);
+			//glPopMatrix();
+			//glMatrixMode(GL_MODELVIEW);
             //GLenum e = glGetError();
             //NSLog(@"Error %d", e);
         }
@@ -1131,7 +1131,13 @@
             [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y]];
             currentX = dataPoint.x;
             currentY = dataPoint.y;
-
+			drawCurrentX = YES;
+			//get the channel
+			int	ch = 0;
+			while( channelOffsets[ch] < dataPoint.y )
+				ch++;
+            [chCoord setStringValue:[NSString stringWithFormat:@"%d",ch]];
+            [[timeCoord window] orderFront:self];
 		}
         if([theEvent modifierFlags] & NSShiftKeyMask )
 		{
@@ -1139,43 +1145,7 @@
 			int	ch = 0;
 			while( channelOffsets[ch] < dataPoint.y )
 				ch++;
-			/*
-			//change to red
-			//change the color
-			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer  );
-			float *_colors,*_c;
-			_colors = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-			int np = (int)(numPoints/numChannels);
-			if( selectedChannels != NULL )
-			{
-				if( [selectedChannels count] > 0)
-				{
-
-					_ch = [selectedChannels firstIndex];
-					_c = _colors + 3*numPoints + 3*_ch*np;
-					for(i=0;i<np;i++)
-					{
-						_c[3*i] = 1.0f;
-						_c[3*i+1] = 0.5f;
-						_c[3*i+2] = 0.3f;
-					}
-					[selectedChannels removeIndex: _ch];
-			    }		
-				[selectedChannels addIndex: ch];
-			}
-			else
-			{
-				selectedChannels = [[NSMutableIndexSet indexSetWithIndex: ch] retain];
-			}
-			_c = _colors + 3*numPoints + 3*ch*np;
-			for(i=0;i<np;i++)
-			{
-				_c[3*i] = 1.0;
-				_c[3*i+1] = 0.0;
-				_c[3*i+2] = 0.0;
-			}
-			glUnmapBuffer(GL_ARRAY_BUFFER);
-			*/
+            [chCoord setStringValue:[NSString stringWithFormat:@"%d",ch]];
 			NSLog(@"Selected channel: %d", ch);
 			NSLog(@"currentY: %f", currentY);
 			NSLog(@"channelOffset[ch] = %f",channelOffsets[ch]);
