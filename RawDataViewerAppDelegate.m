@@ -48,12 +48,15 @@
     NSRange rWf = [filename rangeOfString:@"waveforms.bin"];
     if(rWf.location != NSNotFound )
     {
+		[sp resetSpikes];
         res = [sp loadWaveformsFile:filename];
         [wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil cellID:NULL];
 		//get the channel from the file name
 		NSRange gwf = [filename rangeOfString:@"g0"];
 		if(gwf.location != NSNotFound )
 		{
+			//de-select any selected channels
+			[wf selectChannels: [wf selectedChannels]];
 			int ch = [[filename substringWithRange: NSMakeRange(gwf.location + 1,rWf.location - gwf.location-1)] intValue];
 			[wf selectChannels: [NSIndexSet indexSetWithIndex: ch-1]];
 		}
