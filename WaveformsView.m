@@ -24,6 +24,7 @@
 @synthesize drawSpikes;
 @synthesize sp;
 @synthesize endTime;
+@synthesize selectedChannels;
 //@synthesize currentX,currentY;
 
 -(void)awakeFromNib
@@ -636,7 +637,6 @@
         }
         else
         {
-           
            spikeVertices[2*3*k+4] = channelOffsets[channels[i*2+1]]+0.5*(channelOffsets[channels[i*2+1]+1]-channelOffsets[channels[i*2+1]-1]);
         }
         spikeVertices[2*3*k+3] = spikeData[i];
@@ -966,12 +966,14 @@
         glDisableClientState(GL_COLOR_ARRAY);
         if ( (drawSpikes == YES) && ( spikesLoaded == YES))
         {
-			glMatrixMode(GL_PROJECTION);
-			glPushMatrix();
-			glLoadIdentity();
-			glOrtho(xmin+dx, windowSize+dx, 0, 1, -2.0+dz, 3.0+dz);
+			//glMatrixMode(GL_PROJECTION);
+			//glPushMatrix();
+			//glLoadIdentity();
+			//glOrtho(xmin+dx, windowSize+dx, 0, 1, -2.0+dz, 3.0+dz);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
+			//jglTranslatef(0.0,-channelOffsets[0],0.0);
+			//glScalef(1.0,channelOffsets[numChannels-1]-channelOffsets[0],1.0);
             glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
             glEnableClientState(GL_VERTEX_ARRAY);
             glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
@@ -1867,6 +1869,8 @@
 
 -(void)selectChannels:(NSIndexSet*)_channels
 {
+	if( [_channels count] == 0)
+		return;
 	float *_colors,*_c;
 	NSUInteger np,ch,i;
 	//change the color

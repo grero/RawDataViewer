@@ -49,6 +49,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 @property (assign,readwrite) BOOL drawSpikes;
 @property (assign,readwrite) NSUInteger endTime;
 @property (assign) IBOutlet SignalProcessor *sp;
+@property (retain,readwrite) NSMutableIndexSet *selectedChannels;
 
 //OpenGL related functions
 +(NSOpenGLPixelFormat*)defaultPixelFormat;
