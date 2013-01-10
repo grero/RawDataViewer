@@ -276,9 +276,9 @@
 -(void)decodeData:(NSData*)data numRows: (uint32_t)nrows numCols:(uint32_t)ncols channelOffsets:(NSData*)offsets
 {
     
-    float *spikeForms,*_data,*_cinv,*_offsets,*bp,sq;
+    float *spikeForms,*_data,*_cinv,*_offsets,*bp,*combinations,sq;
     double d;
-    uint32_t i,j,k,l,timepts,*C,_nspikes;
+    uint32_t i,j,k,l,ll,timepts,*C,_nspikes,ncombos;
     dispatch_queue_t queue;
     
     _data = (float*)[data bytes];
@@ -286,6 +286,25 @@
     timepts = [[self templates] length]/(ntemplates*nrows*sizeof(float));
     _cinv = (float*)[[self cinv] bytes];
     _offsets = (float*)[offsets bytes];
+	
+	ncombos = ntemplates*(ntemplates-1)/2;
+	combinations = calloc(ncombos*nrows*timepts*timepts + ntemplates*nrows*timepts,,sizeof(float));
+	for(i=0;i<ntemplates-1;i++)
+	{
+		for(j=i+1;j<templates;j++)
+		{
+			for(k=0;k<nrows;k++)
+			{
+				for(l=0;l<timepts;l++)
+				{
+					for(ll=0;ll<timepts;ll++)
+					{
+						combinations[i*nrows*timepts*timepts+k*timepts*timepts+l*timepts+ll] = spikeForms[i*nrows*timepts+k*timepts + l] + spikeForms[j*nrows*timepts + ll];
+					}
+				}
+			}
+		}
+	}
     //loop through spikeforms
     
     C = calloc(ntemplates*(ncols-timepts),sizeof(uint32_t));
@@ -356,84 +375,6 @@
     
     free(C);
     free(bp);
-}
-
--(void)extractSpikesFromData:(NSData*)data numRows: (uint32_t)nrows numCols:(uint32_t)ncols channelOffsets:(NSData*)offsets xOffset:(float)xoffset
-{
-	uint32_t i,j,k,l;
-	float *_data,*_tmpData,*_cinv,*_offset,*mD,d,alpha,*spikeidx,q,r,sq;
-
-
-	_data = (float*)[data bytes];
-	_cinv = (float*)[[self cinv] bytes];
-	_offset = (float*)[offsets bytes];
-	mD = malloc(ncols*sizeof(float));
-	//TODO: make this a setting
-	alpha = 0.001;
-	//compute mahalanobis distance
-	malanobisDistance(_data,nrows,ncols,1,_offset,_cinv,NULL,0,mD);
-	spikeidx = malloc(ncols*sizeof(float));
-	for(i=0;i<ncols;i++)
-	{
-		//compute the probability for observing this distance under the null hypothesis
-		d = 1-chi2_cdf((double)mD[i],nrows);
-		//if d is less than the threshold, this is a spike
-		spikeidx[i] = d < alpha;
-
-	}
-	free(mD);
-	//for each continuous group, find the minimum
-	i = 0;
-	while(i < ncols)
-	{
-		j = i;
-		l = -1;
-		r= HUGE_VAL;
-		while( (spikeidx[j]==1) && (j < ncols))
-		{
-			q = HUGE_VAL;
-			for(k=0;k<nrows;k++)
-			{
-				d = _data[k*ncols+j];
-				q = MIN(d,q);
-			}
-			//set the minimum index
-			l = q > r ? j : l;
-			r = MIN(q,r);
-			j+=1;
-
-		}
-		//r is now the spike index
-		//add the spike; verify that there was indeed a spike
-		if( (j < ncols ) && (j>0)  )
-		{
-			if(spikeidx[j-1]==1)
-			{
-			    sq = xoffset + j/(samplingRate/1000);
-				[[self spikes] appendBytes: &sq length:sizeof(float)];
-				nspikes+=1;
-				i=j+1;
-			}
-			else
-			{
-				i+=1;
-			}
-		}
-		else
-		{
-			i+=1;
-		}
-	}
-
-	free(spikeidx);
-}
-
--(void)resetSpikes
-{
-	[[self spikes] setLength:0];
-	[[self templates] setLength:0];
-	ntemplates = 0;
-	nspikes = 0;
 }
 
 
