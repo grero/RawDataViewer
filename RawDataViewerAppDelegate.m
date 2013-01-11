@@ -29,6 +29,49 @@
     //Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"loadMoreData" object:nil];
 }
+- (BOOL)application:(NSApplication *)theApplication openFiles:(NSArray *)filenames
+{
+	NSString *filename;
+	NSEnumerator *_filenames;
+	BOOL res;
+	_filenames = [filenames objectEnumerator];
+	filename = [_filenames nextObject];
+    [[progress window] makeKeyAndOrderFront:self];
+    [progress startAnimation:self];
+	//reset the spikes
+	[sp resetSpikes];
+	//reset the selected channels
+	[wf selectChannels: [wf selectedChannels]];
+	while( filename )
+	{
+		NSRange rWf = [filename rangeOfString:@"waveforms.bin"];
+		if(rWf.location != NSNotFound )
+		{
+			res = [sp loadWaveformsFile:filename];
+			[wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil cellID:NULL];
+			NSRange gwf = [filename rangeOfString:@"g0"];
+			if(gwf.location != NSNotFound )
+			{
+				int ch = [[filename substringWithRange: NSMakeRange(gwf.location + 1,rWf.location - gwf.location-1)] intValue];
+				[wf selectChannels: [NSIndexSet indexSetWithIndex: ch-1]];
+
+			}
+		}
+		else if([[filename pathExtension] isEqualToString:@"mat"])
+		{
+			res = [self loadHmmSortResultsFromFile:filename];
+		}
+		else if([[filename pathExtension] isEqualToString:@"bin"])
+		{
+			res = [self loadDataFromFile: filename atOffset: 0];
+		}
+		filename = [_filenames nextObject];
+
+	}
+	[progress stopAnimation:self];
+	[[progress window] orderOut:self];
+	return res;
+}
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
     //read data from the file
@@ -414,6 +457,10 @@
     }
     //check for the presense of a file called reorder.txt; if we find it, that means we have to reoder the data
     numChannels = nchs;
+	if( numActiveChannels == 0)
+	{
+		numActiveChannels = nchs;
+	}
     [self checkForReorderingForFile:filename];
     if(reorder != NULL )
     {
