@@ -36,5 +36,7 @@
 -(BOOL)saveWaveformsFile:(NSString*)filename;
 -(void)decodeData:(NSData*)data numRows: (uint32_t)nrows numCols:(uint32_t)ncols channelOffsets:(NSData*)offsets;
 -(void)resetSpikes;
+-(void)assignSpikeID:(NSInteger)spid;
+-(void)assignSpikeID:(NSInteger)spid forSpikesInRange: (NSRange)range;
 
 @end

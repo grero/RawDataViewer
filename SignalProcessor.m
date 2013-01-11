@@ -442,5 +442,33 @@
 	nspikes = 0;
 }
 
+-(void)assignSpikeID:(NSInteger)spid
+{
+	uint32_t i,*_cids;;
+	_cids = malloc(nspikes*sizeof(uint32_t));
+	for(i=0;i<nspikes;i++)
+	{
+		_cids[i] = spid;
+	}
+	[self setCids: [NSMutableData dataWithBytes: _cids length: nspikes*sizeof(uint32_t)]];
+	free(_cids);
+}
+
+-(void)assignSpikeID:(NSInteger)spid forSpikesInRange: (NSRange)range
+{
+	uint32_t i,*_cids,n;;
+	_cids = malloc(range.length*sizeof(uint32_t));
+	n = range.location + range.length;
+	if( cids == NULL )
+	{
+		[self setCids: [NSMutableData dataWithLength: nspikes*sizeof(uint32_t)]];
+	}
+	for(i=0;i<range.length;i++)
+	{
+		_cids[i] = spid;
+	}
+	[[self cids] replaceBytesInRange: range withBytes: _cids length: range.length*sizeof(uint32_t)];
+	free(_cids);
+}
 
 @end
