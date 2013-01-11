@@ -34,7 +34,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     GLuint indexBuffer,vertexBuffer,colorBuffer,spikesBuffer,templatesBuffer;
     NSUInteger drawingMode,numTemplateVertices; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
-    NSMutableData *spikeIdx;
+    NSMutableData *spikeIdx,*channelColors;;
 	NSMutableIndexSet *selectedChannels;
     BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded,drawCurrentX,drawThresholds;
     
@@ -50,6 +50,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 @property (assign,readwrite) NSUInteger endTime;
 @property (assign) IBOutlet SignalProcessor *sp;
 @property (retain,readwrite) NSMutableIndexSet *selectedChannels;
+@property (retain,readwrite) NSMutableData *channelColors;
 
 //OpenGL related functions
 +(NSOpenGLPixelFormat*)defaultPixelFormat;
@@ -84,6 +85,6 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(void) createAxis;
 -(void)saveToPDFAtURL:(NSURL*)url;
 -(void)animateTransition: (NSTimer*)timer;
--(void)selectChannels:(NSIndexSet*)_channels;
+-(void)selectChannels:(NSIndexSet*)_channels usingColor:(NSData*)_color;
 
 @end

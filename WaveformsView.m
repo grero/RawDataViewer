@@ -25,6 +25,7 @@
 @synthesize sp;
 @synthesize endTime;
 @synthesize selectedChannels;
+@synthesize channelColors;
 //@synthesize currentX,currentY;
 
 -(void)awakeFromNib
@@ -308,12 +309,27 @@
     NSUInteger npoints,ch,left;//i,j,k,pidx,tidx;
     int16_t *_data;
     //GLfloat offset;//d,peak,trough;
-    GLfloat *limits,*choffsets;
+    GLfloat *limits,*choffsets,*chColors;
     dispatch_queue_t queue;
     
     npoints = timepoints;
     numChannels = channels;
 	_data = (int16_t*)[vertex_data bytes];
+	if( [channelColors length] == 0)
+	{
+		[self setChannelColors: [NSMutableData dataWithLength: 3*channels*sizeof(GLfloat)]];
+		chColors = (GLfloat*)[[self channelColors] bytes];
+		for(ch=0;ch<=channels;ch++)
+		{
+			chColors[3*ch] = 1.0f;
+			chColors[3*ch+1] = 0.5f;
+			chColors[3*ch+2] = 0.3f;
+		}
+	}
+	else
+	{
+		chColors = (GLfloat*)[[self channelColors] bytes];
+	}
     //we want to create peaks every 8 points
     chunkSize = 8;
     left = npoints - (npoints/chunkSize)*chunkSize; //figure out how much we have to pad
@@ -420,6 +436,7 @@
                 vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
                 
                 //color
+				/*
 				if( [selectedChannels containsIndex: c])
 				{
 					colors[3*k] = 1.0f;
@@ -432,6 +449,11 @@
 					colors[3*k+1] = 0.5f;
 					colors[3*k+2] = 0.3f;
 				} 
+				*/
+				colors[3*k] = chColors[3*c];
+				colors[3*k+1] = chColors[3*c+1];
+				colors[3*k+2] = chColors[3*c+2];
+			
                 
             }
     
@@ -466,7 +488,7 @@
             vertices[3*k+1] = d + offset;
             //z
             vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
-            
+           /* 
             //color
            
 			if( [selectedChannels containsIndex: c])
@@ -481,6 +503,10 @@
 				colors[3*k+1] = 0.5f;
 				colors[3*k+2] = 0.3f;
 			} 
+			*/
+			colors[3*k] = chColors[3*c];
+			colors[3*k+1] = chColors[3*c+1];
+			colors[3*k+2] = chColors[3*c+2];
 
         }
     });
@@ -1149,7 +1175,7 @@
 			NSLog(@"Selected channel: %d", ch);
 			NSLog(@"currentY: %f", currentY);
 			NSLog(@"channelOffset[ch] = %f",channelOffsets[ch]);
-			[self selectChannels: [NSIndexSet indexSetWithIndex: ch]];
+			[self selectChannels: [NSIndexSet indexSetWithIndex: ch] usingColor: NULL];
             [[timeCoord window] orderFront:self];
 
         }
@@ -1849,12 +1875,25 @@
     }
 }
 
--(void)selectChannels:(NSIndexSet*)_channels
+-(void)selectChannels:(NSIndexSet*)_channels usingColor:(NSData*)_color
 {
 	if( [_channels count] == 0)
 		return;
-	float *_colors,*_c;
+	float *_colors,*_c,*_cl,*chColors;
 	NSUInteger np,ch,i;
+	if( _color == NULL )
+	{
+		_cl = malloc(3*sizeof(float));
+		//red
+		_cl[0] = 1.0;
+		_cl[1] = 0.0;
+		_cl[2] = 0.0;
+	}
+	else
+	{
+		_cl = (float*)[_color bytes];
+	}
+	chColors = (float*)[channelColors bytes];
 	//change the color
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer  );
 	_colors = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
@@ -1883,15 +1922,22 @@
 		{
 			for(i=0;i<np;i++)
 			{
-				_c[3*i] = 1.0;
-				_c[3*i+1] = 0.0;
-				_c[3*i+2] = 0.0;
+				_c[3*i] = _cl[0];
+				_c[3*i+1] = _cl[1];
+				_c[3*i+2] = _cl[2];
 			}
 			[selectedChannels addIndex: ch];
 		}
+		//update the channel colors
+		[channelColors replaceBytesInRange: NSMakeRange(3*ch*sizeof(float),3*sizeof(float)) withBytes: _c length:3*sizeof(float)];
 		ch = [_channels indexGreaterThanIndex: ch];
 	}
 	glUnmapBuffer(GL_ARRAY_BUFFER);
+	if(_color == NULL )
+	{
+		//cleanup
+		free(_cl);
+	}
 
 }
 
