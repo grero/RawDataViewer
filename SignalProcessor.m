@@ -457,17 +457,25 @@
 -(void)assignSpikeID:(NSInteger)spid forSpikesInRange: (NSRange)range
 {
 	uint32_t i,*_cids,n;;
+	NSRange byteRange;
 	_cids = malloc(range.length*sizeof(uint32_t));
 	n = range.location + range.length;
 	if( cids == NULL )
 	{
 		[self setCids: [NSMutableData dataWithLength: nspikes*sizeof(uint32_t)]];
 	}
+	else
+	{
+		//resize the data
+		[[self cids] setLength: nspikes*sizeof(uint32_t)];
+	}
 	for(i=0;i<range.length;i++)
 	{
 		_cids[i] = spid;
 	}
-	[[self cids] replaceBytesInRange: range withBytes: _cids length: range.length*sizeof(uint32_t)];
+	//need to convert to byte range	
+	byteRange = NSMakeRange(range.location*sizeof(uint32_t),range.length*sizeof(uint32_t));
+	[[self cids] replaceBytesInRange: byteRange withBytes: _cids length: range.length*sizeof(uint32_t)];
 	free(_cids);
 }
 
