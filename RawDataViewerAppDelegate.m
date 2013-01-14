@@ -33,7 +33,13 @@
 {
 	NSString *filename;
 	NSEnumerator *_filenames;
-	BOOL res;
+	BOOL res,updateSpikes;
+	float _color[3];
+	uint32_t ch,*cids,n,i;
+	NSRange spikeRange;
+	ch = 0;
+	spikeRange.location = 0;
+	updateSpikes = NO;
 	_filenames = [filenames objectEnumerator];
 	filename = [_filenames nextObject];
     [[progress window] makeKeyAndOrderFront:self];
@@ -41,21 +47,29 @@
 	//reset the spikes
 	[sp resetSpikes];
 	//reset the selected channels
-	[wf selectChannels: [wf selectedChannels]];
+	[wf selectChannels: [wf selectedChannels] usingColor: NULL];
 	while( filename )
 	{
 		NSRange rWf = [filename rangeOfString:@"waveforms.bin"];
 		if(rWf.location != NSNotFound )
 		{
-			res = [sp loadWaveformsFile:filename];
-			[wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil cellID:NULL];
 			NSRange gwf = [filename rangeOfString:@"g0"];
 			if(gwf.location != NSNotFound )
 			{
-				int ch = [[filename substringWithRange: NSMakeRange(gwf.location + 1,rWf.location - gwf.location-1)] intValue];
-				[wf selectChannels: [NSIndexSet indexSetWithIndex: ch-1]];
-
+				ch = [[filename substringWithRange: NSMakeRange(gwf.location + 1,rWf.location - gwf.location-1)] intValue];
 			}
+			//generate a random color for this channel
+			srandom(ch);
+			_color[0] = ((float)random())/RAND_MAX;
+			_color[1] = ((float)random())/RAND_MAX;
+			_color[2] = ((float)random())/RAND_MAX;
+			[wf selectChannels: [NSIndexSet indexSetWithIndex: ch-1] usingColor: [NSData dataWithBytes: _color length: 3*sizeof(float)]];
+			res = [sp loadWaveformsFile:filename];
+			n = [sp ntemplates];
+			spikeRange.length = n-spikeRange.location;
+			[sp assignSpikeID: ch forSpikesInRange: spikeRange];
+			spikeRange.location = n;
+			updateSpikes = YES;
 		}
 		else if([[filename pathExtension] isEqualToString:@"mat"])
 		{
@@ -67,6 +81,12 @@
 		}
 		filename = [_filenames nextObject];
 
+	}
+	//check if we did something to the spikes
+	if(updateSpikes)
+	{
+		[wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil 
+						 cellID: [sp cids]];
 	}
 	[progress stopAnimation:self];
 	[[progress window] orderOut:self];
@@ -99,9 +119,9 @@
 		if(gwf.location != NSNotFound )
 		{
 			//de-select any selected channels
-			[wf selectChannels: [wf selectedChannels]];
+			[wf selectChannels: [wf selectedChannels] usingColor: NULL];
 			int ch = [[filename substringWithRange: NSMakeRange(gwf.location + 1,rWf.location - gwf.location-1)] intValue];
-			[wf selectChannels: [NSIndexSet indexSetWithIndex: ch-1]];
+			[wf selectChannels: [NSIndexSet indexSetWithIndex: ch-1] usingColor: NULL];
 		}
 
         [progress stopAnimation:self];
