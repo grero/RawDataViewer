@@ -267,6 +267,11 @@
     }
     //we don't need limits anymore
     ymax = offset+limits[2*(channels-1)+1];
+	if(channelLimits == NULL)
+	{
+		channelLimits = malloc(2*channels*sizeof(GLfloat));
+	}
+	memcpy(channelLimits,limits,2*channels*sizeof(GLfloat));
     free(limits);
     dz = 0.0;
     dy = 0.0;
@@ -515,6 +520,11 @@
     vDSP_minv(vertices, 3, &m, numPoints);
     //we don't need limits anymore
     ymax = channelOffsets[channels-1]+limits[2*(channels-1)+1];
+	if(channelLimits == NULL)
+	{
+		channelLimits = malloc(2*channels*sizeof(GLfloat));
+	}
+	memcpy(channelLimits,limits,2*channels*sizeof(GLfloat));
     free(limits);
     dz = 0.0;
     dy = 0.0;
@@ -1152,16 +1162,18 @@
         //dx = xmin-dataPoint.x;
         if([theEvent modifierFlags] & NSAlternateKeyMask )
         {
+			int	ch = 0;
+			while( (channelOffsets[ch]+channelLimits[2*ch+1] < dataPoint.y ) && (ch < numChannels ))
+				ch++;
+			//ch-=1;
+			//ch = MAX(ch,0);
             //report the current coordinates to the text field
             [timeCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.x]];
-            [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y]];
+            [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y-channelOffsets[ch]]];
             currentX = dataPoint.x;
             currentY = dataPoint.y;
 			drawCurrentX = YES;
 			//get the channel
-			int	ch = 0;
-			while( channelOffsets[ch] < dataPoint.y )
-				ch++;
             [chCoord setStringValue:[NSString stringWithFormat:@"%d",ch]];
             [[timeCoord window] orderFront:self];
 		}
@@ -1945,6 +1957,7 @@
 {
     free(vertices);
     free(indices);
+	free(channelLimits);
     //free(wfMinmax);
     free(colors);
     [[NSNotificationCenter defaultCenter] removeObserver:self
