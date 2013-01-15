@@ -30,6 +30,11 @@
 		DBD0A664152A950100122BEA /* fileReader.c in Sources */ = {isa = PBXBuildFile; fileRef = DBD0A663152A950100122BEA /* fileReader.c */; };
 		DBD0A667152A9E0B00122BEA /* libhdf5_hl.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DBD0A665152A9E0B00122BEA /* libhdf5_hl.6.dylib */; };
 		DBD0A668152A9E0B00122BEA /* libhdf5.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DBD0A666152A9E0B00122BEA /* libhdf5.6.dylib */; };
+		DBDD081E15F47802000E4692 /* libisomap.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDD081915F47802000E4692 /* libisomap.dylib */; };
+		DBDD081F15F47802000E4692 /* libmatio.2.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDD081A15F47802000E4692 /* libmatio.2.dylib */; };
+		DBDD082015F47802000E4692 /* libmpi.0.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDD081B15F47802000E4692 /* libmpi.0.dylib */; };
+		DBDD082115F47802000E4692 /* libopen-pal.0.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDD081C15F47802000E4692 /* libopen-pal.0.dylib */; };
+		DBDD082215F47802000E4692 /* libopen-rte.0.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDD081D15F47802000E4692 /* libopen-rte.0.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,6 +44,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				DBDD081E15F47802000E4692 /* libisomap.dylib in CopyFiles */,
+				DBDD081F15F47802000E4692 /* libmatio.2.dylib in CopyFiles */,
+				DBDD082015F47802000E4692 /* libmpi.0.dylib in CopyFiles */,
+				DBDD082115F47802000E4692 /* libopen-pal.0.dylib in CopyFiles */,
+				DBDD082215F47802000E4692 /* libopen-rte.0.dylib in CopyFiles */,
 				DBC5CCAA1532EDED008D94AB /* libhdf5_hl.6.dylib in CopyFiles */,
 				DBC5CCAB1532EDED008D94AB /* libhdf5.6.dylib in CopyFiles */,
 				DBC5CCAC1532EDED008D94AB /* libmatio.2.dylib in CopyFiles */,
@@ -82,6 +92,11 @@
 		DBD0A663152A950100122BEA /* fileReader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fileReader.c; sourceTree = "<group>"; };
 		DBD0A665152A9E0B00122BEA /* libhdf5_hl.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5_hl.6.dylib; path = ../../../../../../usr/local/hdf5/lib/libhdf5_hl.6.dylib; sourceTree = "<group>"; };
 		DBD0A666152A9E0B00122BEA /* libhdf5.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhdf5.6.dylib; path = ../../../../../../usr/local/hdf5/lib/libhdf5.6.dylib; sourceTree = "<group>"; };
+		DBDD081915F47802000E4692 /* libisomap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libisomap.dylib; sourceTree = "<group>"; };
+		DBDD081A15F47802000E4692 /* libmatio.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libmatio.2.dylib; sourceTree = "<group>"; };
+		DBDD081B15F47802000E4692 /* libmpi.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libmpi.0.dylib; sourceTree = "<group>"; };
+		DBDD081C15F47802000E4692 /* libopen-pal.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libopen-pal.0.dylib"; sourceTree = "<group>"; };
+		DBDD081D15F47802000E4692 /* libopen-rte.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "libopen-rte.0.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +164,11 @@
 		29B97314FDCFA39411CA2CEA /* RawDataViewer */ = {
 			isa = PBXGroup;
 			children = (
+				DBDD081915F47802000E4692 /* libisomap.dylib */,
+				DBDD081A15F47802000E4692 /* libmatio.2.dylib */,
+				DBDD081B15F47802000E4692 /* libmpi.0.dylib */,
+				DBDD081C15F47802000E4692 /* libopen-pal.0.dylib */,
+				DBDD081D15F47802000E4692 /* libopen-rte.0.dylib */,
 				DBD0A665152A9E0B00122BEA /* libhdf5_hl.6.dylib */,
 				DBD0A666152A9E0B00122BEA /* libhdf5.6.dylib */,
 				DBC39474152051F4005CFB49 /* libmatio.2.dylib */,
@@ -273,7 +293,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "install_name_tool -change /usr/local/hdf5/lib/libhdf5.6.dylib @rpath/libhdf5.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /usr/local/hdf5/lib/libhdf5_hl.6.dylib @rpath/libhdf5_hl.6.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /usr/local/lib/libmatio.2.dylib @rpath/libmatio.2.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /usr/local/lib/libgsl.0.dylib @rpath/libgsl.0.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\n\ninstall_name_tool -id \"@rpath/libhdf5.6.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5.6.dylib\"\ninstall_name_tool -id \"@rpath/libhdf5_hl.6.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5_hl.6.dylib\"\ninstall_name_tool -id \"@rpath/libmatio.2.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libmatio.2.dylib\"\ninstall_name_tool -id \"@rpath/libgsl.0.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libgsl.0.dylib\"\n";
+			shellScript = "install_name_tool -change /usr/local/hdf5/lib/libhdf5.6.dylib @executable_path/../Frameworks/libhdf5.6.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\n\ninstall_name_tool -id \"@executable_path/../Frameworks/libhdf5.6.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5.6.dylib\"\n\ninstall_name_tool -change /usr/local/hdf5/lib/libhdf5.dylib @executable_path/../Frameworks/libhdf5.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\n\ninstall_name_tool -id \"@executable_path/../Frameworks/libhdf5.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5.dylib\"\n\ninstall_name_tool -change /usr/lib/libmpi.0.dylib @executable_path/../Frameworks/libmpi.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5.6.dylib\"\ninstall_name_tool -change /usr/lib/libmpi.0.dylib @executable_path/../Frameworks/libmpi.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5_hl.6.dylib\"\n\ninstall_name_tool -id \"@executable_path/../Frameworks/libmpi.0.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libmpi.0.dylib\"\n\ninstall_name_tool -change /usr/local/lib/libopen-rte.0.dylib @executable_path/../Frameworks/libopen-rte.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libmpi.0.dylib\"\ninstall_name_tool -change /usr/local/lib/libopen-pal.0.dylib @executable_path/../Frameworks/libopen-pal.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libmpi.0.dylib\"\n\ninstall_name_tool -id \"@executable_path/../Frameworks/libopen-rte.0.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libopen-rte.0.dylib\"\ninstall_name_tool -id \"@executable_path/../Frameworks/libopen-pal.0.dylib\" \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libopen-pal.0.dylib\"\n\ninstall_name_tool -change /usr/local/lib/libopen-pal.0.dylib @executable_path/../Frameworks/libopen-pal.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libopen-rte.0.dylib\"\n\ninstall_name_tool -change /usr/local/hdf5/lib/libhdf5_hl.dylib @executable_path/../Frameworks/libhdf5_hl.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /usr/local/hdf5/lib/libhdf5_hl.6.dylib @executable_path/../Frameworks/libhdf5_hl.6.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\n\n\ninstall_name_tool -id @executable_path/../Frameworks/libhdf5_hl.6.dylib  \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libhdf5_hl.6.dylib\"\n\n\ninstall_name_tool -change /tmp/hdf5-1.8.3/hdf5/lib/libhdf5.6.dylib @executable_path/../Frameworks/libhdf5.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /tmp/hdf5-1.8.3/hdf5/lib/libhdf5_hl.6.dylib @executable_path/../Frameworks/libhdf5_hl.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\n\ninstall_name_tool -change /usr/local/lib/libgsl.dylib @executable_path/../Frameworks/libgsl.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -id @executable_path/../Frameworks/libgsl.dylib  \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libgsl.dylib\"\ninstall_name_tool -change /usr/local/lib/libgsl.0.dylib @executable_path/../Frameworks/libgsl.0.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -id @executable_path/../Frameworks/libgsl.0.dylib  \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libgsl.0.dylib\"\n\ninstall_name_tool -change /usr/local/lib/libmatio.2.dylib @executable_path/../Frameworks/libmatio.2.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\ninstall_name_tool -change /opt/cluster/usr/lib/libmatio.2.dylib @executable_path/../Frameworks/libmatio.2.dylib \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\"\n\ninstall_name_tool -id \"@executable_path/../Frameworks/libmatio.2.dylib\"  \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libmatio.2.dylib\"\n\ninstall_name_tool -change /usr/local/lib/libmpi.0.dylib @executable_path/../Frameworks/libmpi.0.dylib\ninstall_name_tool -id @executable_path/../Frameworks/libmpi.0.dylib \"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH/libmpi.0.dylib\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -329,7 +349,7 @@
 				GCC_PREFIX_HEADER = RawDataViewer_Prefix.pch;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/hdf5/include,
-					"/usr/local/include",
+					/usr/local/include,
 				);
 				INFOPLIST_FILE = "RawDataViewer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -338,6 +358,7 @@
 					/usr/local/hdf5/lib,
 					"/usr/local/lib/**",
 				);
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = RawDataViewer;
 			};
 			name = Debug;
@@ -354,7 +375,7 @@
 				GCC_PREFIX_HEADER = RawDataViewer_Prefix.pch;
 				HEADER_SEARCH_PATHS = (
 					/usr/local/hdf5/include,
-					"/usr/local/include",
+					/usr/local/include,
 				);
 				INFOPLIST_FILE = "RawDataViewer-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -364,6 +385,7 @@
 					"/usr/local/lib/**",
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
 				PRODUCT_NAME = RawDataViewer;
 			};
 			name = Release;
@@ -371,7 +393,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_INPUT_FILETYPE = automatic;
@@ -389,7 +411,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_INPUT_FILETYPE = automatic;
