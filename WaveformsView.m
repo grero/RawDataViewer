@@ -1156,6 +1156,7 @@
         ySpan = ymax;
         dy = 0;
         zoomStackIdx = 0;
+		[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(0,numChannels)]];
         
     }
     else
