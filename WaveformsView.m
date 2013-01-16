@@ -24,7 +24,7 @@
 @synthesize drawSpikes;
 @synthesize sp;
 @synthesize endTime;
-@synthesize selectedChannels;
+@synthesize selectedChannels,visibleChannels;
 @synthesize channelColors;
 //@synthesize currentX,currentY;
 
@@ -320,6 +320,10 @@
     npoints = timepoints;
     numChannels = channels;
 	_data = (int16_t*)[vertex_data bytes];
+	if( visibleChannels == NULL )
+	{
+		[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(0,channels)]];
+	}
 	if( [channelColors length] == 0)
 	{
 		[self setChannelColors: [NSMutableData dataWithLength: 3*channels*sizeof(GLfloat)]];
@@ -533,16 +537,20 @@
     dz = 0.0;
     dy = 0.0;
     dx =0.0;
-    //add maximum of the last channel to the offset
-    
-    ySpan = ymax;
+	//set the maximum based on the visible channels
+	uint32_t miCh,mxCh;
+	miCh = [[self visibleChannels] firstIndex];
+	mxCh = [[self visibleChannels] lastIndex];
+	dy = channelOffsets[miCh] + channelLimits[2*miCh];
+    ySpan = channelOffsets[mxCh] + channelLimits[2*mxCh+1]-dy;//ymax;
     ymin = 0;//-channelOffsets[0];//+channelLimits[0];
     //push onto the zoom stack
     zoomStack[0] = dx;
     zoomStack[1] = windowSize;
     zoomStack[2] = dy;
     zoomStack[3] = ySpan;
-    
+    zoomStackIdx = 0; 
+	nValidZoomStacks = 1;
     [[self openGLContext] makeCurrentContext];
     //vertices have been created, now push those to the GPU
     if(dataLoaded == NO )
@@ -1198,7 +1206,7 @@
         else
         {
             //make sure we actually moved
-            if( (fabs((tx-dataPoint.x)/xmin) > 0.001) && (fabs((ty-dataPoint.y)/ymin) > 0.001))
+            if( (fabs((tx-dataPoint.x)/windowSize) > 0.001) && (fabs((ty-dataPoint.y)/ySpan) > 0.001))
             {
                 windowSize = dataPoint.x-tx;
                 dx = tx;
@@ -1219,6 +1227,7 @@
                 if( zoomStackIdx<zoomStackLength-1 )
                 {
                     zoomStackIdx+=1;
+					nValidZoomStacks+=1;
                 }
                 else
                 {
@@ -1231,6 +1240,16 @@
                 zoomStack[zoomStackIdx*4+1] = windowSize;
                 zoomStack[zoomStackIdx*4+2] = dy;
                 zoomStack[zoomStackIdx*4+3] = ySpan;
+				//determine the channel
+				uint32_t ch1,ch2,ch = 0;
+				while( (channelOffsets[ch]+channelLimits[2*ch+1] <= MIN(ty,dataPoint.y)) && (ch < numChannels ))
+					ch++;
+				ch1 = ch;
+				while( (channelOffsets[ch]+channelLimits[2*ch+1] < MAX(ty,dataPoint.y )) && (ch < numChannels ))
+					ch++;
+				ch2 = ch;
+				[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(ch1,ch2-ch1)]];
+				NSLog(@"Visible channels: %@",[self visibleChannels]);
             }
                 
         }
@@ -1442,7 +1461,7 @@
         {
             //right arrow
             //move down the zoom stack
-            if(zoomStackIdx < zoomStackLength-1)
+            if( (zoomStackIdx < zoomStackLength-1) && (zoomStackIdx < nValidZoomStacks-1) )
             {
                 zoomStackIdx+=1;
             }
@@ -1464,6 +1483,15 @@
         windowSize = zoomStack[zoomStackIdx*4+1];
         dy = zoomStack[zoomStackIdx*4+2];
         ySpan = zoomStack[zoomStackIdx*4+3];
+		//also update the visible channels
+		uint32_t ch1,ch2,ch = 0;
+		while( (channelOffsets[ch]+channelLimits[2*ch+1] <= dy) && (ch < numChannels ))
+			ch++;
+		ch1 = ch;
+		while( (channelOffsets[ch]+channelLimits[2*ch] < dy+ySpan) && (ch < numChannels ))
+			ch++;
+		ch2 = ch;
+		[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(ch1,ch2-ch1)]];
         [self setNeedsDisplay:YES];
         
         //[self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];

@@ -26,7 +26,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     NSData *drawingColor,*highlightColor;
     NSMutableData *highlightWaves;
 	NSMutableArray *highlightedChannels;
-    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes,endTime;
+    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes,endTime,nValidZoomStacks;
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan,samplingRate;
     GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets,*extractionThresholds;
     GLuint *indices;
@@ -35,7 +35,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     NSUInteger drawingMode,numTemplateVertices; //which mode are we using to draw (peak/all)
     GLfloat currentX,currentY;
     NSMutableData *spikeIdx,*channelColors;;
-	NSMutableIndexSet *selectedChannels;
+	NSMutableIndexSet *selectedChannels,*visibleChannels;
     BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded,drawCurrentX,drawThresholds;
     
     IBOutlet SignalProcessor *sp;
@@ -49,7 +49,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 @property (assign,readwrite) BOOL drawSpikes;
 @property (assign,readwrite) NSUInteger endTime;
 @property (assign) IBOutlet SignalProcessor *sp;
-@property (retain,readwrite) NSMutableIndexSet *selectedChannels;
+@property (retain,readwrite) NSMutableIndexSet *selectedChannels,*visibleChannels;
 @property (retain,readwrite) NSMutableData *channelColors;
 
 //OpenGL related functions
