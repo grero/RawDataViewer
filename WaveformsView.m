@@ -335,8 +335,12 @@
 	{
 		chColors = (GLfloat*)[[self channelColors] bytes];
 	}
+	chunkSize = [[NSUserDefaults standardUserDefaults] floatForKey:@"chunkSize"];
     //we want to create peaks every 8 points
-    chunkSize = 8;
+	if( chunkSize ==0 )
+	{
+		chunkSize = 2;
+	}
     left = npoints - (npoints/chunkSize)*chunkSize; //figure out how much we have to pad
     numPoints = npoints*channels;
     //check if we already have allocate space; if so, free
@@ -532,7 +536,7 @@
     //add maximum of the last channel to the offset
     
     ySpan = ymax;
-    ymin = 0;
+    ymin = 0;//-channelOffsets[0];//+channelLimits[0];
     //push onto the zoom stack
     zoomStack[0] = dx;
     zoomStack[1] = windowSize;
@@ -1194,7 +1198,7 @@
         else
         {
             //make sure we actually moved
-            if( (abs(tx-dataPoint.x)/xmin > 0.001) && (abs(ty-dataPoint.y)/ymin > 0.001))
+            if( (fabs((tx-dataPoint.x)/xmin) > 0.001) && (fabs((ty-dataPoint.y)/ymin) > 0.001))
             {
                 windowSize = dataPoint.x-tx;
                 dx = tx;
