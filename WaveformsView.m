@@ -1589,20 +1589,19 @@
             {
                 i+=1;
             }
-            if(spikeVertices[2*3*i] < xmax)
+			currentX = spikeVertices[2*3*i];
+			//give the array back
+			glUnmapBuffer(GL_ARRAY_BUFFER);
+            if(currentX > xmax)
             {
-                currentX = spikeVertices[2*3*i];
-                //update the zoom
-                windowSize = 5+xmin;
-                dx = currentX-2.5-xmin;
-                
-                //give the array back
-                glUnmapBuffer(GL_ARRAY_BUFFER);
-                [self setNeedsDisplay:YES];
-            }
-            else{
-                glUnmapBuffer(GL_ARRAY_BUFFER);
-            }
+				//load more data
+				[self moveUp: self];
+			}
+			//update the zoom
+			windowSize = 5+xmin;
+			dx = currentX-2.5-xmin;
+			
+			[self setNeedsDisplay:YES];
         }
         else if( [[theEvent characters] isEqualToString:@"p"] )
         {
@@ -1615,23 +1614,20 @@
             {
                 i-=1;
             }
-            if (spikeVertices[2*3*i] > xmin )
+			currentX = spikeVertices[2*3*i];
+			//give the array back
+			glUnmapBuffer(GL_ARRAY_BUFFER);
+            if (currentX < xmin )
             {
-                currentX = spikeVertices[2*3*i];
-                //update the zoom
-                windowSize = 5+xmin;
-                dx = currentX-2.5-xmin;
-                
-                //give the array back
-                glUnmapBuffer(GL_ARRAY_BUFFER);
-                [self setNeedsDisplay:YES];
+				//load more data
+				[self moveDown: self];
+			}
+			//update the zoom
+			windowSize = 5+xmin;
+			dx = currentX-2.5-xmin;
+			
+			[self setNeedsDisplay:YES];
 
-            }
-            else
-            {
-                glUnmapBuffer(GL_ARRAY_BUFFER);
-   
-            }
    
         }
         else if ([[theEvent characters] isEqualToString:@"a"])
