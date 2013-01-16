@@ -38,5 +38,6 @@
 -(void)resetSpikes;
 -(void)assignSpikeID:(NSInteger)spid;
 -(void)assignSpikeID:(NSInteger)spid forSpikesInRange: (NSRange)range;
+-(void)assignSpikeIDs:(NSData*)spids forSpikesInRange: (NSRange)range;
 
 @end

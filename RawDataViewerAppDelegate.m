@@ -40,7 +40,8 @@
 	ch = 0;
 	spikeRange.location = 0;
 	updateSpikes = NO;
-	_filenames = [filenames objectEnumerator];
+	//get an enumerator that will enumerate all the files except any files ending in .cut (see below)
+	_filenames = [[filenames filteredArrayUsingPredicate: [NSPredicate predicateWithFormat: @"NOT SELF  ENDSWITH \".cut\""]] objectEnumerator];
 	filename = [_filenames nextObject];
     [[progress window] makeKeyAndOrderFront:self];
     [progress startAnimation:self];
@@ -68,8 +69,39 @@
 			n = [sp ntemplates];
 			spikeRange.length = n-spikeRange.location;
 			[sp assignSpikeID: ch forSpikesInRange: spikeRange];
+
+			//check if we are also loading a cut file
+			NSString *cutFilename = [filename stringByReplacingOccurrencesOfString:@"bin" withString:@"cut"];
+			if([filenames containsObject: cutFilename] )
+			{
+				//cids = readClusterIds(fname, cids);
+				NSArray *lines = [[NSString stringWithContentsOfFile:cutFilename encoding: NSASCIIStringEncoding error: NULL] componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+				uint32_t *cids = malloc(([lines count]+1)*sizeof(uint32_t));
+				//iteratae through lines
+				NSEnumerator *lines_enum = [lines objectEnumerator];
+				id line;
+				NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+				int cidx = 0;
+				while ( (line = [lines_enum nextObject] ) )
+				{
+					NSNumber *q = [formatter numberFromString:line];
+					//if line is not a string, q is nil
+					if( q )
+					{
+						cids[cidx] = (uint32_t)[q intValue];
+						cidx+=1;
+					}
+					
+				}
+				//done with formatter, so release it
+				[formatter release];
+				[sp assignSpikeIDs: [NSData dataWithBytes: cids length: (spikeRange.length)*sizeof(uint32_t)] forSpikesInRange: spikeRange];
+				free(cids);
+			}
 			spikeRange.location = n;
 			updateSpikes = YES;
+
+
 		}
 		else if([[filename pathExtension] isEqualToString:@"mat"])
 		{

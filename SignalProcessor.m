@@ -478,5 +478,29 @@
 	[[self cids] replaceBytesInRange: byteRange withBytes: _cids length: range.length*sizeof(uint32_t)];
 	free(_cids);
 }
+-(void)assignSpikeIDs:(NSData*)spids forSpikesInRange: (NSRange)range
+{
+	uint32_t n,i,*_cids;
+	NSRange byteRange;
+	n = [spids length]/sizeof(uint32_t);
+	if(n != range.length)
+	{
+		return;
+	}
+	if( cids == NULL )
+	{
+		[self setCids: [NSMutableData dataWithLength: nspikes*sizeof(uint32_t)]];
+	}
+	else
+	{
+		//resize the data
+		[[self cids] setLength: nspikes*sizeof(uint32_t)];
+	}
+	_cids = (uint32_t*) [spids bytes];
+	//need to convert to byte range	
+	byteRange = NSMakeRange(range.location*sizeof(uint32_t),range.length*sizeof(uint32_t));
+	[[self cids] replaceBytesInRange: byteRange withBytes: _cids length: range.length*sizeof(uint32_t)];
+	
+}
 
 @end
