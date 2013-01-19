@@ -1884,6 +1884,11 @@
         step = ((d-5)/2)*0.01;
     }
     
+	if( currentX > xmax )
+	{
+		//load more data
+		[self moveUp: self];
+	}
     if(currentX < endx )
     {
         currentX+=step;
