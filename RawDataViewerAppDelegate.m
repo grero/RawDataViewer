@@ -107,7 +107,9 @@
 		{
 			res = [self loadHmmSortResultsFromFile:filename];
 		}
-		else if([[filename pathExtension] isEqualToString:@"bin"])
+		//else if([[filename pathExtension] isEqualToString:@"bin"])
+		
+		else
 		{
 			res = [self loadDataFromFile: filename atOffset: 0];
 		}
