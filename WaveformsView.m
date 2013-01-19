@@ -1194,7 +1194,7 @@
 		{
 			//get the channel
 			int	ch = 0;
-			while( channelOffsets[ch] < dataPoint.y )
+			while( (channelOffsets[ch] < dataPoint.y ) && (ch < numChannels-1))
 				ch++;
             [chCoord setStringValue:[NSString stringWithFormat:@"%d",ch]];
 			NSLog(@"Selected channel: %d", ch);
