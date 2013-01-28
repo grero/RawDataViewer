@@ -516,7 +516,7 @@
 		numActiveChannels = nchs;
 	}
     [self checkForReorderingForFile:filename];
-    if(reorder != NULL )
+	if( (reorder != NULL ) && ([[NSUserDefaults standardDefaults] boolForKey:@"reorderChannels"]))
     {
         NSLog(@"Reordering data...");
         
