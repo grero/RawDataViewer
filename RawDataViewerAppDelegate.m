@@ -433,6 +433,7 @@
     
     [[progress window] makeKeyAndOrderFront:self];
     [progress startAnimation:self];
+	[[progress window] setTitle:@"Loading data..."];
     const char *fname;    
     FILE *fid;
     uint32_t headerSize,samplingRate,npoints,maxSize,k,i;
@@ -516,7 +517,7 @@
 		numActiveChannels = nchs;
 	}
     [self checkForReorderingForFile:filename];
-	if( (reorder != NULL ) && ([[NSUserDefaults standardDefaults] boolForKey:@"reorderChannels"]))
+	if( (reorder != NULL ) && ([[NSUserDefaults standardUserDefaults] boolForKey:@"reorderChannels"]))
     {
         NSLog(@"Reordering data...");
         
@@ -561,6 +562,8 @@
     }
     
     //[wf createPeakVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)nchs andTimePoints:(NSUInteger)npoints/nchs];
+	
+	[[progress window] setTitle:@"Drawing data..."];
     [wf createConnectedVertices:[NSData dataWithBytes:data length:npoints*sizeof(int16_t)] withNumberOfWaves:0 channels:(NSUInteger)numActiveChannels andTimePoints:(NSUInteger)npoints/numActiveChannels];
     
     //we don't need to keep the data
