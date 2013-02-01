@@ -339,3 +339,31 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
     free(minpts);
     return 0;
 }
+
+int readDataFromHDF5File(const char *fname, float *data, uint32_t *nchs, uint32_t *npts)
+{
+    hid_t file_id;
+    herr_t status;
+    hsize_t dataDims[3];
+	int16_t *_data;
+
+    file_id = H5Fopen (fname, H5F_ACC_RDONLY, H5P_DEFAULT);
+    status = H5LTget_dataset_info(file_id,"/broadband",dataDims,NULL,NULL);
+	if(status < 0)
+	{
+		printf("Something happend\n");
+		return status;
+	}
+	//allocate space
+	_data = malloc(dataDims[0]*dataDims[1]*sizeof(int16_t));
+	//read the dataset
+    status = H5LTread_dataset_double(file_id,"/broadband",_data);
+	if(status < 0)
+	{
+		free(_data);
+		printf("Someting happened\n");
+		return status;
+	}
+	//convert to 
+			
+}
