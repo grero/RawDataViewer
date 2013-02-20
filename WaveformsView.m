@@ -631,10 +631,21 @@
         for(i=0;i<nspikes;i++)
         {
             //this is just a round-about way of making sure all spikes belonging to the same cells get the same color
-            srandom(cids[i]);
-            spikeColors[3*i] = ((GLfloat)random())/RAND_MAX;
-            spikeColors[3*i+1] = ((GLfloat)random())/RAND_MAX;
-            spikeColors[3*i+2] = ((GLfloat)random())/RAND_MAX;
+			if(cids[i]==0)
+			{
+				//noise cluster
+				spikeColors[3*i] = 1.0;
+				spikeColors[3*i+1] = 1.0;
+				spikeColors[3*i+2] = 1.0;
+
+			}
+			else
+			{
+				srandom(cids[i]);
+				spikeColors[3*i] = ((GLfloat)random())/RAND_MAX;
+				spikeColors[3*i+1] = ((GLfloat)random())/RAND_MAX;
+				spikeColors[3*i+2] = ((GLfloat)random())/RAND_MAX;
+			}
         }
         useSpikeColors = YES;
     }
@@ -1300,7 +1311,7 @@
     [image unlockFocus];
      //get the data
     NSData *imageData = [imageRep EPSRepresentation];
-    [imageData writeToFile:@"test.eps" atomically:YES];
+    [imageData writeToFile:@"/tmp/test.eps" atomically:YES];
     
 }
 
@@ -1777,11 +1788,12 @@
 -(void)moveUp:(id)sender
 {
     //what happens when we reach the end?
-    
     vertexOffset+=(NSInteger)(1.0*(xmax-xmin)*samplingRate);
-    vertexOffset = MIN(vertexOffset,endTime-10000);
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
-    
+	if(vertexOffset < endTime)
+	{
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
+		
+	}
 }
 
 -(void)moveDown:(id)sender
