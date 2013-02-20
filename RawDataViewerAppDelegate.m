@@ -108,7 +108,15 @@
 			res = [self loadHmmSortResultsFromFile:filename];
 		}
 		//else if([[filename pathExtension] isEqualToString:@"bin"])
-		
+		else if([[filename pathExtension] isEqualToString:@"hdf5"])
+		{
+
+		}
+		else if([[filename pathExtension] isEqualToString:@"snc"])
+		{
+			[sp loadSyncsFile: filename];
+			updateSpikes = YES;
+		}	
 		else
 		{
 			res = [self loadDataFromFile: filename atOffset: 0];
@@ -385,7 +393,8 @@
 -(IBAction)saveToPDF:(id)sender
 {
    NSOperationQueue *queue = [NSOperationQueue mainQueue];
-   NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:wf                                                                                                    selector:@selector(saveToPDFAtURL:) object:NULL] autorelease];
+   NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:wf 
+																		selector:@selector(saveToPDFAtURL:) object:NULL] autorelease];
     [queue addOperation:theOp];
 }
 
@@ -400,7 +409,8 @@
     {
         url = [NSURL fileURLWithPath:[sPanel filename]];
         NSOperationQueue *queue = [NSOperationQueue mainQueue];
-        NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:wf                                                                                                    selector:@selector(saveToPDFAtURL:) object:url] autorelease];
+        NSInvocationOperation* theOp = [[[NSInvocationOperation alloc] initWithTarget:wf 
+																			 selector:@selector(saveToPDFAtURL:) object:url] autorelease];
         [queue addOperation:theOp];
     }
 }
@@ -443,6 +453,7 @@
     
     maxSize = [[NSUserDefaults standardUserDefaults] floatForKey:@"maxDataSize"];
     fname  = [filename cStringUsingEncoding:NSASCIIStringEncoding];
+
     fid = fopen(fname, "rb");
     //get the header size
     fread(&headerSize, sizeof(uint32_t), 1, fid);
