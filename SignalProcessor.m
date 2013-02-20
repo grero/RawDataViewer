@@ -211,6 +211,46 @@
     return YES;
 }
 
+-(BOOL)loadSyncsFile:(NSString*)filename
+{
+	//snc file containing stimulus sync time stamps, expressed in data points
+	const char *_fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
+	FILE *fid;
+	int32_t headerSize,nsyncs,i,*syncs;
+	size_t q;
+	float fconv,*_spikes;
+	fid = fopen(_fname,"r");
+	//read reahder header
+	q = fread(&headerSize,sizeof(int32_t),1,fid);
+	//skeeip 260 bytes reserved for info
+	q = fseek(fid,260,SEEK_CUR);
+	//read the number of syncs
+	q = fread(&nsyncs,sizeof(int32_t),1,fid);
+	//allocate space for the syncs themselves
+	syncs = malloc(nsyncs*sizeof(int32_t));
+	//seek to the beginning of the syncs
+	q = fseek(fid,headerSize,SEEK_SET);
+	//read the syncs
+	q = fread(syncs,sizeof(int32_t),nsyncs,fid);
+	fclose(fid);
+
+    _spikes = malloc(nsyncs*sizeof(float));
+	//convert from microseconds to miliseconds
+	fconv = 1.0/(samplingRate/1000);
+    for(i=0;i<nsyncs;i++)
+    {
+        _spikes[i] = fconv*(float)syncs[i];
+    }
+    free(syncs);
+    [spikes appendBytes:_spikes length:nsyncs*sizeof(float)];
+    free(_spikes);
+    ntemplates+=nsyncs;
+    nspikes+=nsyncs;
+    
+    return YES;
+
+}
+
 -(BOOL)saveWaveformsFile:(NSString *)filename
 {
     //save to waveformsfile

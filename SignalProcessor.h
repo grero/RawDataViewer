@@ -32,6 +32,7 @@
 -(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs atTimePoint:(float)timept;
 -(BOOL)saveTemplates:(NSString*)filename;
 -(BOOL)loadSpikesFromFile:(NSString*)filename;
+-(BOOL)loadSyncsFile:(NSString*)filename;
 -(BOOL)loadWaveformsFile:(NSString*)filename;
 -(BOOL)saveWaveformsFile:(NSString*)filename;
 -(void)decodeData:(NSData*)data numRows: (uint32_t)nrows numCols:(uint32_t)ncols channelOffsets:(NSData*)offsets;
