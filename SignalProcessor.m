@@ -11,8 +11,8 @@
 @implementation SignalProcessor
 
 @synthesize templateFile;
-@synthesize spikes,templates,cinv,cells,cids;
-@synthesize ntemplates,nspikes,samplingRate;
+@synthesize spikes,templates,cinv,cells,cids,channels,numChannels;
+@synthesize ntemplates,nspikes,samplingRate,timepts;
 
 - (id)init
 {

@@ -712,6 +712,9 @@
     [sp setNspikes:nspikes];
     [sp setNtemplates:nSpikeForms];
     [sp setCids:[NSMutableData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
+	[sp setChannels: [NSMutableData dataWithBytes: channels length: nspikes*2*sizeof(NSUInteger)]];
+	[sp setNumChannels: [NSMutableData dataWithBytes: nchannels length: nspikes*sizeof(NSUInteger)]];
+	[sp setTimepts: timepts];
     [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL cellID:[NSData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
     [wf createTemplateVertices:[sp templates] timestamps:[sp spikes] numberOfSpikes:nspikes timepts:timepts 
 					  channels:[NSData dataWithBytes: channels length:nspikes*2*sizeof(NSUInteger)] 
@@ -735,6 +738,11 @@
         //temporarily remove self
         [[NSNotificationCenter defaultCenter] removeObserver:self];
         [self loadDataFromFile:[self dataFileName] atOffset:currentPos];
+		//also redraw the template vertices
+		[wf createTemplateVertices:[sp templates] timestamps:[sp spikes] numberOfSpikes:[sp nspikes] timepts:[sp timepts]
+					  channels:[sp channels] 
+			  numberOfChannels:[sp numChannels] cellID:[sp cids]];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"loadMoreData" object:nil];
     }
 }

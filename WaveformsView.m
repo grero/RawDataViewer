@@ -738,6 +738,30 @@
     
     [self setNeedsDisplay:YES];
 }
+-(void)updateTemplateVerticesWithChannels: (NSData*)channels numChannels: (NSData*)numChannels
+{
+	NSUInteger i,ch,nspikes,*_channels,*_nchannels;
+	GLfloat *spikeVertices;
+    glBindBuffer(GL_ARRAY_BUFFER, templatesBuffer);
+    spikeVertices = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+	_channels = (NSUInteger*)[channels bytes];
+	_nchannels = (NSUInteger*)[numChannels bytes];
+	nspikes = [channels length]/(2*sizeof(NSUInteger));
+	if(spikeVertices != NULL)
+	{
+		//change the y-value
+		for(i=0;i<nspikes;i++)
+		{
+			for(ch=0;ch<_nchannels[i];ch++)
+			{
+				spikeVertices[3*i+1] = channelOffsets[_channels[2*i]+ch];
+			}
+
+		}
+	}
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+}
+
 -(void)createTemplateVertices:(NSData*)spikes timestamps:(NSData*)timestamps numberOfSpikes: (NSUInteger)nspikes timepts:(NSInteger)timepts channels:(NSData*)chs numberOfChannels: (NSData*)nchs cellID:(NSData*)cellid
 {
     NSUInteger i,ch,k;
@@ -837,7 +861,7 @@
     {
         float d,q;
         int minpt;
-        in_offset = cids[i]*numChannels*timepts;
+        in_offset = cids[i]*nChannels[cids[i]]*timepts;
         //find the location of the minimm point
         for(ch=0;ch<nChannels[i];ch++)
         {

@@ -15,18 +15,18 @@
     //NSMutableArray *templates;
     //array of arrays
     NSMutableData *templates,*spikes,*cids;
-    NSMutableData *numChannels,*cinv;
+    NSMutableData *numChannels,*cinv,*channels;
     NSMutableDictionary *cells;
-    uint32_t ntemplates,nspikes;
+    uint32_t ntemplates,nspikes,timepts;
     NSString *templateFile;
     double samplingRate;
     
 }
 
 @property (retain,readwrite) NSString *templateFile;
-@property (retain,readwrite) NSMutableData *spikes,*templates,*cinv,*cids;
+@property (retain,readwrite) NSMutableData *spikes,*templates,*cinv,*cids,*channels,*numChannels;
 @property (retain,readwrite) NSMutableDictionary *cells;
-@property (assign,readwrite)  uint32_t ntemplates,nspikes;
+@property (assign,readwrite)  uint32_t ntemplates,nspikes,timepts;
 @property (assign,readwrite) double samplingRate;
 
 -(void)addTemplate:(float*)spike length:(NSInteger)n numChannels:(uint32_t)nchs atTimePoint:(float)timept;
