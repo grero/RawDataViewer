@@ -674,12 +674,21 @@
     uint32_t ntemps,nchs,timepts,npoints,i,j,ch,k;
     int *minpts,res;
     uint32_t nspikes, *cids,nSpikeForms;
+	NSUInteger *channels,*nchannels;
     fname = [filename cStringUsingEncoding:NSASCIIStringEncoding];
-    res = readHMMFromMatfile(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes, &cids,&nSpikeForms,&data,&npoints);
+	//get the channel from the group
+	NSRange rWf = [filename rangeOfString:@".mat"];
+	NSRange gwf = [filename rangeOfString:@"g0"];
+	if(gwf.location != NSNotFound )
+	{
+		ch = [[filename substringWithRange: NSMakeRange(gwf.location + 1,rWf.location - gwf.location-1)] intValue];
+		ch-=1;
+	}
+    res = readHMMFromMatfile(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes, &cids,&nSpikeForms,&data,&npoints,[sp samplingRate]/1000.0);
     if( res==-1)
     {
         //matlab read failed, try hdf5 read
-        res = readHMMFromHDF5file(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes,&cids,&nSpikeForms,&data,&npoints);
+        res = readHMMFromHDF5file(fname, &_spikeForms, &nspikes, &nchs, &timepts, &spikes,&cids,&nSpikeForms,&data,&npoints,[sp samplingRate]/1000.0);
     }
     if( res != 0)
     {
@@ -690,13 +699,25 @@
     {
         [wf createConnectedVertices:[NSData dataWithBytes:data length:npoints*nchs*sizeof(int16_t)] withNumberOfWaves:0 channels:nchs andTimePoints:npoints];
     }
+	channels = malloc(2*nspikes*sizeof(NSUInteger));
+	nchannels = malloc(nspikes*sizeof(NSUInteger));
+	for(i=0;i<nspikes;i++)
+	{
+		channels[2*i] = ch;
+		channels[2*i+1] = ch+1;
+		nchannels[i] = 1;
+	}
     [sp setTemplates:[NSMutableData dataWithBytes:_spikeForms length:nSpikeForms*nchs*timepts*sizeof(float)]];
     [sp setSpikes:[NSMutableData dataWithBytes:spikes length:nspikes*sizeof(float)]];
     [sp setNspikes:nspikes];
     [sp setNtemplates:nSpikeForms];
     [sp setCids:[NSMutableData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
     [wf createSpikeVertices:[NSData dataWithBytes:spikes length:nspikes*sizeof(float)] numberOfSpikes:nspikes channels:NULL numberOfChannels:NULL cellID:[NSData dataWithBytes:cids length:nspikes*sizeof(uint32_t)]];
-    [wf createTemplateVertices:[sp templates] timestamps:[sp spikes] numberOfSpikes:nspikes timepts:timepts channels:NULL numberOfChannels:NULL cellID:[sp cids]];
+    [wf createTemplateVertices:[sp templates] timestamps:[sp spikes] numberOfSpikes:nspikes timepts:timepts 
+					  channels:[NSData dataWithBytes: channels length:nspikes*2*sizeof(NSUInteger)] 
+			  numberOfChannels:[NSData dataWithBytes: nchannels length: nspikes*sizeof(NSUInteger)] cellID:[sp cids]];
+	free(channels);
+	free(nchannels);
     free(spikes);
   
 	return YES;

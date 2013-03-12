@@ -9,7 +9,7 @@
 #import "fileReader.h"
 
 
-int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids, uint32_t *nSpikeForms, int16_t **data, uint32_t *npoints)
+int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids, uint32_t *nSpikeForms, int16_t **data, uint32_t *npoints,float samplingRate)
 {
     uint32_t _npoints,_nchs,_nstates,_nspikes,_ntemps,k;
     double minpt,*mlseq,d;
@@ -167,7 +167,7 @@ int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes,
         {
             if(mlseq[i*_ntemps+j] == minpts[j] )
             {
-                (*spikes)[k] = ((float)i)/29.990;
+                (*spikes)[k] = ((float)i)/samplingRate;
                 (*cids)[k] = j;
                 k+=1;
             }
@@ -203,7 +203,7 @@ int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes,
 
 }
 
-int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids, uint32_t *nSpikeForms, int16_t **data,uint32_t *npoints)
+int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids, uint32_t *nSpikeForms, int16_t **data,uint32_t *npoints,float samplingRate)
 {
     hid_t file_id;
     herr_t status;
@@ -213,7 +213,7 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
     uint32_t _ntemps,_nchs,_timepts,_npoints,i,j,k,ch;
     
     file_id = H5Fopen (fname, H5F_ACC_RDONLY, H5P_DEFAULT);
-    free(_spikeforms);
+	//free(_spikeforms);
     //read the sequence
     status = H5LTget_dataset_info(file_id,"/mlseq",mlseqDims,NULL,NULL);
     if(status != 0 )
@@ -330,7 +330,7 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
         {
             if(mlseq[i*_ntemps+j] == minpts[j] )
             {
-                (*spikes)[k] = ((float)i)/29.990;
+                (*spikes)[k] = ((float)i)/samplingRate;
                 (*cids)[k] = j;
                 k+=1;
             }

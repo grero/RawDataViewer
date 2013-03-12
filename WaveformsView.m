@@ -824,7 +824,12 @@
         glBufferData(GL_ARRAY_BUFFER, 3*nvertices*sizeof(GLfloat), 0, GL_STATIC_DRAW);
     }
     spikeVertices = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-    GLenum e = glGetError();
+	if( spikeVertices == NULL )
+	{
+		GLenum e = glGetError();
+		NSLog(@"Spike vertices could not be allocated. Opengl error code %d", e);
+		return;
+	}
     k=0;
     in_offset = 0;
     out_offset = 0;
