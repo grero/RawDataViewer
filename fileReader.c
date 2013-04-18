@@ -211,7 +211,7 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
     int *mlseq,*minpts;
     double minpt,d,*_spikeforms;
     uint32_t _ntemps,_nchs,_timepts,_npoints,i,j,k,ch;
-    
+   	*data = NULL; 
     file_id = H5Fopen (fname, H5F_ACC_RDONLY, H5P_DEFAULT);
 	//free(_spikeforms);
     //read the sequence
@@ -285,10 +285,10 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
                 }
             }
         }
+		*nSpikeForms = _ntemps;
+		_timepts = spikeFormDims[0];
+		*nstates = _timepts;
     }
-    *nSpikeForms = _ntemps;
-    _timepts = spikeFormDims[0];
-    *nstates = _timepts;
     //free the temporary variable
         
     minpts = malloc(_ntemps*sizeof(int));
