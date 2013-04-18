@@ -103,7 +103,7 @@
 
 
 		}
-		else if([[filename pathExtension] isEqualToString:@"mat"])
+		else if([[filename pathExtension] hasSuffix:@"mat"])
 		{
 			res = [self loadHmmSortResultsFromFile:filename];
 		}
@@ -171,7 +171,7 @@
         return res;
     }
     
-    else if([[filename pathExtension] isEqualToString:@"mat"])
+    else if([[filename pathExtension] hasSuffix:@"mat"])
     {
         res = [self loadHmmSortResultsFromFile:filename];
         [progress stopAnimation:self];
