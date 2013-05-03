@@ -208,7 +208,7 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
     hid_t file_id;
     herr_t status;
     hsize_t spikeFormDims[3],mlseqDims[2];
-    int *mlseq,*minpts;
+    int *mlseq,*minpts,rank;
     double minpt,d,*_spikeforms;
     uint32_t _ntemps,_nchs,_timepts,_npoints,i,j,k,ch;
    	*data = NULL; 
@@ -229,11 +229,16 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
     }
     _ntemps = mlseqDims[1];
     _npoints = mlseqDims[0];
-
+	//initialize
+	spikeFormDims[0] = 1;
+	spikeFormDims[1] = 1;
+	spikeFormDims[2] = 1;
     status = H5LTget_dataset_info(file_id,"/spikeForms",spikeFormDims,NULL,NULL);
+	status = H5LTget_dataset_ndims (file_id,  "/spikeForms",  &rank );
     if(status != 0 )
     {
         status = H5LTget_dataset_info(file_id,"/spkform",spikeFormDims,NULL,NULL);
+		status = H5LTget_dataset_ndims (file_id,  "/spkform",  &rank );
         if (status !=0)
         {
             return status;
@@ -253,10 +258,17 @@ int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes
             return status;
         }
     }
-    *nchs = spikeFormDims[1];
-    *nstates = spikeFormDims[2];
-    _timepts = spikeFormDims[2];
-    _nchs = spikeFormDims[1];
+	if (rank == 2)
+	{
+		*nchs =  1;
+	}
+	else
+	{
+		*nchs = spikeFormDims[1];
+	}
+    _nchs = *nchs; 
+    *nstates = spikeFormDims[rank-1];
+    _timepts = spikeFormDims[rank-1];
     *nSpikeForms = spikeFormDims[0];
     //check; nSpikeForms should be equal to _ntemps; if not we need to transpose the spikeforms
     if( _ntemps == *nSpikeForms )
