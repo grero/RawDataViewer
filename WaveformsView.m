@@ -1237,9 +1237,9 @@
 			while( (channelOffsets[ch] < dataPoint.y ) && (ch < numChannels-1))
 				ch++;
             [chCoord setStringValue:[NSString stringWithFormat:@"%d",ch]];
-			NSLog(@"Selected channel: %d", ch);
-			NSLog(@"currentY: %f", currentY);
-			NSLog(@"channelOffset[ch] = %f",channelOffsets[ch]);
+			//NSLog(@"Selected channel: %d", ch);
+			//NSLog(@"currentY: %f", currentY);
+			//NSLog(@"channelOffset[ch] = %f",channelOffsets[ch]);
 			[self selectChannels: [NSIndexSet indexSetWithIndex: ch] usingColor: NULL];
             [[timeCoord window] orderFront:self];
 
@@ -1290,7 +1290,7 @@
 					ch++;
 				ch2 = ch;
 				[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(ch1,ch2-ch1)]];
-				NSLog(@"Visible channels: %@",[self visibleChannels]);
+				//NSLog(@"Visible channels: %@",[self visibleChannels]);
             }
                 
         }
@@ -1494,7 +1494,7 @@
 - (void)keyDown:(NSEvent *)theEvent
 {
     //print the keycode
-    NSLog(@"keycode: %d", [theEvent keyCode]);
+    //NSLog(@"keycode: %d", [theEvent keyCode]);
     if ([theEvent modifierFlags] & NSNumericPadKeyMask) {
         
         //we don't want to use interpret keys because moving the mouse and using the right/left arrow keys are interpreted as the event, by default
@@ -1992,7 +1992,7 @@
 	ch = [_channels firstIndex];
 	while(ch != NSNotFound )
 	{
-		NSLog(@"ch = %d" ,ch);
+		//NSLog(@"ch = %d" ,ch);
 		_c = _colors + 3*numPoints + 3*ch*np;
 		if( [selectedChannels containsIndex: ch] )
 		{

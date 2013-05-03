@@ -266,7 +266,7 @@
             NSString *sreorder,*reOrderPath;
             NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
             //check for reorder in cwd
-            NSLog(cwd);
+            //NSLog(cwd);
             if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:@"reorder.txt"]])
             {
                 reOrderPath = [cwd stringByAppendingPathComponent: @"reorder.txt"];
@@ -753,7 +753,7 @@
     int mxCh;
     NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
     //check for reorder in cwd
-    NSLog(cwd);
+    //NSLog(cwd);
     if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:@"reorder.txt"]])
     {
         reOrderPath = [cwd stringByAppendingPathComponent: @"reorder.txt"];
