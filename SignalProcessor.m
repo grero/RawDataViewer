@@ -12,7 +12,7 @@
 
 @synthesize templateFile;
 @synthesize spikes,templates,cinv,cells,cids,channels,numChannels;
-@synthesize ntemplates,nspikes,samplingRate,timepts;
+@synthesize ntemplates,nspikes,samplingRate,timepts,timeOffset;
 
 - (id)init
 {
@@ -146,7 +146,8 @@
     const char* fname;
     FILE *fid;
     uint64_t *timestamps;
-    float *_spikes,s,fconv;
+    float *_spikes,s;
+	double fconv;
     int16_t *spikeForms;
     uint8_t nchs;
     uint32_t headerSize,numSpikes,timepts,i,_nchs,conv;
@@ -192,7 +193,7 @@
 	fconv = 0.001;
     for(i=0;i<numSpikes;i++)
     {
-        _spikes[i] = fconv*(float)timestamps[i];
+        _spikes[i] = (float)(fconv*(double)(timestamps[i]) - timeOffset);
     }
     free(timestamps);
     [spikes appendBytes:_spikes length:numSpikes*sizeof(float)];

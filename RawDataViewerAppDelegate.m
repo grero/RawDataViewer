@@ -17,6 +17,7 @@
 @synthesize progress;
 @synthesize dataFileName;
 @synthesize workspace;
+@synthesize timeOffset;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
 	// Insert code here to initialize your application
@@ -181,7 +182,8 @@
     else
     {
         maxSize = [[NSUserDefaults standardUserDefaults] floatForKey:@"maxDataSize"];
-        
+        //TODO: estimate the offset by getting the index and assuming each file before this one in the sequence has the same number of data points 
+
         fid = fopen(fname, "rb");
         //get the header size
         fread(&headerSize, sizeof(uint32_t), 1, fid);
@@ -226,7 +228,7 @@
         numActiveChannels = nchs;
         //set the filename
         [self setDataFileName:filename];
-
+		int seqnr = [[filename pathExtension] intValue];
         //attempt to get a dictionary for this file
         if( [[NSUserDefaults standardUserDefaults] dictionaryForKey:filename] == nil )
         {
@@ -240,6 +242,8 @@
         }
         fseek(fid,0,SEEK_END);
         npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
+		//set the temporal offset for this particular chunk of data
+		[[self sp] setTimeOffset:(seqnr-1)*npoints/nchs/(samplingRate/1000)];
         //check that we are actually able to load; load a maximum of 100MB
         if(npoints*sizeof(int16_t) > maxSize*1024*1024 )
         {
@@ -493,8 +497,11 @@
     }
     [sp setSamplingRate:(double)samplingRate];
     [self setDataFileName:filename];
+	int seqnr = [[filename pathExtension] intValue];
     fseek(fid,0,SEEK_END);
     npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
+	//TODO: this assumes a seqnr that is 1 based.
+	[[self sp] setTimeOffset:((double)(seqnr-1))*((double)npoints)/((double)nchs)/(((double)samplingRate)/1000)];
     //notify the drawing window of the file size
     [wf setEndTime:npoints/nchs];
     npoints-=offset*nchs;

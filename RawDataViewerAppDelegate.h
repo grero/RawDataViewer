@@ -27,6 +27,7 @@
     NSMutableDictionary *workspace;
     int *reorder,reorderMax;
     BOOL reorderMissing;
+	double  timeOffset;
 }
 
 -(IBAction)openFile:(id)sender;
@@ -47,6 +48,7 @@
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet WaveformsView *wf;
 @property (assign) IBOutlet SignalProcessor *sp;
+@property (assign) double timeOffset;
 
 @property (assign) IBOutlet NSProgressIndicator *progress;
 @property (retain,readwrite) NSString *dataFileName;
