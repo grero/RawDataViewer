@@ -495,6 +495,47 @@
 	free(_cids);
 }
 
+-(void)sortSpikes
+{
+	float *_spikes,*_newspikes;
+	vDSP_Length i,*idx;
+	uint32_t *_cids,*_newcids;
+	_spikes = (float*)[[self spikes] bytes];
+	_newspikes = malloc(nspikes*sizeof(float));
+	idx = malloc(nspikes*sizeof(vDSP_Length));
+	//fill the index vector first
+	for(i=0;i<nspikes;i++)	
+	{
+		idx[i] = i;
+	}
+	//do an indirect sort of the spikes
+	vDSP_vsorti(_spikes,idx,NULL,nspikes,1);
+	//idx now contains the sorted indices
+	//rearrange both the spikes and the template ids
+	_cids = (uint32_t*)[[self cids] bytes];
+	if(_cids!=NULL)
+	{
+		_newcids = malloc(nspikes*sizeof(uint32_t));
+		for(i=0;i<nspikes;i++)
+		{
+			_newcids[i] = _cids[idx[i]];
+		}
+		//update cids
+		[[self cids] replaceBytesInRange:NSMakeRange(0,nspikes*sizeof(uint32_t)) withBytes: _newcids];
+		free(_newcids);
+	}
+	//rearrange spikes
+	for(i=0;i<nspikes;i++)
+	{
+		_newspikes[i] = _spikes[idx[i]];
+	}
+	//replace spikes
+	[[self spikes] replaceBytesInRange:NSMakeRange(0,nspikes*sizeof(float)) withBytes: _newspikes];
+	//we don't need _newspikes anymore
+	free(_newspikes);
+	
+
+}
 -(void)assignSpikeID:(NSInteger)spid forSpikesInRange: (NSRange)range
 {
 	uint32_t i,*_cids,n;;

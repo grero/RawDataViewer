@@ -128,6 +128,8 @@
 	//check if we did something to the spikes
 	if(updateSpikes)
 	{
+		//sort spikes in time first
+		[sp sortSpikes];
 		[wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil 
 						 cellID: [sp cids]];
 	}

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Accelerate/Accelerate.h>
 #import "computations.h"
 
 @interface SignalProcessor : NSObject {
@@ -40,5 +41,6 @@
 -(void)assignSpikeID:(NSInteger)spid;
 -(void)assignSpikeID:(NSInteger)spid forSpikesInRange: (NSRange)range;
 -(void)assignSpikeIDs:(NSData*)spids forSpikesInRange: (NSRange)range;
+-(void)sortSpikes;
 
 @end
