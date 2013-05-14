@@ -21,7 +21,7 @@
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
 @synthesize timeCoord,ampCoord,chCoord;
-@synthesize drawSpikes;
+@synthesize drawSpikes,drawTemplates;
 @synthesize sp;
 @synthesize endTime;
 @synthesize selectedChannels,visibleChannels;
