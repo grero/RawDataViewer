@@ -745,10 +745,13 @@
         //temporarily remove self
         [[NSNotificationCenter defaultCenter] removeObserver:self];
         [self loadDataFromFile:[self dataFileName] atOffset:currentPos];
-		//also redraw the template vertices
-		[wf createTemplateVertices:[sp templates] timestamps:[sp spikes] numberOfSpikes:[sp nspikes] timepts:[sp timepts]
-					  channels:[sp channels] 
-			  numberOfChannels:[sp numChannels] cellID:[sp cids]];
+		//also redraw the template vertices, but only if requested
+		if( [wf drawTemplates] )
+		{
+			[wf createTemplateVertices:[sp templates] timestamps:[sp spikes] numberOfSpikes:[sp nspikes] timepts:[sp timepts]
+						  channels:[sp channels] 
+				  numberOfChannels:[sp numChannels] cellID:[sp cids]];
+		}
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"loadMoreData" object:nil];
     }
