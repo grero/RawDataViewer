@@ -243,10 +243,9 @@
         _spikes[i] = fconv*(float)syncs[i];
     }
     free(syncs);
-    [spikes appendBytes:_spikes length:nsyncs*sizeof(float)];
+    [markers appendBytes:_spikes length:nsyncs*sizeof(float)];
     free(_spikes);
-    ntemplates+=nsyncs;
-    nspikes+=nsyncs;
+    nmarkers+=nsyncs;
     
     return YES;
 
@@ -481,6 +480,12 @@
 	[[self templates] setLength:0];
 	ntemplates = 0;
 	nspikes = 0;
+}
+
+-(void)resetMarkers
+{
+	[[self markers] setLength:0];
+	nmarkers = 0;
 }
 
 -(void)assignSpikeID:(NSInteger)spid

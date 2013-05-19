@@ -34,13 +34,14 @@
 {
 	NSString *filename;
 	NSEnumerator *_filenames;
-	BOOL res,updateSpikes;
+	BOOL res,updateSpikes,updateMarkers;
 	float _color[3];
 	uint32_t ch,*cids,n,i;
 	NSRange spikeRange;
 	ch = 0;
 	spikeRange.location = 0;
 	updateSpikes = NO;
+	updateMarkers = NO;
 	//get an enumerator that will enumerate all the files except any files ending in .cut (see below)
 	_filenames = [[filenames filteredArrayUsingPredicate: [NSPredicate predicateWithFormat: @"NOT SELF  ENDSWITH \".cut\""]] objectEnumerator];
 	filename = [_filenames nextObject];
@@ -55,6 +56,11 @@
 		NSRange rWf = [filename rangeOfString:@"waveforms.bin"];
 		if(rWf.location != NSNotFound )
 		{
+			if(updateSpikes == NO)
+			{
+				//reset spikes only if we actually find a waveforms.bin file
+				[sp resetSpikes];
+			}
 			NSRange gwf = [filename rangeOfString:@"g0"];
 			if(gwf.location != NSNotFound )
 			{
@@ -115,8 +121,13 @@
 		}
 		else if([[filename pathExtension] isEqualToString:@"snc"])
 		{
+			if(updateMarkers == NO)
+			{
+				//reset markers
+				[sp resetMarkers];
+			}
 			[sp loadSyncsFile: filename];
-			updateSpikes = YES;
+			updateMarkers = YES;
 		}	
 		else
 		{
@@ -132,6 +143,12 @@
 		[sp sortSpikes];
 		[wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil 
 						 cellID: [sp cids]];
+	}
+	if(updateMarkers || updateSpikes)
+	{
+		[wf createSpikeVertices:[sp markers] numberOfSpikes:[sp nmarkers] channels:nil numberOfChannels:nil 
+						 cellID: nil];
+
 	}
 	[progress stopAnimation:self];
 	[[progress window] orderOut:self];
