@@ -546,8 +546,8 @@
 	miCh = [[self visibleChannels] firstIndex];
 	mxCh = [[self visibleChannels] lastIndex];
 	//set the minimum to the first offset - the peak of the first channel
-	dy = channelOffsets[drawChannels[0]] + channelLimits[2*drawChannels[0]];
-    ySpan = channelOffsets[drawChannels[numDrawnChannels-1]] + channelLimits[2*drawChannels[numDrawnChannels-1]+1]-dy;//ymax;
+	dy = channelOffsets[0] + channelLimits[2*drawChannels[0]];
+    ySpan = channelOffsets[numDrawnChannels-1] + channelLimits[2*drawChannels[numDrawnChannels-1]+1]-dy;//ymax;
     ymin = 0;//-channelOffsets[0];//+channelLimits[0];
     //push onto the zoom stack
     zoomStack[0] = dx;
@@ -1237,7 +1237,7 @@
             currentY = dataPoint.y;
 			drawCurrentX = YES;
 			//get the channel
-            [chCoord setStringValue:[NSString stringWithFormat:@"%d",ch]];
+            [chCoord setStringValue:[NSString stringWithFormat:@"%d",drawChannels[ch]]];
             [[timeCoord window] orderFront:self];
 		}
         if([theEvent modifierFlags] & NSShiftKeyMask )
@@ -1246,7 +1246,7 @@
 			int	ch = 0;
 			while( (channelOffsets[ch]  + channelLimits[2*drawChannels[ch]+1]< dataPoint.y ) && (ch < numDrawnChannels-1))
 				ch++;
-            [chCoord setStringValue:[NSString stringWithFormat:@"%d",ch]];
+            [chCoord setStringValue:[NSString stringWithFormat:@"%d",drawChannels[ch]]];
 			//NSLog(@"Selected channel: %d", ch);
 			//NSLog(@"currentY: %f", currentY);
 			//NSLog(@"channelOffset[ch] = %f",channelOffsets[ch]);
