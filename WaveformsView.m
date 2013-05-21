@@ -382,7 +382,7 @@
     }
     else
     {
-        channelOffsets = malloc(channels*sizeof(GLfloat));
+        channelOffsets = malloc(numDrawnChannels*sizeof(GLfloat));
     }
     //vector to hold the min/max for each channel
     limits = calloc(2*channels,sizeof(GLfloat));
@@ -410,10 +410,10 @@
             
         }
     });
-    channelOffsets[0] = -limits[0];
-    for(ch=1;ch<channels;ch++)
+    channelOffsets[0] = -limits[2*drawChannels[0]];
+    for(ch=1;ch<numDrawnChannels;ch++)
     {
-        channelOffsets[ch] = channelOffsets[ch-1] + (-limits[2*ch] + limits[2*(ch-1)+1]);
+        channelOffsets[ch] = channelOffsets[ch-1] + (-limits[2*drawChannels[ch]] + limits[2*(drawChannels[ch-1])+1]);
     }
     
     //for(ch=0;ch<channels;ch++)
@@ -545,8 +545,9 @@
 	uint32_t miCh,mxCh;
 	miCh = [[self visibleChannels] firstIndex];
 	mxCh = [[self visibleChannels] lastIndex];
-	dy = channelOffsets[miCh] + channelLimits[2*miCh];
-    ySpan = channelOffsets[mxCh] + channelLimits[2*mxCh+1]-dy;//ymax;
+	//set the minimum to the first offset - the peak of the first channel
+	dy = channelOffsets[drawChannels[0]] + channelLimits[2*drawChannels[0]];
+    ySpan = channelOffsets[drawChannels[numDrawnChannels-1]] + channelLimits[2*drawChannels[numDrawnChannels-1]+1]-dy;//ymax;
     ymin = 0;//-channelOffsets[0];//+channelLimits[0];
     //push onto the zoom stack
     zoomStack[0] = dx;
@@ -1051,6 +1052,7 @@
 			//TODO: here we should be able to select channels
             for(ch=0;ch<numDrawnChannels;ch++)
             {
+				//note we could also use channelLimits here
 				glPushMatrix();
 				glTranslatef(0,channelOffsets[ch],0);
                 glDrawArrays(GL_LINES, drawChannels[ch]*np, np);
@@ -1224,7 +1226,7 @@
         if([theEvent modifierFlags] & NSAlternateKeyMask )
         {
 			int	ch = 0;
-			while( (channelOffsets[ch]+channelLimits[2*ch+1] < dataPoint.y ) && (ch < numChannels ))
+			while( (channelOffsets[ch]+channelLimits[2*drawChannels[ch+1]] < dataPoint.y ) && (ch < numDrawnChannels ))
 				ch++;
 			//ch-=1;
 			//ch = MAX(ch,0);
@@ -1242,7 +1244,7 @@
 		{
 			//get the channel
 			int	ch = 0;
-			while( (channelOffsets[ch] < dataPoint.y ) && (ch < numChannels-1))
+			while( (channelOffsets[ch]  + channelLimits[2*drawChannels[ch]+1]< dataPoint.y ) && (ch < numDrawnChannels-1))
 				ch++;
             [chCoord setStringValue:[NSString stringWithFormat:@"%d",ch]];
 			//NSLog(@"Selected channel: %d", ch);
@@ -1506,32 +1508,37 @@
     if ([theEvent modifierFlags] & NSNumericPadKeyMask) {
         
         //we don't want to use interpret keys because moving the mouse and using the right/left arrow keys are interpreted as the event, by default
-        if([theEvent keyCode] == 124 )
-        {
-            //right arrow
-            //move down the zoom stack
-            if( (zoomStackIdx < zoomStackLength-1) && (zoomStackIdx < nValidZoomStacks-1) )
-            {
-                zoomStackIdx+=1;
-            }
+		if( ([theEvent keyCode]==124) || ([theEvent keyCode] == 123))
+		{
+			if([theEvent keyCode] == 124 )
+			{
+				//right arrow
+				//move down the zoom stack
+				if( (zoomStackIdx < zoomStackLength-1) && (zoomStackIdx < nValidZoomStacks-1) )
+				{
+					zoomStackIdx+=1;
+				}
 
-        }
-        else if( [theEvent keyCode] == 123 )
-        {
-            if(zoomStackIdx>0)
-            {
-                zoomStackIdx-=1;
-            }
-            
-        }
+			}
+			else if( [theEvent keyCode] == 123 )
+			{
+				if(zoomStackIdx>0)
+				{
+					zoomStackIdx-=1;
+				}
+				
+			}
+			dx = zoomStack[zoomStackIdx*4];
+			windowSize = zoomStack[zoomStackIdx*4+1];
+			dy = zoomStack[zoomStackIdx*4+2];
+			ySpan = zoomStack[zoomStackIdx*4+3];
+		}
         else
         {
             [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
         }
-        dx = zoomStack[zoomStackIdx*4];
-        windowSize = zoomStack[zoomStackIdx*4+1];
-        dy = zoomStack[zoomStackIdx*4+2];
-        ySpan = zoomStack[zoomStackIdx*4+3];
+		//set the according to the zoom stack
+		/*
 		//also update the visible channels
 		uint32_t ch1,ch2,ch = 0;
 		while( (channelOffsets[ch]+channelLimits[2*ch+1] <= dy) && (ch < numChannels ))
@@ -1540,7 +1547,7 @@
 		while( (channelOffsets[ch]+channelLimits[2*ch] < dy+ySpan) && (ch < numChannels ))
 			ch++;
 		ch2 = ch;
-		[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(ch1,ch2-ch1)]];
+		[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(ch1,ch2-ch1)]];*/
         [self setNeedsDisplay:YES];
         
         //[self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
@@ -1715,18 +1722,39 @@
         else if( [[theEvent characters] isEqualToString:@"h"] )
 		{
 			//draw only the selected channels
+			int ch;
 			[visibleChannels removeAllIndexes];
 			[visibleChannels addIndexes: selectedChannels];
-			numDrawnChannels = numChannels;
+			numDrawnChannels = [visibleChannels count];
 			drawChannels = realloc(drawChannels,numDrawnChannels*sizeof(NSUInteger));
+			[visibleChannels getIndexes: drawChannels maxCount: numDrawnChannels inIndexRange:nil];
+			channelOffsets[0] = -channelLimits[2*drawChannels[0]];
+			for(ch=1;ch<numDrawnChannels;ch++)
+			{
+				channelOffsets[ch] = channelOffsets[ch-1] + (-channelLimits[2*drawChannels[ch]] + channelLimits[2*(drawChannels[ch-1])+1]);
+			}
+			dy = channelOffsets[0] + channelLimits[2*drawChannels[0]];
+			ySpan = channelOffsets[numDrawnChannels-1] + channelLimits[2*(drawChannels[numDrawnChannels-1])+1]-dy;//ymax;
+			[self setNeedsDisplay: YES];
+
 
 		}
         else if( [[theEvent characters] isEqualToString:@"H"] )
 		{
 			//reset to drawing all channels
-			[self setVisibleChannels:[NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0,numChannels)]];
+			int ch;
+			[self setVisibleChannels:[NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(0,numChannels)]];
 			numDrawnChannels = numChannels;
 			drawChannels = realloc(drawChannels,numDrawnChannels*sizeof(NSUInteger));
+			[visibleChannels getIndexes: drawChannels maxCount: numDrawnChannels inIndexRange:nil];
+			channelOffsets[0] = -channelLimits[2*drawChannels[0]];
+			for(ch=1;ch<numDrawnChannels;ch++)
+			{
+				channelOffsets[ch] = channelOffsets[ch-1] + (-channelLimits[2*drawChannels[ch]] + channelLimits[2*(drawChannels[ch-1])+1]);
+			}
+			dy = channelOffsets[0] + channelLimits[2*drawChannels[0]];
+			ySpan = channelOffsets[numDrawnChannels-1] + channelLimits[2*drawChannels[numDrawnChannels-1]+1]-dy;//ymax;
+			[self setNeedsDisplay: YES];
 		}
         
         else
