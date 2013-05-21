@@ -324,6 +324,10 @@
 	{
 		[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(0,channels)]];
 	}
+	//get a copy of the channels in a pure c array as well
+	numDrawnChannels = [visibleChannels count];
+	drawChannels = malloc(numDrawnChannels*sizeof(NSUInteger));
+	[visibleChannels getIndexes: drawChannels maxCount: numDrawnChannels inIndexRange:nil];
 	if( [channelColors length] == 0)
 	{
 		[self setChannelColors: [NSMutableData dataWithLength: 3*channels*sizeof(GLfloat)]];
@@ -1044,10 +1048,11 @@
             np = numPoints/numChannels;
             glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
             glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
-            for(ch=0;ch<numChannels;ch++)
+			//TODO: here we should be able to select channels
+            for(ch=0;ch<numDrawnChannels;ch++)
             {
-                glDrawArrays(GL_LINES, ch*np, np);
-                glDrawArrays(GL_LINES, ch*np+1, np-1);
+                glDrawArrays(GL_LINES, drawChannels[ch]*np, np);
+                glDrawArrays(GL_LINES, drawChannels[ch]*np+1, np-1);
                 
             }
         }

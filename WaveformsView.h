@@ -26,10 +26,10 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     NSData *drawingColor,*highlightColor;
     NSMutableData *highlightWaves;
 	NSMutableArray *highlightedChannels;
-    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes,endTime,nValidZoomStacks;
+    NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes,endTime,nValidZoomStacks,numDrawnChannels,*drawChannels;
     GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan,samplingRate;
     GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets,*extractionThresholds;
-    GLuint *indices;
+	GLuint *indices;
     GLfloat dz,dx,dy,tx,ty;
     GLuint indexBuffer,vertexBuffer,colorBuffer,spikesBuffer,templatesBuffer;
     NSUInteger drawingMode,numTemplateVertices; //which mode are we using to draw (peak/all)
