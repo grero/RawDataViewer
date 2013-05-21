@@ -1072,8 +1072,8 @@
 			//glOrtho(xmin+dx, windowSize+dx, 0, 1, -2.0+dz, 3.0+dz);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			//jglTranslatef(0.0,-channelOffsets[0],0.0);
-			//glScalef(1.0,channelOffsets[numChannels-1]-channelOffsets[0],1.0);
+			//glTranslatef(0.0,-channelOffsets[0],0.0);
+			glScalef(1.0,channelOffsets[numChannels-1]-channelOffsets[0],1.0);
             glBindBuffer(GL_ARRAY_BUFFER, spikesBuffer);
             glEnableClientState(GL_VERTEX_ARRAY);
             glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
