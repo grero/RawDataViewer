@@ -66,6 +66,10 @@
 			{
 				ch = [[filename substringWithRange: NSMakeRange(gwf.location + 1,rWf.location - gwf.location-1)] intValue];
 			}
+			else
+			{
+				ch = 1; //1-based
+			}
 			//generate a random color for this channel
 			srandom(ch);
 			_color[0] = ((float)random())/RAND_MAX;
@@ -144,7 +148,7 @@
 		[wf createSpikeVertices:[sp spikes] numberOfSpikes:[sp ntemplates] channels:nil numberOfChannels:nil 
 						 cellID: [sp cids]];
 	}
-	if(updateMarkers || updateSpikes)
+	if(updateMarkers)
 	{
 		[wf createSpikeVertices:[sp markers] numberOfSpikes:[sp nmarkers] channels:nil numberOfChannels:nil 
 						 cellID: nil];
@@ -194,6 +198,9 @@
     else if([[filename pathExtension] hasSuffix:@"mat"])
     {
         res = [self loadHmmSortResultsFromFile:filename];
+		//check the res variable; if we didn't get a recognized sort result, pop open a 
+		//dialog box and let the user pick the variable(s) to plot
+		if( res )
         [progress stopAnimation:self];
         [[progress window] orderOut:self];
         return res;
@@ -261,8 +268,11 @@
         }
         fseek(fid,0,SEEK_END);
         npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
-		//set the temporal offset for this particular chunk of data
-		[[self sp] setTimeOffset:(seqnr-1)*npoints/nchs/(samplingRate/1000)];
+		if( seqnr>0)
+		{
+			//set the temporal offset for this particular chunk of data
+			[[self sp] setTimeOffset:(seqnr-1)*npoints/nchs/(samplingRate/1000)];
+		}
         //check that we are actually able to load; load a maximum of 100MB
         if(npoints*sizeof(int16_t) > maxSize*1024*1024 )
         {
@@ -520,7 +530,10 @@
     fseek(fid,0,SEEK_END);
     npoints = (ftell(fid)-headerSize)/sizeof(int16_t);
 	//TODO: this assumes a seqnr that is 1 based.
-	[[self sp] setTimeOffset:((double)(seqnr-1))*((double)npoints)/((double)nchs)/(((double)samplingRate)/1000)];
+	if(seqnr>0)
+	{
+		[[self sp] setTimeOffset:((double)(seqnr-1))*((double)npoints)/((double)nchs)/(((double)samplingRate)/1000)];
+	}
     //notify the drawing window of the file size
     [wf setEndTime:npoints/nchs];
     npoints-=offset*nchs;
