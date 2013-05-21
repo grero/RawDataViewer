@@ -448,7 +448,7 @@
                 //x
                 vertices[3*k] = xmin+((GLfloat)(i + j))/samplingRate;
                 //y
-                vertices[3*k+1] = d + offset;
+                vertices[3*k+1] = d;// + offset;
                 //z
                 vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
                 
@@ -502,7 +502,7 @@
             //x
             vertices[3*k] = xmin+((GLfloat)(i + j))/samplingRate;
             //y
-            vertices[3*k+1] = d + offset;
+            vertices[3*k+1] = d;// + offset;
             //z
             vertices[3*k+2] = 0.5;//2*((float)random())/RAND_MAX-1;
            /* 
@@ -1051,8 +1051,11 @@
 			//TODO: here we should be able to select channels
             for(ch=0;ch<numDrawnChannels;ch++)
             {
+				glPushMatrix();
+				glTranslatef(0,channelOffsets[ch],0);
                 glDrawArrays(GL_LINES, drawChannels[ch]*np, np);
                 glDrawArrays(GL_LINES, drawChannels[ch]*np+1, np-1);
+				glPopMatrix();
                 
             }
         }
@@ -1709,6 +1712,22 @@
             drawCurrentX = YES;
             
         }
+        else if( [[theEvent characters] isEqualToString:@"h"] )
+		{
+			//draw only the selected channels
+			[visibleChannels removeAllIndexes];
+			[visibleChannels addIndexes: selectedChannels];
+			numDrawnChannels = numChannels;
+			drawChannels = realloc(drawChannels,numDrawnChannels*sizeof(NSUInteger));
+
+		}
+        else if( [[theEvent characters] isEqualToString:@"H"] )
+		{
+			//reset to drawing all channels
+			[self setVisibleChannels:[NSIndexSet indexSetWithIndexesInRange: NSMakeRange(0,numChannels)]];
+			numDrawnChannels = numChannels;
+			drawChannels = realloc(drawChannels,numDrawnChannels*sizeof(NSUInteger));
+		}
         
         else
         {
