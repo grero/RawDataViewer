@@ -379,3 +379,168 @@ int readDataFromHDF5File(const char *fname, float *data, uint32_t *nchs, uint32_
 	//convert to 
 			
 }
+
+void readNptDataFile(const char *fname, size_t offset, double **data, uint32_t *nchannels, uint64_t *npoints, double *samplingRate )
+{
+	FILE *fid;
+	uint32_t headerSize,_samplingRate;
+	uint8_t datatype,nchs;
+	size_t nbytes,i,_npoints;
+	
+	*data = NULL;
+	fid = fopen(fname,"r");
+	fread(&headerSize,sizeof(uint32_t),1,fid);
+	fread(&nchs,sizeof(uint8_t),1,fid);
+	*nchannels = (uint32_t)nchs;
+	fread(&_samplingRate,sizeof(uint32_t),1,fid);
+	*samplingRate = (double)_samplingRate;
+	fread(&datatype,sizeof(uint8_t),1,fid);
+	//get the length of the file
+	fseek(fid,0,SEEK_END);
+	nbytes = ftello(fid)-(size_t)headerSize;
+	fseek(fid,headerSize,SEEK_SET);
+		
+	switch(datatype)
+	{
+		case 1:{
+			
+			uint8_t *_data = malloc(nbytes);
+			fread(_data,1,nbytes,fid);
+			_npoints = nbytes/((uint64_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		}
+		case 4: {
+			int16_t *_data = malloc(nbytes);
+			fread(_data,sizeof(int16_t),nbytes,fid);
+			_npoints = nbytes/(2*(uint64_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		}
+		case 5: {
+			int32_t *_data = malloc(nbytes);
+			fread(_data,sizeof(int32_t),nbytes,fid);
+			_npoints = nbytes/(4*(uint64_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		}
+		case 6: {
+			int64_t *_data = malloc(nbytes);
+			fread(_data,sizeof(int64_t),nbytes,fid);
+			_npoints = nbytes/(8*(uint64_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		}
+		case 7: {
+			uint8_t *_data = malloc(nbytes);
+			fread(_data,1,nbytes,fid);
+			_npoints = nbytes/((uint64_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		}
+		case 8: {
+			uint16_t *_data = malloc(nbytes);
+			fread(_data,sizeof(uint16_t),nbytes,fid);
+			_npoints = nbytes/(2*(uint16_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		}
+		case 9: {
+			uint32_t *_data = malloc(nbytes);
+			fread(_data,sizeof(uint32_t),nbytes,fid);
+			_npoints = nbytes/(4*(uint64_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		}
+		case 10: {
+			uint64_t *_data = malloc(nbytes);
+			fread(_data,sizeof(uint64_t),nbytes,fid);
+			_npoints = nbytes/(8*(uint64_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		 }
+		case 12: {
+			float *_data = malloc(nbytes);
+			fread(_data,sizeof(float),nbytes,fid);
+			_npoints = nbytes/(4*(uint64_t)nchs);
+			nbytes = _npoints*((uint64_t)nchs);
+			//conver everything to double
+			*data = malloc(nbytes*sizeof(double));
+			for(i=0;i<nbytes;i++)	
+			{
+				*data[i] = (double)(_data[i]);
+			}
+			free(_data);
+			break;
+		 }
+		case 13: {
+			*data = malloc(nbytes);
+			fread(*data,sizeof(double),nbytes,fid);
+			_npoints = nbytes/(8*(uint64_t)nchs);
+			break;
+		}
+		case 14: {
+			*data = malloc(nbytes);
+			fread(*data,sizeof(double),nbytes,fid);
+			_npoints = nbytes/(8*(uint64_t)nchs);
+			break;
+		}
+	}
+	*npoints = (uint64_t)_npoints;
+}

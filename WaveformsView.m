@@ -1250,7 +1250,7 @@
 			//NSLog(@"Selected channel: %d", ch);
 			//NSLog(@"currentY: %f", currentY);
 			//NSLog(@"channelOffset[ch] = %f",channelOffsets[ch]);
-			[self selectChannels: [NSIndexSet indexSetWithIndex: ch] usingColor: NULL];
+			[self selectChannels: [NSIndexSet indexSetWithIndex: drawChannels[ch]] usingColor: NULL];
             [[timeCoord window] orderFront:self];
 
         }

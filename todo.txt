@@ -1,1 +1,4 @@
-Fix the location of the libraries
+Implement distributed objects, such that we can communicate with the FeatureViewer
+Implement plotting of extraction thresholds
+	would be cool to have real-time sorting as we change the threshold
+Implement interval measurement (time and voltage)

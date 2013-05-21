@@ -23,4 +23,5 @@
 int readHMMFromMatfile(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids, uint32_t *nSpikeForms, int16_t **data,uint32_t *npoints,float samplingRate);
 int readHMMFromHDF5file(const char *fname, float **spikeforms, uint32_t *nspikes, uint32_t *nchs, uint32_t *nstates, float **spikes, uint32_t **cids, uint32_t *nSpikeForms, int16_t **data, uint32_t *npoints,float samplingRate);
 int readDataFromHDF5File(const char *fname, float *data, uint32_t *nchs, uint32_t *npts);
+void readNptDataFile(const char *fname, size_t offset, double **data, uint32_t *nchannels, uint64_t *npoints, double *samplingRate );
 
