@@ -1735,6 +1735,9 @@
 			}
 			dy = channelOffsets[0] + channelLimits[2*drawChannels[0]];
 			ySpan = channelOffsets[numDrawnChannels-1] + channelLimits[2*(drawChannels[numDrawnChannels-1])+1]-dy;//ymax;
+			//select the visible channels again to un-select them
+			[self selectChannels: selectedChannels usingColor: NULL];
+
 			[self setNeedsDisplay: YES];
 
 
@@ -1742,7 +1745,9 @@
         else if( [[theEvent characters] isEqualToString:@"H"] )
 		{
 			//reset to drawing all channels
-			int ch;
+			//reselect the visible channels
+			[self selectChannels: visibleChannels usingColor: NULL];
+			int ch; 
 			[self setVisibleChannels:[NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(0,numChannels)]];
 			numDrawnChannels = numChannels;
 			drawChannels = realloc(drawChannels,numDrawnChannels*sizeof(NSUInteger));
