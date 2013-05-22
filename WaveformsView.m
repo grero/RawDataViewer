@@ -21,7 +21,7 @@
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
 @synthesize timeCoord,ampCoord,chCoord;
-@synthesize drawSpikes,drawTemplates;
+@synthesize drawSpikes,drawTemplates,drawGrid;
 @synthesize sp;
 @synthesize endTime;
 @synthesize selectedChannels,visibleChannels;
@@ -1005,7 +1005,37 @@
 
 
 
+-(void)drawGridLines
+{
+	float _dx,_dy;
+	int nx,ny,i,j;
+	_dx = 10; //10ms grid size in x-direction
+	_dy = 100; //100 micro volts in y-direction
+	//get the number of grid lines
+	ny = (int)(ySpan/_dy);
+	nx = (int)(windowSize/_dx);
+	//draw the grid
+	for(i=0;i<=nx;i++)
+	{
+		glBegin(GL_LINES);
+		glColor4f(0.5,0.5,0.5,0.5);
+		glVertex3f(dx+i*_dx,dy,0);
+		glColor4f(0.5,0.5,0.5,0.5);
+		glVertex3f(dx+i*_dx,dy+ySpan,0);
+		glEnd();
+	}
+	for(j=0;j<=ny;j++)
+	{
+		glBegin(GL_LINES);
+		glColor4f(0.5,0.5,0.5,0.5);
+		glVertex3f(dx,dy+j*_dy,0);
+		glColor4f(0.5,0.5,0.5,0.5);
+		glVertex3f(dx+windowSize,dy+j*_dy,0);
+		glEnd();
+	}
+	
 
+}
 - (void)drawRect:(NSRect)bounds 
 {
     NSOpenGLContext *context = [self openGLContext];
@@ -1144,6 +1174,11 @@
         //GLenum e = glGetError();
         //NSLog(@"gl error: %d", e);
     }
+	if( drawGrid )
+	{
+		glLoadIdentity();
+		[self drawGridLines];
+	}
     glFlush();
     [context flushBuffer];
 }
@@ -1767,7 +1802,11 @@
 			ySpan = channelOffsets[numDrawnChannels-1] + channelLimits[2*drawChannels[numDrawnChannels-1]+1]-dy;//ymax;
 			[self setNeedsDisplay: YES];
 		}
-        
+        else if( [[theEvent characters] isEqualToString:@"g"] )
+       	{
+			[self setDrawGrid: ([self drawGrid])==0];
+			[self setNeedsDisplay: YES];
+		}
         else
         {
             [self interpretKeyEvents:[NSArray arrayWithObject:theEvent]];
