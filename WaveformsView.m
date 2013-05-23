@@ -2092,6 +2092,9 @@
 {
 	if( [_channels count] == 0)
 		return;
+	//check that we are not out of bounds
+	if( [_channels lastIndex] >= numChannels)
+		return;
 	float *_colors,*_c,*_cl,*chColors;
 	NSUInteger np,ch,i;
 	if( _color == NULL )
@@ -2151,6 +2154,7 @@
 		//cleanup
 		free(_cl);
 	}
+	[self setNeedsDisplay: YES];
 
 }
 
