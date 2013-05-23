@@ -1783,23 +1783,27 @@
         else if( [[theEvent characters] isEqualToString:@"h"] )
 		{
 			//draw only the selected channels
-			int ch;
-			[visibleChannels removeAllIndexes];
-			[visibleChannels addIndexes: selectedChannels];
-			numDrawnChannels = [visibleChannels count];
-			drawChannels = realloc(drawChannels,numDrawnChannels*sizeof(NSUInteger));
-			[visibleChannels getIndexes: drawChannels maxCount: numDrawnChannels inIndexRange:nil];
-			channelOffsets[0] = -channelLimits[2*drawChannels[0]];
-			for(ch=1;ch<numDrawnChannels;ch++)
+			//only do this if we have some channels selected
+			if( [selectedChannels count] > 0)
 			{
-				channelOffsets[ch] = channelOffsets[ch-1] + (-channelLimits[2*drawChannels[ch]] + channelLimits[2*(drawChannels[ch-1])+1]);
-			}
-			dy = channelOffsets[0] + channelLimits[2*drawChannels[0]];
-			ySpan = channelOffsets[numDrawnChannels-1] + channelLimits[2*(drawChannels[numDrawnChannels-1])+1]-dy;//ymax;
-			//select the visible channels again to un-select them
-			[self selectChannels: selectedChannels usingColor: NULL];
+				int ch;
+				[visibleChannels removeAllIndexes];
+				[visibleChannels addIndexes: selectedChannels];
+				numDrawnChannels = [visibleChannels count];
+				drawChannels = realloc(drawChannels,numDrawnChannels*sizeof(NSUInteger));
+				[visibleChannels getIndexes: drawChannels maxCount: numDrawnChannels inIndexRange:nil];
+				channelOffsets[0] = -channelLimits[2*drawChannels[0]];
+				for(ch=1;ch<numDrawnChannels;ch++)
+				{
+					channelOffsets[ch] = channelOffsets[ch-1] + (-channelLimits[2*drawChannels[ch]] + channelLimits[2*(drawChannels[ch-1])+1]);
+				}
+				dy = channelOffsets[0] + channelLimits[2*drawChannels[0]];
+				ySpan = channelOffsets[numDrawnChannels-1] + channelLimits[2*(drawChannels[numDrawnChannels-1])+1]-dy;//ymax;
+				//select the visible channels again to un-select them
+				[self selectChannels: selectedChannels usingColor: NULL];
 
-			[self setNeedsDisplay: YES];
+				[self setNeedsDisplay: YES];
+			}
 
 
 		}
