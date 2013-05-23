@@ -37,6 +37,7 @@
 -(IBAction)changeAmp:(id)sender;
 -(IBAction)changeChannel:(id)sender;
 -(IBAction)toggleSpikeView:(id)sender;
+-(IBAction)toggleDataView:(id)sender;
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
 -(BOOL)loadSpikesFromFile:(NSString*)filename;

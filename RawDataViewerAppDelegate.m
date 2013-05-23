@@ -476,6 +476,22 @@
     }
 }
 
+-(IBAction)toggleDataView:(id)sender
+{
+    if ([[sender title] isEqualToString:@"Show data"] )
+    {
+        [sender setTitle:@"Hide data"];
+        [wf setDrawData:YES];
+        [wf setNeedsDisplay:YES];
+    }
+    else if( [[sender title] isEqualToString:@"Hide data"] )
+    {
+        [sender setTitle:@"Show data"];
+        [wf setDrawData:NO];
+        [wf setNeedsDisplay:YES];
+    }
+}
+
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset
 {
     //read data from the file

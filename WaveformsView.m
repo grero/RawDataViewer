@@ -21,7 +21,7 @@
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
 @synthesize timeCoord,ampCoord,chCoord;
-@synthesize drawSpikes,drawTemplates,drawGrid;
+@synthesize drawSpikes,drawTemplates,drawGrid,drawData;
 @synthesize sp;
 @synthesize endTime;
 @synthesize selectedChannels,visibleChannels;
@@ -585,6 +585,7 @@
      */
     //notify that we have loaded the data
     dataLoaded = YES;
+	[self setDrawData: YES];
     drawingMode = 0;//indicate that we are drawing everything
     [self setNeedsDisplay: YES];
 }
@@ -1042,6 +1043,7 @@
 }
 - (void)drawRect:(NSRect)bounds 
 {
+	NSUInteger ch,np;
     NSOpenGLContext *context = [self openGLContext];
     [context makeCurrentContext];
 	
@@ -1055,6 +1057,7 @@
     //glClear(GL_DEPTH_BUFFER_BIT);
     if(dataLoaded)
     {
+
 		//[self drawLabels];
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -1062,41 +1065,43 @@
         		//activate the dynamicbuffer
        	glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glEnableClientState(GL_VERTEX_ARRAY);
+		if( drawData )
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+			glEnableClientState(GL_VERTEX_ARRAY);
 
-        
-        //glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-        glEnableClientState(GL_COLOR_ARRAY);
-		NSUInteger ch,np;
-        if( drawingMode == 1)
-        {
-            //only draw peaks
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-            glEnableClientState(GL_INDEX_ARRAY);
-            glDrawElements(GL_LINES, numPoints/chunkSize, GL_UNSIGNED_INT, (GLvoid*)0);
-            //glDrawArrays(GL_LINES, 0, numPoints);
-        }
-        else if (drawingMode == 0 )
-        {
-            //draw everything
-            np = numPoints/numChannels;
-            glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
-            glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
-			//TODO: here we should be able to select channels
-            for(ch=0;ch<numDrawnChannels;ch++)
-            {
-				//note we could also use channelLimits here
-				glPushMatrix();
-				glTranslatef(0,channelOffsets[ch],0);
-                glDrawArrays(GL_LINES, drawChannels[ch]*np, np);
-                glDrawArrays(GL_LINES, drawChannels[ch]*np+1, np-1);
-				glPopMatrix();
-                
-            }
-        }
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_COLOR_ARRAY);
+			
+			//glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+			glEnableClientState(GL_COLOR_ARRAY);
+			if( drawingMode == 1)
+			{
+				//only draw peaks
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+				glEnableClientState(GL_INDEX_ARRAY);
+				glDrawElements(GL_LINES, numPoints/chunkSize, GL_UNSIGNED_INT, (GLvoid*)0);
+				//glDrawArrays(GL_LINES, 0, numPoints);
+			}
+			else if (drawingMode == 0 )
+			{
+				//draw everything
+				np = numPoints/numChannels;
+				glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
+				glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numPoints*sizeof(GLfloat)));
+				//TODO: here we should be able to select channels
+				for(ch=0;ch<numDrawnChannels;ch++)
+				{
+					//note we could also use channelLimits here
+					glPushMatrix();
+					glTranslatef(0,channelOffsets[ch],0);
+					glDrawArrays(GL_LINES, drawChannels[ch]*np, np);
+					glDrawArrays(GL_LINES, drawChannels[ch]*np+1, np-1);
+					glPopMatrix();
+					
+				}
+			}
+			glDisableClientState(GL_VERTEX_ARRAY);
+			glDisableClientState(GL_COLOR_ARRAY);
+		}
 		if( drawThresholds )
 		{
 			//draw extraction thresholds for each channel
