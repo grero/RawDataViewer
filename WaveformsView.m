@@ -778,7 +778,9 @@
     GLfloat *spikeColors;
     uint32_t *cids,in_offset;
     int32_t out_offset;
-    
+	templatesPerChannel = realloc(templatesPerChannel,numChannels*sizeof(NSUInteger));
+	//set the zero
+	bzero(templatesPerChannel,numChannels*sizeof(NSUInteger));
     if(nchs != NULL)
     {
         nChannels = (NSUInteger*)[nchs bytes];
@@ -831,6 +833,7 @@
     {
         //+2 because we add an extra point to the beginning and end of each template
         nvertices+=nChannels[i]*(timepts+2);
+		templatesPerChannel[channels[2*i]]+=nChannels[i]*(timepts+2);;
     }
     //.. then we remove the first and the last point
     nvertices-=2;
@@ -888,7 +891,8 @@
                     //x-value
                     spikeVertices[3*l] = _timestamps[i]+(-minpt+l)/samplingRate;
                     //y-vaue
-                    spikeVertices[3*l+1] = spikeData[in_offset+ch*timepts+l] + channelOffsets[channels[2*i]+ch];
+					//TODO: channelOffsets refers to the currently visible channels 
+                    spikeVertices[3*l+1] = spikeData[in_offset+ch*timepts+l];// + channelOffsets[channels[2*i]+ch];
                     //z-value
                     spikeVertices[3*l+2] = 1.0;
                 }
@@ -902,7 +906,7 @@
                 //x-value
                 spikeVertices[3*(out_offset+ch*(timepts+2)+l)] = _timestamps[i]+(-minpt+l)/samplingRate;
                 //y-vaue
-                spikeVertices[3*(out_offset+ch*(timepts+2)+l)+1] = spikeData[in_offset+ch*timepts+l] + channelOffsets[channels[2*i]+ch];
+                spikeVertices[3*(out_offset+ch*(timepts+2)+l)+1] = spikeData[in_offset+ch*timepts+l];// + channelOffsets[channels[2*i]+ch];
                 //z-value
                 spikeVertices[3*(out_offset+ch*(timepts+2)+l)+2] = -3.5;
 
@@ -912,7 +916,7 @@
                     //x-value
                     spikeVertices[3*(out_offset+ch*(timepts+2)+l)] = _timestamps[i]+(-minpt+l-1)/samplingRate;
                     //y-vaue
-                    spikeVertices[3*(out_offset+ch*(timepts+2)+l)+1] = spikeData[in_offset+ch*timepts+l-1] + channelOffsets[channels[2*i]+ch];
+                    spikeVertices[3*(out_offset+ch*(timepts+2)+l)+1] = spikeData[in_offset+ch*timepts+l-1];// + channelOffsets[channels[2*i]+ch];
                     //z-value
                     spikeVertices[3*(out_offset+ch*(timepts+2)+l)+2] = 1.0;
                 }
@@ -922,7 +926,7 @@
                 l = timepts+1;
                 //add an extra point unless we at the last channel of the last spike
                 spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)] = _timestamps[i]+(-minpt+l-2)/samplingRate;
-                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+1] = spikeData[in_offset+ch*timepts+l-2] + channelOffsets[channels[2*i]+ch];
+                spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+1] = spikeData[in_offset+ch*timepts+l-2] ;//+ channelOffsets[channels[2*i]+ch];
                 spikeVertices[3*(out_offset+ch*(timepts+2)+timepts+1)+2] = -4.0;
             }
         }
@@ -1140,6 +1144,8 @@
         }
         if( (drawTemplates) && ( templatesLoaded == YES))
         {
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
             glBindBuffer(GL_ARRAY_BUFFER, templatesBuffer);
             glEnableClientState(GL_VERTEX_ARRAY);
             glVertexPointer(3, GL_FLOAT, 0, (GLvoid*)0);
@@ -1153,8 +1159,16 @@
                 glEnableClientState(GL_COLOR_ARRAY);
                 glColorPointer(3, GL_FLOAT, 0, (GLvoid*)((char*)NULL + 3*numTemplateVertices*sizeof(GLfloat)));
             }
-            glDrawArrays(GL_LINES, 0, numTemplateVertices);
-            glDrawArrays(GL_LINES, 1, numTemplateVertices-1);
+			int _offset = 0;
+			for(ch=0;ch<numDrawnChannels;ch++)
+			{
+				glPushMatrix();
+				glTranslatef(0,channelOffsets[ch],0);
+				glDrawArrays(GL_LINES, _offset, templatesPerChannel[drawChannels[ch]]);
+				glDrawArrays(GL_LINES, _offset+1, templatesPerChannel[drawChannels[ch]]-1);
+				glPopMatrix();
+				_offset += templatesPerChannel[drawChannels[ch]];
+			}
             glDisableClientState(GL_VERTEX_ARRAY);
             if(useSpikeColors == YES)
             {
