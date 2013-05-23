@@ -1252,9 +1252,15 @@
         windowSize = MIN(10000+xmin,xmax);
         dx = 0;
         
-        ySpan = ymax;
-        dy = 0;
+		//ySpan = channelOffsets[numDrawnChannels-1]+limits[2*(drawChannels[numDrawnChannels-1])+1];
+        //ySpan = ymax;
+        //dy = 0;
+		//dy = channelOffsets[0] + channelLimits[2*drawChannels[0]];
         zoomStackIdx = 0;
+		dx = zoomStack[zoomStackIdx*4];
+		windowSize = zoomStack[zoomStackIdx*4+1];
+		dy = zoomStack[zoomStackIdx*4+2];
+		ySpan = zoomStack[zoomStackIdx*4+3];
 		[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(0,numChannels)]];
         
     }
