@@ -1977,7 +1977,7 @@
     {
         //need to load more data
         //find out how many windows we need to skip
-        offset = _currentX/(xmax-xmin);
+        offset = (_currentX-xmin)/(xmax-xmin);
         vertexOffset+=offset*(NSInteger)(1.0*(xmax-xmin)*samplingRate);
         vertexOffset = MIN(vertexOffset,endTime-10000);
         _xmin = vertexOffset/samplingRate;
@@ -1997,7 +1997,7 @@
     {
         _xmin = xmin;
     }
-    dx = _dx-_xmin;
+    //dx = _dx-_xmin;
     currentX = _currentX;
 
     [self setNeedsDisplay:YES];
