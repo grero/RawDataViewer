@@ -453,6 +453,13 @@
     [wf setCurrentX :[sender floatValue]];
 }
 
+-(IBAction)changeChannel:(id)sender
+{
+	//TODO: this only works if there is only one channel
+	int _channel = [sender intValue];
+	[wf selectChannels: [NSIndexSet indexSetWithIndex: _channel] usingColor: NULL];
+}
+
 -(IBAction)toggleSpikeView:(id)sender
 {
     if ([[sender title] isEqualToString:@"Show spikes"] )
