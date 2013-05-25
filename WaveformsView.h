@@ -28,7 +28,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 	NSMutableArray *highlightedChannels;
     NSUInteger numPoints,numChannels,chunkSize,vertexOffset,zoomStackIdx,zoomStackLength,numSpikes,endTime,nValidZoomStacks,numDrawnChannels,
 			   *templatesPerChannel,*drawChannels;
-    GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan,samplingRate;
+    GLfloat xmax,xmin,ymax,ymin,windowSize,ySpan,samplingRate,gridSpaceX,gridSpaceY;
     GLfloat *vertices,*colors,*channelLimits,*zoomStack,*channelOffsets,*extractionThresholds;
 	GLuint *indices;
     GLfloat dz,dx,dy,tx,ty;
@@ -43,7 +43,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     IBOutlet NSTextField *timeCoord,*ampCoord,*chCoord;
     NSTimer *animationTimer;
 }
-@property (assign,readwrite) GLfloat currentX,currentY;
+@property (assign,readwrite) GLfloat currentX,currentY,gridSpaceX,gridSpaceY;
 @property (assign,readwrite) IBOutlet NSTextField *timeCoord,*ampCoord,*chCoord;
 @property (retain,readwrite) NSMutableData *highlightWaves;
 @property (retain,readwrite) NSMutableArray *highlightedChannels;

@@ -29,7 +29,29 @@
     [defaults registerDefaults:[NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:20.0] forKey:@"maxDataSize"]];
     //Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"loadMoreData" object:nil];
+	//make sure we receive notification about changes to NSUserDefaults
+	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self
+		forKeyPath:@"values.gridSpaceX"
+		options:NSKeyValueObservingOptionNew
+		context:NULL];
+	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self
+		forKeyPath:@"values.gridSpaceY"
+		options:NSKeyValueObservingOptionNew
+		context:NULL];
 }
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if([keyPath isEqualToString: @"values.gridSpaceX"])
+	{
+		[wf setGridSpaceX: [[object defaults] floatForKey: @"gridSpaceX"]];
+	}
+	else if([keyPath isEqualToString: @"values.gridSpaceY"])
+	{
+		[wf setGridSpaceY: [[object defaults] floatForKey: @"gridSpaceY"]];
+	}
+}
+
 - (BOOL)application:(NSApplication *)theApplication openFiles:(NSArray *)filenames
 {
 	NSString *filename;

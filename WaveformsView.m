@@ -31,6 +31,8 @@
 -(void)awakeFromNib
 {
     dataLoaded = NO;
+	gridSpaceX = 10.0;
+	gridSpaceY = 100.0;
 }
 
 -(BOOL)acceptsFirstResponder
@@ -1008,14 +1010,33 @@
 }
 
 
+-(void)setGridSpaceX:(float)_dx
+{
+	gridSpaceX = _dx;
+	[self setNeedsDisplay:YES];
+}
 
+-(void)setGridSpaceY:(float)_dy
+{
+	gridSpaceY = _dy;
+	[self setNeedsDisplay:YES];
+}
+
+-(GLfloat)gridSpaceX
+{
+	return gridSpaceX;
+}
+-(GLfloat)gridSpaceY
+{
+	return gridSpaceY;
+}
 
 -(void)drawGridLines
 {
 	float _dx,_dy;
 	int nx,ny,i,j;
-	_dx = 10; //10ms grid size in x-direction
-	_dy = 100; //100 micro volts in y-direction
+	_dx = gridSpaceX; //10ms grid size in x-direction
+	_dy = gridSpaceY; //100 micro volts in y-direction
 	//get the number of grid lines
 	ny = (int)(ySpan/_dy);
 	nx = (int)(windowSize/_dx);
