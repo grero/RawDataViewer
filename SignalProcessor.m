@@ -11,7 +11,7 @@
 @implementation SignalProcessor
 
 @synthesize templateFile;
-@synthesize spikes,templates,cinv,cells,cids,channels,numChannels;
+@synthesize spikes,templates,cinv,cells,cids,channels,numChannels,markers;
 @synthesize ntemplates,nspikes,samplingRate,timepts,timeOffset;
 
 - (id)init
@@ -21,9 +21,11 @@
         templates = [[[[NSMutableData alloc] init] retain] autorelease];
         numChannels  = [[[[NSMutableData alloc] init] retain] autorelease];
         spikes  = [[[[NSMutableData alloc] init] retain] autorelease];
+        markers  = [[[[NSMutableData alloc] init] retain] autorelease];
 
         ntemplates = 0;
         nspikes = 0;
+		nmarkers = 0;
         }
     
     return self;
