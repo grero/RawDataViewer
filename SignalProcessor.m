@@ -12,7 +12,7 @@
 
 @synthesize templateFile;
 @synthesize spikes,templates,cinv,cells,cids,channels,numChannels,markers;
-@synthesize ntemplates,nspikes,samplingRate,timepts,timeOffset;
+@synthesize ntemplates,nspikes,nmarkers,samplingRate,timepts,timeOffset;
 
 - (id)init
 {
@@ -247,7 +247,7 @@
     free(syncs);
     [markers appendBytes:_spikes length:nsyncs*sizeof(float)];
     free(_spikes);
-    nmarkers+=nsyncs;
+	[self setNmarkers: nmarkers+nsyncs];
     
     return YES;
 
