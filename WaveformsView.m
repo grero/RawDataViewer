@@ -1719,6 +1719,7 @@
 			if(spikeVertices != NULL)
 			{
 				int i = 0;
+				float v;
 				if( ( currentX > xmax) || (currentX < xmin) )
 				{
 					currentX = xmin;
@@ -1727,14 +1728,11 @@
 				{
 					i+=1;
 				}
-				currentX = spikeVertices[2*3*i];
-				//give the array back
+				v = spikeVertices[2*3*i];
+				//make sure we free up the buffer before calling setCurrentX, as setCurrentX might need to change the vertexBuffer
 				glUnmapBuffer(GL_ARRAY_BUFFER);
-				if(currentX > xmax)
-				{
-					//load more data
-					[self moveUp: self];
-				}
+				[self setCurrentX: v];
+				//give the array back
 				//update the zoom
 				windowSize = 5+xmin;
 				dx = currentX-2.5-xmin;
@@ -1750,19 +1748,16 @@
 			if(spikeVertices != NULL)
 			{
 				int i = numSpikes-1;
+				float v;
 				currentX = MAX(currentX,xmin);
 				while( (currentX <= spikeVertices[2*3*i] ) && (i>0) && (spikeVertices[2*3*i] >= xmin))
 				{
 					i-=1;
 				}
-				currentX = spikeVertices[2*3*i];
-				//give the array back
+				v = spikeVertices[2*3*i];
 				glUnmapBuffer(GL_ARRAY_BUFFER);
-				if (currentX < xmin )
-				{
-					//load more data
-					[self moveDown: self];
-				}
+				[self setCurrentX: v];
+				//give the array back
 				//update the zoom
 				windowSize = 5+xmin;
 				dx = currentX-2.5-xmin;
