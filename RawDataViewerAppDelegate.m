@@ -821,6 +821,7 @@
         //currentPos is the position of where we are right now;
         //temporarily remove self
         [[NSNotificationCenter defaultCenter] removeObserver:self];
+		//TODO: check if we are at the end of the file. If so, and if there are more chunks available, load the next data file chunk.
         [self loadDataFromFile:[self dataFileName] atOffset:currentPos];
 		//also redraw the template vertices, but only if requested
 		if( [wf drawTemplates] )
