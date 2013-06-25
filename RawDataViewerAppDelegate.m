@@ -528,7 +528,9 @@
     uint8_t nchs;
     int16_t *data,*tmp_data;
     size_t nbytes;
-    
+   	//Change the window title to reflect the name of the currently loaded file 
+	NSString *windowTitle = [[NSApp mainWindow] title];
+	[[NSApp mainWindow] setTitle: [NSString stringWithFormat: @"%@ - %@", windowTitle, [filename lastPathComponent]]];
     maxSize = [[NSUserDefaults standardUserDefaults] floatForKey:@"maxDataSize"];
     fname  = [filename cStringUsingEncoding:NSASCIIStringEncoding];
 
