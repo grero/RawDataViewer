@@ -831,7 +831,7 @@
 			currentPos = 0;
 			NSInteger seqnr = [[[self dataFileName] pathExtension] intValue];
 			NSString *newDataFilename = [[self dataFileName] stringByReplacingOccurrencesOfString: [[self dataFileName] pathExtension] withString: [NSString stringWithFormat: @"%.4d", seqnr+1]];
-			if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:newDataFilename]])
+			if([[NSFileManager defaultManager] isReadableFileAtPath:newDataFilename])
 			{
 				//update the current file name
 				[self setDataFileName: newDataFilename];
@@ -841,7 +841,7 @@
 		{
 			NSInteger seqnr = [[[self dataFileName] pathExtension] intValue];
 			NSString *newDataFilename = [[self dataFileName] stringByReplacingOccurrencesOfString: [[self dataFileName] pathExtension] withString: [NSString stringWithFormat: @"%.4d", seqnr-1]];
-			if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:newDataFilename]])
+			if([[NSFileManager defaultManager] isReadableFileAtPath:newDataFilename])
 			{
 				//update the current file name
 				[self setDataFileName: newDataFilename];
