@@ -1970,6 +1970,12 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
 		
 	}
+	else
+	{
+		vertexOffset = 0;
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],[NSNumber numberWithBool: YES],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",@"nextFile",nil]]];
+		
+	}
 }
 
 -(void)moveDown:(id)sender
@@ -1979,6 +1985,12 @@
         vertexOffset = MAX(0,(NSInteger)vertexOffset-(NSInteger)(1.0*(xmax-xmin)*samplingRate));
         [[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",nil]]];
     }
+	else
+	{
+        vertexOffset = MAX(0,(NSInteger)endTime-(NSInteger)(1.0*(xmax-xmin)*samplingRate));
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"loadMoreData" object:self userInfo:[NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects: [NSNumber numberWithInt:vertexOffset],[NSNumber numberWithBool: YES],nil] forKeys:[NSArray arrayWithObjects:@"currentPos",@"prevFile",nil]]];
+		
+	}
 }
 
 -(void)setCurrentX:(GLfloat)_currentX

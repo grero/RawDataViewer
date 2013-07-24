@@ -817,6 +817,7 @@
 {
     if([[notification name] isEqualToString:@"loadMoreData"] )
     {
+		NSString *cwd = [[NSFileManager defaultManager] currentDirectoryPath];
         //we are instructed to load more data
         NSDictionary *dict = [notification userInfo];
         NSInteger currentPos = [[dict objectForKey:@"currentPos"] intValue];
@@ -824,6 +825,30 @@
         //temporarily remove self
         [[NSNotificationCenter defaultCenter] removeObserver:self];
 		//TODO: check if we are at the end of the file. If so, and if there are more chunks available, load the next data file chunk.
+		if([[ dict valueForKey: @"nextFile"] boolValue])
+		{
+			//reset the position
+			currentPos = 0;
+			NSInteger seqnr = [[[self dataFileName] pathExtension] intValue];
+			NSString *newDataFilename = [[self dataFileName] stringByReplacingOccurrencesOfString: [[self dataFileName] pathExtension] withString: [NSString stringWithFormat: @"%.4d", seqnr+1]];
+			if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:newDataFilename]])
+			{
+				//update the current file name
+				[self setDataFileName: newDataFilename];
+			}
+		}
+		else if([[ dict valueForKey: @"prevFile"] boolValue])
+		{
+			NSInteger seqnr = [[[self dataFileName] pathExtension] intValue];
+			NSString *newDataFilename = [[self dataFileName] stringByReplacingOccurrencesOfString: [[self dataFileName] pathExtension] withString: [NSString stringWithFormat: @"%.4d", seqnr-1]];
+			if([[NSFileManager defaultManager] isReadableFileAtPath:[cwd stringByAppendingPathComponent:newDataFilename]])
+			{
+				//update the current file name
+				[self setDataFileName: newDataFilename];
+			}
+
+		}
+		
         [self loadDataFromFile:[self dataFileName] atOffset:currentPos];
 		//also redraw the template vertices, but only if requested
 		if( [wf drawTemplates] )
