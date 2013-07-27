@@ -32,6 +32,7 @@
 
 -(IBAction)openFile:(id)sender;
 -(IBAction)saveToPDF:(id)sender;
+-(IBAction)saveToTikz:(id)sender;
 -(IBAction)savePDFAs:(id)sender;
 -(IBAction)changeTime:(id)sender;
 -(IBAction)changeAmp:(id)sender;

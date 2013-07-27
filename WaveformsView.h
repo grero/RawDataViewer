@@ -86,6 +86,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(NSImage*)image;
 -(void) createAxis;
 -(void)saveToPDFAtURL:(NSURL*)url;
+-(void)saveToTikzAtURL:(NSURL*)url;
 -(void)animateTransition: (NSTimer*)timer;
 -(void)selectChannels:(NSIndexSet*)_channels usingColor:(NSData*)_color;
 

@@ -453,6 +453,17 @@
     [queue addOperation:theOp];
 }
 
+-(IBAction)saveToTikz:(id)sender
+{
+   NSSavePanel *sPanel = [NSSavePanel savePanel];
+   [sPanel beginSheetModalForWindow: [NSApp mainWindow] completionHandler: ^(NSInteger result){
+	   if( result == NSFileHandlingPanelOKButton )
+	   {
+		   [wf saveToTikzAtURL: [sPanel URL]];
+	   }
+   }];
+}
+
 -(IBAction)savePDFAs:(id)sender
 {
     NSURL *url;

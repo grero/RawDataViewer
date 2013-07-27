@@ -1435,6 +1435,60 @@
     
 }
 
+-(void)saveToTikzAtURL:(NSURL*)url
+{
+	int i,np;
+	char *fname;
+	FILE *fid;
+	NSUInteger nchs,ch,ch1,ch2;
+	//get the first and last visible channel
+	ch1 = [visibleChannels firstIndex];
+	ch2 = [visibleChannels lastIndex];
+	//save the current view to a tikz figure at the given url
+	fname = [[url path] cStringUsingEncoding: NSASCIIStringEncoding];
+	//open file
+	fid = fopen(fname,"w");
+	//set up the figure
+	fprintf(fid,"\\begin{tikzpicture}\n");
+	fprintf(fid,"\\begin{axis}[\n");
+	fprintf(fid,"axis x line=bottom, axis y line=left,\n");
+	fprintf(fid,"xmin=%f, xmax=%f, ymin=%f, ymax=%f,\n",
+		  xmin+dx, xmin+dx+windowSize, channelLimits[2*ch1],
+		  channelOffsets[ch2] - channelOffsets[ch1] + channelLimits[2*ch2+1]);
+	fprintf(fid,"xlabel = Time (ms), ylabel=Amplitude (mV)]\n");
+	//lines = [lines stringByAppendingString: @"xticks=, yticks="]
+  np = numPoints/numChannels;
+  //get the currently visible channels
+  nchs = [visibleChannels count];
+  //draw the coordinate
+  ch = [visibleChannels firstIndex];
+  while(ch != NSNotFound )
+  {
+	  fprintf(fid,"\\addplot[blue]\n");
+	  fprintf(fid,"coordinates{\n");
+	i = 0;
+	while( (vertices[3*(ch*np+i)] < xmin+dx ) && (i < np))
+	{
+		i++;
+	}
+	if(i < np )
+	{
+		while( (vertices[3*(ch*np+i)] < windowSize+dx) && (i < np ))
+		{
+			fprintf(fid,"(%f,%f) ", 
+				  vertices[3*(ch*np+i)], vertices[3*(ch*np+i)+1] + channelOffsets[ch] - channelOffsets[ch1]);
+			i++;
+		}
+	}
+	  //end the coordinate list
+	  fprintf(fid,"};\n");
+	ch = [visibleChannels indexGreaterThanIndex: ch];
+  }
+  fprintf(fid,"\\end{axis}\n");
+  fprintf(fid,"\\end{tikzpicture}\n");
+  fclose(fid);
+}
+
 -(void)saveToPDFAtURL:(NSURL*)url
 {
     
