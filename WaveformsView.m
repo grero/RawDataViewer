@@ -1437,10 +1437,11 @@
 
 -(void)saveToTikzAtURL:(NSURL*)url
 {
-	int i,np;
+	int i,np,j,offset;
 	char *fname;
 	FILE *fid;
-	NSUInteger nchs,ch,ch1,ch2;
+	NSUInteger nchs,ch,ch1,ch2,timepts;
+	timepts = [sp timepts];
 	//get the first and last visible channel
 	ch1 = [visibleChannels firstIndex];
 	ch2 = [visibleChannels lastIndex];
@@ -1462,6 +1463,7 @@
   nchs = [visibleChannels count];
   //draw the coordinate
   ch = [visibleChannels firstIndex];
+  //get the y-offset
   while(ch != NSNotFound )
   {
 	  fprintf(fid,"\\addplot[blue]\n");
@@ -1483,6 +1485,47 @@
 	  //end the coordinate list
 	  fprintf(fid,"};\n");
 	ch = [visibleChannels indexGreaterThanIndex: ch];
+  }
+  //TODO: check if there are any spikes to draw
+  if( numSpikes > 0)
+  {
+	  //map the spike vertices
+	  GLfloat *spikeVertices;
+	  glBindBuffer(GL_ARRAY_BUFFER, templatesBuffer);
+   	  spikeVertices = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
+	  if( spikeVertices != NULL )
+	  {
+			ch = [visibleChannels firstIndex];
+
+			while(ch != NSNotFound )
+			{
+				offset = 0;
+				for(i=0;i<ch-1;i++)
+					offset += templatesPerChannel[i];
+				for(i=offset; i < offset+templatesPerChannel[ch]; i+=1*(timepts+2))
+				{
+					//check if the x-value is within the x-bounds
+					//TODO: this does not work
+					if( (spikeVertices[3*i+3*(timepts)] < xmin+dx+windowSize ) &&
+					(spikeVertices[3*i] > xmin+dx ) &&
+					(spikeVertices[3*i+3*(timepts)] > spikeVertices[3*i]))
+					{
+						//plot this spike
+						fprintf(fid,"\\addplot[red]\n");
+						fprintf(fid,"coordinates{\n");
+						for(j=0;j<timepts; j++)
+						{
+							fprintf(fid,"(%f, %f) ",spikeVertices[3*(i+j)], 
+							spikeVertices[3*(i+j)+1] + channelOffsets[ch] - channelOffsets[ch1]);
+
+						}
+						fprintf(fid,"};\n");
+					}
+				}
+				ch = [visibleChannels indexGreaterThanIndex: ch];
+			}
+			glUnmapBuffer(GL_ARRAY_BUFFER);
+		}
   }
   fprintf(fid,"\\end{axis}\n");
   fprintf(fid,"\\end{tikzpicture}\n");
