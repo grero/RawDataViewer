@@ -1437,7 +1437,7 @@
 
 -(void)saveToTikzAtURL:(NSURL*)url
 {
-	int i,np,j,offset;
+	int i,np,j,offset,k;
 	char *fname;
 	FILE *fid;
 	NSUInteger nchs,ch,ch1,ch2,timepts;
@@ -1499,6 +1499,7 @@
 
 			while(ch != NSNotFound )
 			{
+				k = 1;
 				offset = 0;
 				for(i=0;i<ch-1;i++)
 					offset += templatesPerChannel[i];
@@ -1510,16 +1511,21 @@
 					(spikeVertices[3*i] > xmin+dx ) &&
 					(spikeVertices[3*i+3*(timepts)] > spikeVertices[3*i]))
 					{
+						//grab the color
+						GLfloat *_color = spikeVertices + 3*numTemplateVertices + 3*i;
+
+						//the color specification
+						fprintf(fid, "\\definecolor{color%d}{rgb}{%f,%f,%f}\n", k, _color[0],_color[1],_color[2]);
 						//plot this spike
-						fprintf(fid,"\\addplot[red]\n");
+						fprintf(fid,"\\addplot[color%d]\n", k);
 						fprintf(fid,"coordinates{\n");
 						for(j=0;j<timepts; j++)
 						{
 							fprintf(fid,"(%f, %f) ",spikeVertices[3*(i+j)], 
 							spikeVertices[3*(i+j)+1] + channelOffsets[ch] - channelOffsets[ch1]);
-
 						}
 						fprintf(fid,"};\n");
+						k+=1;
 					}
 				}
 				ch = [visibleChannels indexGreaterThanIndex: ch];
