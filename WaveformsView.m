@@ -1506,7 +1506,7 @@
 				{
 					//check if the x-value is within the x-bounds
 					//TODO: this does not work
-					if( (spikeVertices[3*i+3*(timepts)] < xmin+dx+windowSize ) &&
+					if( (spikeVertices[3*i+3*(timepts)] < dx+windowSize ) &&
 					(spikeVertices[3*i] > xmin+dx ) &&
 					(spikeVertices[3*i+3*(timepts)] > spikeVertices[3*i]))
 					{
