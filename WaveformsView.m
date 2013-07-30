@@ -1487,7 +1487,7 @@
 	ch = [visibleChannels indexGreaterThanIndex: ch];
   }
   //TODO: check if there are any spikes to draw
-  if( numSpikes > 0)
+  if( ( numSpikes > 0) && drawTemplates)
   {
 	  //map the spike vertices
 	  GLfloat *spikeVertices;
