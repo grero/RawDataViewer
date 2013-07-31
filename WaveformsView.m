@@ -1000,6 +1000,8 @@
     drawTemplates = YES;
     numSpikes = nspikes;
     templatesLoaded = YES;
+	//make sure we enable the menu item allowing us to show/hide templates
+    [[[[[[NSApplication sharedApplication] mainMenu] itemWithTitle: @"View"] submenu] itemWithTitle:@"Hide templates"] setEnabled:YES];
     
     [self setNeedsDisplay:YES];
 }

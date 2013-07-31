@@ -509,6 +509,22 @@
     }
 }
 
+-(IBAction)toggleTemplateView:(id)sender
+{
+    if ([[sender title] isEqualToString:@"Show templates"] )
+    {
+        [sender setTitle:@"Hide templates"];
+        [wf setDrawTemplates:YES];
+        [wf setNeedsDisplay:YES];
+    }
+    else if( [[sender title] isEqualToString:@"Hide templates"] )
+    {
+        [sender setTitle:@"Show templates"];
+        [wf setDrawTemplates:NO];
+        [wf setNeedsDisplay:YES];
+    }
+}
+
 -(IBAction)toggleDataView:(id)sender
 {
     if ([[sender title] isEqualToString:@"Show data"] )

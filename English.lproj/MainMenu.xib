@@ -1246,6 +1246,15 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="807220149">
+									<reference key="NSMenu" ref="466310130"/>
+									<bool key="NSIsDisabled">YES</bool>
+									<string key="NSTitle">Hide templates</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
 								<object class="NSMenuItem" id="757524564">
 									<reference key="NSMenu" ref="466310130"/>
 									<string key="NSTitle">Hide data</string>
@@ -2673,6 +2682,14 @@
 					<int key="connectionID">621</int>
 				</object>
 				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleTemplateView:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="807220149"/>
+					</object>
+					<int key="connectionID">623</int>
+				</object>
+				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">sp</string>
 						<reference key="source" ref="695463542"/>
@@ -3245,6 +3262,7 @@
 							<reference ref="854609876"/>
 							<reference ref="112461390"/>
 							<reference ref="757524564"/>
+							<reference ref="807220149"/>
 						</object>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -4176,6 +4194,11 @@
 						<reference key="object" ref="797419178"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">622</int>
+						<reference key="object" ref="807220149"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -4374,6 +4397,7 @@
 					<string>614.IBPluginDependency</string>
 					<string>615.IBPluginDependency</string>
 					<string>620.IBPluginDependency</string>
+					<string>622.IBPluginDependency</string>
 					<string>72.IBPluginDependency</string>
 					<string>73.IBPluginDependency</string>
 					<string>74.IBPluginDependency</string>
@@ -4593,6 +4617,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -4607,7 +4632,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">621</int>
+			<int key="maxID">623</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4623,12 +4648,18 @@
 							<string>changeChannel:</string>
 							<string>changeTime:</string>
 							<string>openFile:</string>
+							<string>savePDFAs:</string>
 							<string>saveToPDF:</string>
+							<string>saveToTikz:</string>
 							<string>toggleDataView:</string>
 							<string>toggleSpikeView:</string>
+							<string>toggleTemplateView:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -4646,9 +4677,12 @@
 							<string>changeChannel:</string>
 							<string>changeTime:</string>
 							<string>openFile:</string>
+							<string>savePDFAs:</string>
 							<string>saveToPDF:</string>
+							<string>saveToTikz:</string>
 							<string>toggleDataView:</string>
 							<string>toggleSpikeView:</string>
+							<string>toggleTemplateView:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -4669,7 +4703,15 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
+								<string key="name">savePDFAs:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
 								<string key="name">saveToPDF:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">saveToTikz:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -4678,6 +4720,10 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">toggleSpikeView:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleTemplateView:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
