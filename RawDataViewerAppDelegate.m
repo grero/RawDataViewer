@@ -490,7 +490,10 @@
 {
 	//TODO: this only works if there is only one channel
 	int _channel = [sender intValue];
-	[wf selectChannels: [NSIndexSet indexSetWithIndex: _channel] usingColor: NULL];
+	//get the already selected channels; this will make sure that only the selected channel is highlighted
+	NSMutableIndexSet *_index = [NSMutableIndexSet indexSetWithIndex: _channel];
+	[_index addIndexes: [wf selectedChannels]];
+	[wf selectChannels: _index usingColor: NULL];
 }
 
 -(IBAction)toggleSpikeView:(id)sender
