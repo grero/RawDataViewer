@@ -1461,7 +1461,7 @@
 	fprintf(fid,"\\begin{axis}[\n");
 	fprintf(fid,"axis x line=bottom, axis y line=left,\n");
 	fprintf(fid,"xmin=%f, xmax=%f, ymin=%f, ymax=%f,\n",
-		  xmin+dx, xmin+dx+windowSize, channelLimits[2*ch1],
+		  xmin+dx, dx+windowSize, channelLimits[2*ch1],
 		  channelOffsets[ch2] - channelOffsets[ch1] + channelLimits[2*ch2+1]);
 	fprintf(fid,"xlabel = Time (ms), ylabel=Amplitude (mV)]\n");
 	//lines = [lines stringByAppendingString: @"xticks=, yticks="]
