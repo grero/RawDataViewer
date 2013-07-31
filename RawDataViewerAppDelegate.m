@@ -544,6 +544,18 @@
     }
 }
 
+-(IBAction)toggleCursorView:(id)sender
+{
+    if ([[sender title] isEqualToString:@"Show cursor"] )
+    {
+        [wf setDrawCurrentX:YES];
+    }
+    else if( [[sender title] isEqualToString:@"Hide cursor"] )
+    {
+        [wf setDrawCurrentX:NO];
+    }
+}
+
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset
 {
     //read data from the file

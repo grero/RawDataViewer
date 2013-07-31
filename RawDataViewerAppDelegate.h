@@ -40,6 +40,7 @@
 -(IBAction)toggleSpikeView:(id)sender;
 -(IBAction)toggleTemplateView:(id)sender;
 -(IBAction)toggleDataView:(id)sender;
+-(IBAction)toggleCursorView:(id)sender;
 
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset;
 -(BOOL)loadSpikesFromFile:(NSString*)filename;

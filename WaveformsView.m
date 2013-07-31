@@ -1318,7 +1318,7 @@
             [ampCoord setStringValue:[NSString stringWithFormat:@"%.2f",dataPoint.y-channelOffsets[ch]]];
             currentX = dataPoint.x;
             currentY = dataPoint.y;
-			drawCurrentX = YES;
+			[self setDrawCurrentX:YES];
 			//get the channel
             [chCoord setStringValue:[NSString stringWithFormat:@"%d",drawChannels[ch]]];
             [[timeCoord window] orderFront:self];
@@ -1879,7 +1879,7 @@
             {
                 if( spikeIdx != nil)
                 {
-                    drawCurrentX = NO;
+					[self setDrawCurrentX: NO];
                     //turn off cursor
                     [NSCursor hide];
                     unsigned int _spidx = 0;
@@ -1903,7 +1903,7 @@
             }
             //turn cursor back on
             [NSCursor unhide];
-            drawCurrentX = YES;
+			[self setDrawCurrentX: YES];
             
         }
         else if( [[theEvent characters] isEqualToString:@"h"] )
@@ -2294,6 +2294,21 @@
 	}
 	[self setNeedsDisplay: YES];
 
+}
+
+
+-(void)setDrawCurrentX:(BOOL)state
+{
+	if( state )
+	{
+		[[[[[[NSApplication sharedApplication] mainMenu] itemWithTitle: @"View"] submenu] itemWithTitle:@"Show cursor"] setTitle: @"Hide cursor"];
+	}
+	else
+	{
+		[[[[[[NSApplication sharedApplication] mainMenu] itemWithTitle: @"View"] submenu] itemWithTitle:@"Hide cursor"] setTitle: @"Show cursor"];
+	}
+	drawCurrentX = state;
+	[self setNeedsDisplay:YES];
 }
 
 -(void)dealloc
