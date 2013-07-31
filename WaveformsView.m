@@ -1321,9 +1321,14 @@
 			[self setDrawCurrentX:YES];
 			//get the channel
             [chCoord setStringValue:[NSString stringWithFormat:@"%d",drawChannels[ch]]];
+			//get the already selected channels; this will make sure that only the selected channel is highlighted
+			NSMutableIndexSet *_index = [NSMutableIndexSet indexSetWithIndex: drawChannels[ch]];
+			[_index addIndexes: [self selectedChannels]];
+			[self selectChannels: _index usingColor: NULL];
+
             [[timeCoord window] orderFront:self];
 		}
-        if([theEvent modifierFlags] & NSShiftKeyMask )
+		else if([theEvent modifierFlags] & NSShiftKeyMask )
 		{
 			//get the channel
 			int	ch = 0;
