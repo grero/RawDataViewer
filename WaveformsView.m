@@ -1309,7 +1309,7 @@
         if([theEvent modifierFlags] & NSAlternateKeyMask )
         {
 			int	ch = 0;
-			while( (channelOffsets[ch]+channelLimits[2*drawChannels[ch+1]] < dataPoint.y ) && (ch < numDrawnChannels ))
+			while( (channelOffsets[ch]  + channelLimits[2*drawChannels[ch]+1]< dataPoint.y ) && (ch < numDrawnChannels-1))
 				ch++;
 			//ch-=1;
 			//ch = MAX(ch,0);
