@@ -556,6 +556,21 @@
     }
 }
 
+-(IBAction)toggleGridView:(id)sender
+{
+    if ([[sender title] isEqualToString:@"Show grid"] )
+    {
+        [sender setTitle:@"Hide grid"];
+        [wf setDrawGrid:YES];
+    }
+    else if( [[sender title] isEqualToString:@"Hide grid"] )
+    {
+        [sender setTitle:@"Show grid"];
+        [wf setDrawGrid:NO];
+    }
+	[wf setNeedsDisplay:YES];
+}
+
 -(BOOL)loadDataFromFile:(NSString *)filename atOffset:(NSUInteger)offset
 {
     //read data from the file

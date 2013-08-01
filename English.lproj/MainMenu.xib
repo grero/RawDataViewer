@@ -1246,7 +1246,7 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="746962221">
+								<object class="NSMenuItem" id="534179983">
 									<reference key="NSMenu" ref="466310130"/>
 									<bool key="NSIsDisabled">YES</bool>
 									<string key="NSTitle">Hide templates</string>
@@ -1263,9 +1263,17 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="457444966">
+								<object class="NSMenuItem" id="996516168">
 									<reference key="NSMenu" ref="466310130"/>
 									<string key="NSTitle">Hide cursor</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
+								<object class="NSMenuItem" id="932992439">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Show grid</string>
 									<string key="NSKeyEquiv"/>
 									<int key="NSMnemonicLoc">2147483647</int>
 									<reference key="NSOnImage" ref="35465992"/>
@@ -2693,7 +2701,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">toggleTemplateView:</string>
 						<reference key="source" ref="976324537"/>
-						<reference key="destination" ref="746962221"/>
+						<reference key="destination" ref="534179983"/>
 					</object>
 					<int key="connectionID">623</int>
 				</object>
@@ -2701,9 +2709,17 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">toggleCursorView:</string>
 						<reference key="source" ref="976324537"/>
-						<reference key="destination" ref="457444966"/>
+						<reference key="destination" ref="996516168"/>
 					</object>
 					<int key="connectionID">625</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">toggleGridView:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="932992439"/>
+					</object>
+					<int key="connectionID">627</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -3278,8 +3294,9 @@
 							<reference ref="854609876"/>
 							<reference ref="112461390"/>
 							<reference ref="757524564"/>
-							<reference ref="746962221"/>
-							<reference ref="457444966"/>
+							<reference ref="534179983"/>
+							<reference ref="996516168"/>
+							<reference ref="932992439"/>
 						</object>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -4213,12 +4230,17 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">622</int>
-						<reference key="object" ref="746962221"/>
+						<reference key="object" ref="534179983"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">624</int>
-						<reference key="object" ref="457444966"/>
+						<reference key="object" ref="996516168"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">626</int>
+						<reference key="object" ref="932992439"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
 				</object>
@@ -4421,6 +4443,7 @@
 					<string>620.IBPluginDependency</string>
 					<string>622.IBPluginDependency</string>
 					<string>624.IBPluginDependency</string>
+					<string>626.IBPluginDependency</string>
 					<string>72.IBPluginDependency</string>
 					<string>73.IBPluginDependency</string>
 					<string>74.IBPluginDependency</string>
@@ -4642,6 +4665,7 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -4656,7 +4680,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">625</int>
+			<int key="maxID">627</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -4677,11 +4701,13 @@
 							<string>saveToTikz:</string>
 							<string>toggleCursorView:</string>
 							<string>toggleDataView:</string>
+							<string>toggleGridView:</string>
 							<string>toggleSpikeView:</string>
 							<string>toggleTemplateView:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -4708,6 +4734,7 @@
 							<string>saveToTikz:</string>
 							<string>toggleCursorView:</string>
 							<string>toggleDataView:</string>
+							<string>toggleGridView:</string>
 							<string>toggleSpikeView:</string>
 							<string>toggleTemplateView:</string>
 						</object>
@@ -4747,6 +4774,10 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">toggleDataView:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">toggleGridView:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
