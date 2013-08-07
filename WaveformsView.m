@@ -1370,6 +1370,16 @@
 						dy = dataPoint.y-ymin;
 						ySpan = ty + ymin -dy;
 					}
+					//determine the channel
+					uint32_t ch1,ch2,ch = 0;
+					while( (channelOffsets[ch]+channelLimits[2*ch+1] <= MIN(ty,dataPoint.y)) && (ch < numChannels ))
+						ch++;
+					ch1 = ch;
+					while( (channelOffsets[ch]+channelLimits[2*ch+1] < MAX(ty,dataPoint.y )) && (ch < numChannels ))
+						ch++;
+					ch2 = ch;
+					[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(ch1,ch2-ch1)]];
+					//NSLog(@"Visible channels: %@",[self visibleChannels]);
 				}
                 if( zoomStackIdx<zoomStackLength-1 )
                 {
@@ -1387,16 +1397,6 @@
                 zoomStack[zoomStackIdx*4+1] = windowSize;
                 zoomStack[zoomStackIdx*4+2] = dy;
                 zoomStack[zoomStackIdx*4+3] = ySpan;
-				//determine the channel
-				uint32_t ch1,ch2,ch = 0;
-				while( (channelOffsets[ch]+channelLimits[2*ch+1] <= MIN(ty,dataPoint.y)) && (ch < numChannels ))
-					ch++;
-				ch1 = ch;
-				while( (channelOffsets[ch]+channelLimits[2*ch+1] < MAX(ty,dataPoint.y )) && (ch < numChannels ))
-					ch++;
-				ch2 = ch;
-				[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(ch1,ch2-ch1)]];
-				//NSLog(@"Visible channels: %@",[self visibleChannels]);
             }
                 
         }
