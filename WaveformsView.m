@@ -21,7 +21,7 @@
 @synthesize highlightWaves;
 @synthesize highlightedChannels;
 @synthesize timeCoord,ampCoord,chCoord;
-@synthesize drawSpikes,drawTemplates,drawGrid,drawData;
+@synthesize drawSpikes,drawTemplates,drawGrid,drawData,vZoom,hZoom;
 @synthesize sp;
 @synthesize endTime;
 @synthesize selectedChannels,visibleChannels;
@@ -33,6 +33,8 @@
     dataLoaded = NO;
 	gridSpaceX = 10.0;
 	gridSpaceY = 100.0;
+	hZoom = YES;
+	vZoom = YES;
 }
 
 -(BOOL)acceptsFirstResponder
@@ -1347,22 +1349,28 @@
             //make sure we actually moved
             if( (fabs((tx-dataPoint.x)/windowSize) > 0.001) && (fabs((ty-dataPoint.y)/ySpan) > 0.001))
             {
-                windowSize = dataPoint.x-tx;
-                dx = tx;
-                //make sure we are not flipping
-                if(dataPoint.x < tx+xmin)
-                {
-                    dx = dataPoint.x-xmin;
-                    windowSize = tx+xmin-dx;
-                }
-                
-                ySpan = dataPoint.y-ty;
-                dy = ty;
-                if(dataPoint.y < ty+ymin )
-                {
-                    dy = dataPoint.y-ymin;
-                    ySpan = ty + ymin -dy;
-                }
+				if( hZoom )
+				{
+					windowSize = dataPoint.x-tx;
+					dx = tx;
+					//make sure we are not flipping
+					if(dataPoint.x < tx+xmin)
+					{
+						dx = dataPoint.x-xmin;
+						windowSize = tx+xmin-dx;
+					}
+				}
+               
+				if( vZoom )
+				{
+					ySpan = dataPoint.y-ty;
+					dy = ty;
+					if(dataPoint.y < ty+ymin )
+					{
+						dy = dataPoint.y-ymin;
+						ySpan = ty + ymin -dy;
+					}
+				}
                 if( zoomStackIdx<zoomStackLength-1 )
                 {
                     zoomStackIdx+=1;
@@ -1395,6 +1403,34 @@
     }
     [self setNeedsDisplay:YES];
     
+}
+
+-(void)rightMouseDown:(NSEvent *)theEvent
+{
+
+	NSMenu *theMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
+	[theMenu insertItemWithTitle:@"Vertical zoom" action:@selector(changeZoomType:) keyEquivalent:@"" atIndex:0];
+	[[theMenu itemAtIndex: 0] setEnabled: YES];
+	[[theMenu itemAtIndex: 0] setState: [self vZoom]];
+	[theMenu insertItemWithTitle:@"Horizontal zoom" action:@selector(changeZoomType:) keyEquivalent:@"" atIndex:1];
+	[[theMenu itemAtIndex: 1] setEnabled: YES];
+	[[theMenu itemAtIndex: 1] setState: [self hZoom]];
+	 
+	[NSMenu popUpContextMenu:theMenu withEvent:theEvent forView:self];
+}
+
+-(IBAction)changeZoomType:(id)sender
+{
+	if( [[sender title] isEqualToString: @"Vertical zoom"] )
+	{
+		[self setVZoom: !vZoom];
+		[sender setState: [self vZoom]];
+	}
+	else if( [[sender title] isEqualToString: @"Horizontal zoom"] )
+	{
+		[self setHZoom: !hZoom];
+		[sender setState: [self hZoom]];
+	}
 }
 
 -(void)mouseDown:(NSEvent *)theEvent

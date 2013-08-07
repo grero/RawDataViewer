@@ -37,7 +37,9 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
     GLfloat currentX,currentY;
     NSMutableData *spikeIdx,*channelColors;;
 	NSMutableIndexSet *selectedChannels,*visibleChannels;
-    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,drawTemplates,templatesLoaded,drawData,drawCurrentX,drawThresholds,drawGrid;
+    BOOL dataLoaded,drawSpikes,spikesLoaded,useSpikeColors,
+		 drawTemplates,templatesLoaded,drawData,drawCurrentX,
+		 drawThresholds,drawGrid,vZoom,hZoom;
     
     IBOutlet SignalProcessor *sp;
     IBOutlet NSTextField *timeCoord,*ampCoord,*chCoord;
@@ -47,7 +49,7 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 @property (assign,readwrite) IBOutlet NSTextField *timeCoord,*ampCoord,*chCoord;
 @property (retain,readwrite) NSMutableData *highlightWaves;
 @property (retain,readwrite) NSMutableArray *highlightedChannels;
-@property (assign,readwrite) BOOL drawSpikes,drawTemplates,drawGrid,drawData,drawCurrentX;
+@property (assign,readwrite) BOOL drawSpikes,drawTemplates,drawGrid,drawData,drawCurrentX,vZoom,hZoom;
 @property (assign,readwrite) NSUInteger endTime;
 @property (assign) IBOutlet SignalProcessor *sp;
 @property (retain,readwrite) NSMutableIndexSet *selectedChannels,*visibleChannels;
@@ -89,5 +91,6 @@ static void wfModifyColors(GLfloat *color_data, GLfloat *color);
 -(void)saveToTikzAtURL:(NSURL*)url;
 -(void)animateTransition: (NSTimer*)timer;
 -(void)selectChannels:(NSIndexSet*)_channels usingColor:(NSData*)_color;
+-(IBAction)changeZoomType:(id)sender;
 
 @end
