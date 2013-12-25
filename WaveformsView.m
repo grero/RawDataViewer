@@ -1480,11 +1480,13 @@
 
 -(void)saveToTikzAtURL:(NSURL*)url
 {
-	int i,np,j,offset,k;
+	int i,np,j,offset,k,q;
 	char *fname;
 	FILE *fid;
 	NSUInteger nchs,ch,ch1,ch2,timepts;
 	timepts = [sp timepts];
+	//get the currently visible channels
+	nchs = [visibleChannels count];
 	//get the first and last visible channel
 	ch1 = [visibleChannels firstIndex];
 	ch2 = [visibleChannels lastIndex];
@@ -1502,16 +1504,15 @@
 	fprintf(fid,"\\begin{axis}[\n");
 	fprintf(fid,"axis x line=bottom, axis y line=left,\n");
 	fprintf(fid,"xmin=%f, xmax=%f, ymin=%f, ymax=%f,\n",
-		  xmin+dx, dx+windowSize, channelLimits[2*ch1],
-		  channelOffsets[ch2] - channelOffsets[ch1] + channelLimits[2*ch2+1]);
+		  xmin+dx, dx+windowSize, channelLimits[2*drawChannels[0]],
+		  channelOffsets[nchs-1] - channelOffsets[0] + channelLimits[2*drawChannels[nchs-1]+1]);
 	fprintf(fid,"xlabel = Time (ms), ylabel=Amplitude (mV)]\n");
 	//lines = [lines stringByAppendingString: @"xticks=, yticks="]
   np = numPoints/numChannels;
-  //get the currently visible channels
-  nchs = [visibleChannels count];
   //draw the coordinate
   ch = [visibleChannels firstIndex];
   //get the y-offset
+  q = 0;
   while(ch != NSNotFound )
   {
 	  fprintf(fid,"\\addplot[blue]\n");
@@ -1526,13 +1527,14 @@
 		while( (vertices[3*(ch*np+i)] < windowSize+dx) && (i < np ))
 		{
 			fprintf(fid,"(%f,%f) ", 
-				  vertices[3*(ch*np+i)], vertices[3*(ch*np+i)+1] + channelOffsets[ch] - channelOffsets[ch1]);
+				  vertices[3*(ch*np+i)], vertices[3*(ch*np+i)+1] + channelOffsets[q] - channelOffsets[0]);
 			i++;
 		}
 	}
 	  //end the coordinate list
 	  fprintf(fid,"};\n");
 	ch = [visibleChannels indexGreaterThanIndex: ch];
+	q+=1;
   }
   //TODO: check if there are any spikes to draw
   if( ( numSpikes > 0) && drawTemplates)
@@ -1544,6 +1546,7 @@
 	  if( spikeVertices != NULL )
 	  {
 			ch = [visibleChannels firstIndex];
+			q = 0;
 
 			while(ch != NSNotFound )
 			{
@@ -1570,13 +1573,14 @@
 						for(j=0;j<timepts; j++)
 						{
 							fprintf(fid,"(%f, %f) ",spikeVertices[3*(i+j)], 
-							spikeVertices[3*(i+j)+1] + channelOffsets[ch] - channelOffsets[ch1]);
+							spikeVertices[3*(i+j)+1] + channelOffsets[q] - channelOffsets[0]);
 						}
 						fprintf(fid,"};\n");
 						k+=1;
 					}
 				}
 				ch = [visibleChannels indexGreaterThanIndex: ch];
+				q +=1 ;
 			}
 			glUnmapBuffer(GL_ARRAY_BUFFER);
 		}
