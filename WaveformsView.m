@@ -1492,6 +1492,11 @@
 	fname = [[url path] cStringUsingEncoding: NSASCIIStringEncoding];
 	//open file
 	fid = fopen(fname,"w");
+	//set up the preample
+	fprintf(fid, "\\documentclass{article}\n");
+	fprintf(fid, "\\usepackage{tikz}\n");
+	fprintf(fid, "\\usepackage{pgfplots}\n");
+	fprintf(fid, "\\begin{document}\n");
 	//set up the figure
 	fprintf(fid,"\\begin{tikzpicture}\n");
 	fprintf(fid,"\\begin{axis}[\n");
@@ -1578,6 +1583,8 @@
   }
   fprintf(fid,"\\end{axis}\n");
   fprintf(fid,"\\end{tikzpicture}\n");
+  //close the document
+  fprintf(fid,"\\end{document}\n");
   fclose(fid);
 }
 
