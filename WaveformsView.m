@@ -328,6 +328,10 @@
 	{
 		[self setVisibleChannels: [NSMutableIndexSet indexSetWithIndexesInRange: NSMakeRange(0,channels)]];
 	}
+	else if( [visibleChannels count] == 0)
+	{
+		[visibleChannels addIndexesInRange: NSMakeRange(0,channels)];
+	}
 	//get a copy of the channels in a pure c array as well
 	numDrawnChannels = [visibleChannels count];
 	drawChannels = malloc(numDrawnChannels*sizeof(NSUInteger));
