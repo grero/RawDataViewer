@@ -582,9 +582,10 @@
     const char *fname;    
     FILE *fid;
     uint32_t headerSize,samplingRate,npoints,maxSize,k,i;
-    uint8_t nchs;
+    uint16_t nchs;
     int16_t *data,*tmp_data;
     size_t nbytes;
+	nchs = 0;
    	//Change the window title to reflect the name of the currently loaded file 
 	NSString *windowTitle = [[NSApp mainWindow] title];
 	[[NSApp mainWindow] setTitle: [NSString stringWithFormat: @"RawDataViewer - %@", [filename lastPathComponent]]];
@@ -595,7 +596,7 @@
     //get the header size
     fread(&headerSize, sizeof(uint32_t), 1, fid);
     //check if we have a valid file
-    if( (headerSize != 73) && (headerSize != 90 ) )
+    if( (headerSize != 73) && (headerSize != 90 ) && (headerSize != 74))
     {
         //not valid file
         [progress stopAnimation:self];
@@ -603,9 +604,15 @@
         NSLog(@"Unrecognized header size");
         return NO;
     }
-    
     //get the number of channels
-    fread(&nchs,sizeof(uint8_t),1,fid);
+   	if( headerSize == 74 ) //new format
+	{
+		fread(&nchs,sizeof(uint16_t),1,fid);
+	}
+	else
+	{
+		fread(&nchs,sizeof(uint8_t),1,fid);
+	}
     if( nchs == 0 )
     {
         [progress stopAnimation:self];
@@ -619,7 +626,14 @@
         //we made a mistake; try reading in the opposite order
         fseek(fid,-5,SEEK_CUR);
         fread(&samplingRate,sizeof(uint32_t),1,fid);
-        fread(&nchs,sizeof(uint8_t),1,fid);
+		if( headerSize == 74 ) //new format
+		{
+			fread(&nchs,sizeof(uint16_t),1,fid);
+		}
+		else
+		{
+			fread(&nchs,sizeof(uint8_t),1,fid);
+		}
     }
     //check again; if we still didn't get a sensible number, this is probably not a valid file
     if (samplingRate > 1e5 )
